@@ -1,7 +1,7 @@
 import db from "../../database/db.js"
 import { DataTypes } from "sequelize"
 
-const Cpu_temp_Model = db.define("Cpu_temp", {
+const Cpu_temp_Model = db.define("Cpu_temps", {
     value: {
         type: DataTypes.INTEGER,
         defaultValue: 0
