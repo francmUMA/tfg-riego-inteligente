@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import db from "./database/db.js";
 import Cpu_temp_routes from "./monitors/routes/Cpu_temp_route.js"
+import userRoutes from "./users/routes/userRoutes.js"
 
 const app = express();
 
@@ -12,11 +13,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/cpu_temp", Cpu_temp_routes);
-app.post("/" , (req, res) => {
-    console.log(req.body.device);
-    console.log(req.body.value);
-    res.status(200).send("OK");
-})
+app.use("/api/users", userRoutes);
 
 
 
