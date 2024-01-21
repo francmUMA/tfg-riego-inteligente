@@ -10,7 +10,10 @@ export default function Page() {
                 <h1 className="text-3xl font-mono w-full h-full mx-12">Empieza a ahorrar agua con nuestro sistema de gestión del riego</h1>
                 <Image className="w-full" src="/welcome_img.jpg" alt="" width="600" height="700"/>
             </div>
-            <Footer />
+            <div className="flex justify-center">
+                <Footer />
+            </div>
+            
         </main>
         
     )
