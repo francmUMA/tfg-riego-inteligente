@@ -1,14 +1,41 @@
 'use client'
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ChangeEvent, useEffect, useState } from "react"
+import { useState } from "react"
+import checkEmail from "../../lib/checkEmail"
+import registerUser from "../../lib/registerUser"
 
 export default function RegisterForm() {
     const [showForm, setShowForm] = useState(true)
+
     const [email, setEmail] = useState('')
-    const [checkEmail, setCheckEmail] = useState(false)
+    const [emptyEmail, setEmptyEmail] = useState(true)
+    const [validEmail, setValidEmail] = useState(false)
+    const [validEmailMessage, setValidEmailMessage] = useState('')
+
     const [password, setPassword] = useState('')
+    const [emptyPassword, setEmptyPassword] = useState(true)
+    const [validPassword, setValidPassword] = useState(false)
+    const [validPasswordMessage, setValidPasswordMessage] = useState('')
+
     const [showDataForm, setShowDataForm] = useState(false)
+
+    const [name, setName] = useState('')
+    const [emptyName, setEmptyName] = useState(true)
+    const [validName, setValidName] = useState(false)
+    const [validNameMessage, setValidNameMessage] = useState('')
+
+    const [surname, setSurname] = useState('')
+    const [emptySurname, setEmptySurname] = useState(true)
+    const [validSurname, setValidSurname] = useState(false)
+    const [validSurnameMessage, setValidSurnameMessage] = useState('')
+
+    const [nif, setNif] = useState('')
+    const [emptyNif, setEmptyNif] = useState(true)
+    const [validNif, setValidNif] = useState(false)
+    const [validNifMessage, setValidNifMessage] = useState('')
+
+
     const [code1, setCode1] = useState('0')
     const [code2, setCode2] = useState('0')
     const [code3, setCode3] = useState('0')
@@ -16,20 +43,109 @@ export default function RegisterForm() {
     
     const router = useRouter()
 
-    const handleEmail = (e: { target: { value: string } }) => {
-        setEmail(e.target.value)
+    const handleEmail = async (e: { target: { value: string } }) => {
+        if (e.target.value === '') {
+            setEmptyEmail(true)
+        } else {
+            setEmptyEmail(false)
+            let verifyEmail = await checkEmail(e.target.value as string)
+            if (verifyEmail == 0) {
+                setValidEmail(true)
+                setEmail(e.target.value)
+            } else if (verifyEmail == 1) {
+                setValidEmail(false)
+                setValidEmailMessage('Email inválido')
+            } else {
+                setValidEmail(false)
+                setValidEmailMessage('Email ya registrado')
+            }
+        }
     }
 
     const handlePassword = (e: { target: { value: string } }) => {
-        setPassword(e.target.value)
+        if (e.target.value === '') {
+            setEmptyPassword(true)
+        } else {
+            setEmptyPassword(false)
+            if (e.target.value.length >= 8 && e.target.value.length <= 16) {
+                setValidPassword(true)
+                setPassword(e.target.value)
+            } else {
+                setValidPassword(false)
+                setValidPasswordMessage('La contraseña debe tener entre 8 y 16 caracteres')
+            }
+        }
     }
 
     const handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault()
-        console.log(email)
-        console.log(password)
         setShowForm(false)
     }
+
+    const handleName = (e: { target: { value: string } }) => {
+        if (e.target.value === '') {
+            setEmptyName(true)
+        } else {
+            setEmptyName(false)
+            if (e.target.value.length <= 45) {
+                setValidName(true)
+                setName(e.target.value)
+            } else {
+                setValidName(false)
+                setValidNameMessage('El nombre no puede tener más de 45 caracteres')
+            }
+        }
+    }
+
+    const handleSurname = (e: { target: { value: string } }) => {
+        if (e.target.value === '') {
+            setEmptySurname(true)
+        } else {
+            setEmptySurname(false)
+            if (e.target.value.length <= 45) {
+                setValidSurname(true)
+                setSurname(e.target.value)
+            } else {
+                setValidSurname(false)
+                setValidSurnameMessage('El apellido no puede tener más de 45 caracteres')
+            }
+        }
+    }
+
+    const handleNif = (e: { target: { value: string } }) => {
+        if (e.target.value === '') {
+            setEmptyNif(true)
+        } else {
+            setEmptyNif(false)
+            if (e.target.value.length <= 9) {
+                setValidNif(true)
+                setNif(e.target.value)
+            } else {
+                setValidNif(false)
+                setValidNifMessage('El NIF no puede tener más de 9 caracteres')
+            }
+        }
+    }
+
+    const handleSubmitDataForm = async (e: { preventDefault: () => void }) => {
+        e.preventDefault()
+        let user = {
+            email: email,
+            password: password,
+            nombre: name,
+            apellidos: surname,
+            NIF: nif
+        }
+        console.log(user)
+        let createUser = await registerUser(user)
+        if (createUser) {
+            console.log('Usuario creado correctamente')
+            router.push('/dashboard')
+        } else {
+            console.log('Error al crear el usuario')
+        }
+    }
+
 
     // Codigo de verificacion
     const handleSendCodeSubmit = () => {
@@ -63,8 +179,8 @@ export default function RegisterForm() {
                             <Image src="/logo.png" alt="" width="150" height="0" />
                         </div>
                         <div className="mt-5 space-y-2">
-                            <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Sign up</h3>
-                            <p className="">Already have an account? <a href="" className="font-medium text-indigo-600 hover:text-indigo-500">Log in</a></p>
+                            <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Regístrate</h3>
+                            <p className="">Tienes ya cuenta? <a href="" className="font-medium text-indigo-600 hover:text-indigo-500">Inicia sesion</a></p>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-3">
@@ -110,31 +226,58 @@ export default function RegisterForm() {
                     </div>
                     <div className="relative">
                         <span className="block w-full h-px bg-gray-300"></span>
-                        <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">Or continue with</p>
+                        <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">O continúa con</p>
                     </div>
                     <form onSubmit={handleSubmit}
                         className="space-y-5"
                     >
-                        <div>
+                        <div className="flex flex-col">
                             <label className="font-medium">
                                 Email
                             </label>
-                            <div className="flex justify-center items-center space-x-3">
-                                <input name="email" type="email" onChange={handleEmail} required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
-                                {checkEmail 
-                                            ? <span>b</span>
-                                            : <span>a</span>
-                                }
-                            </div>
+                            <input name="email" type="email" onChange={handleEmail} onBlur={handleEmail} required
+                            className={`transition easy-in-out duration-200 
+                            w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                            shadow-sm rounded-lg ${
+                                emptyEmail 
+                                ? "border-[#d6d3d1]"
+                                : validEmail
+                                    ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                    : "border-red-500 text-red-500 bg-gray-500/5"
+                            }`}/>
+                            {
+                                emptyEmail
+                                ? null
+                                : validEmail
+                                    ?  null
+                                    :  <p className="transition easy-in-out duration-200 w-full text-red-500/75">
+                                        {validEmailMessage}
+                                        </p>
+                            }
                         </div>
-                       <div>
+                       <div className="flex flex-col">
                             <label className="font-medium">
                                 Contraseña
                             </label>
-                            <div className="flex justify-center items-center space-x-3">
-                                <input name="password" type="password" onChange={handlePassword} required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
-                                <span>a</span>
-                            </div>
+                            <input name="password" type="password" onChange={handlePassword} onBlur={handlePassword} required 
+                            className={`transition easy-in-out delay-100 duration-150  
+                            w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 
+                            shadow-sm rounded-lg ${
+                                emptyPassword 
+                                ? "border-[#d6d3d1]"
+                                : validPassword
+                                    ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                    : "border-red-500 text-red-500 bg-gray-500/5"
+                            }`}/>
+                            {
+                                emptyPassword
+                                ? null
+                                : validPassword
+                                    ?  null
+                                    :  <p className="transition easy-in-out duration-200 w-full text-red-500/75">
+                                        {validPasswordMessage}
+                                        </p>
+                            }
                        </div>
                         <div>
                             <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
@@ -196,33 +339,78 @@ export default function RegisterForm() {
                         <div>
                             <h1 className="">Rellene el formulario para terminar de crear su cuenta</h1>
                         </div>
-                        <form onSubmit={(e) => {
-                            e.preventDefault()
-                            router.push('/dashboard')
-                        }} className="space-y-5">
-                            <div>
+                        <form onSubmit={handleSubmitDataForm} className="space-y-5">
+                            <div className="flex flex-col">
                                 <label className="font-medium">
                                     Nombre
                                 </label>
-                                <div className="flex justify-center items-center space-x-3">
-                                    <input name="nombre" type="text" placeholder="Nombre" required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
-                                </div>
+                                <input name="nombre" type="text" placeholder="Nombre" onChange={handleName} onBlur={handleName} required
+                                className={`transition easy-in-out duration-200 
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                shadow-sm rounded-lg ${
+                                    emptyName 
+                                    ? "border-[#d6d3d1]"
+                                    : validName
+                                        ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                        : "border-red-500 text-red-500 bg-gray-500/5"
+                                }`}/>
+                                {
+                                    emptyName
+                                    ? null
+                                    : validName
+                                        ?  null
+                                        :  <p className="transition easy-in-out duration-200 w-full text-red-500/75">
+                                            {validNameMessage}
+                                            </p>
+                                }
                             </div>
-                            <div>
+                            <div className="flex flex-col">
                                 <label className="font-medium">
                                     Apellidos
                                 </label>
-                                <div className="flex justify-center items-center space-x-3">
-                                    <input name="apellidos" type="text" placeholder="(Opcional)" className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
-                                </div>
+                                <input name="nombre" type="text" placeholder="(Opcional)" onChange={handleSurname} onBlur={handleName}
+                                className={`transition easy-in-out duration-200 
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                shadow-sm rounded-lg ${
+                                    emptySurname 
+                                    ? "border-[#d6d3d1]"
+                                    : validSurname
+                                        ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                        : "border-red-500 text-red-500 bg-gray-500/5"
+                                }`}/>
+                                {
+                                    emptySurname
+                                    ? null
+                                    : validSurname
+                                        ?  null
+                                        :   <p className="transition easy-in-out duration-200 w-full text-red-500/75">
+                                            {validSurnameMessage}
+                                            </p>
+                                }
                             </div>
-                            <div>
+                            <div className="flex flex-col">
                                 <label className="font-medium">
-                                    DNI
+                                    NIF
                                 </label>
-                                <div className="flex justify-center items-center space-x-3">
-                                    <input name="nif" type="text" placeholder="NIF" required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
-                                </div>
+                                <input name="nombre" type="text" placeholder="NIF" onChange={handleNif} onBlur={handleNif} required
+                                className={`transition easy-in-out duration-200 
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                shadow-sm rounded-lg ${
+                                    emptyNif 
+                                    ? "border-[#d6d3d1]"
+                                    : validNif
+                                        ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                        : "border-red-500 text-red-500 bg-gray-500/5"
+                                }`}/>
+                                {
+                                    emptyNif
+                                    ? null
+                                    : validNif
+                                        ?  null
+                                        :  <p className="transition easy-in-out duration-200 w-full text-red-500/75">
+                                            {validNifMessage}
+                                            </p>
+                                }
                             </div>
                             <div className="flex items-center justify-center pt-4">
                                 <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
