@@ -1,13 +1,56 @@
 'use client'
 import Image from "next/image"
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { ChangeEvent, useEffect, useState } from "react"
 
 export default function RegisterForm() {
     const [showForm, setShowForm] = useState(true)
+    const [email, setEmail] = useState('')
+    const [checkEmail, setCheckEmail] = useState(false)
+    const [password, setPassword] = useState('')
+    const [showDataForm, setShowDataForm] = useState(false)
+    const [code1, setCode1] = useState('0')
+    const [code2, setCode2] = useState('0')
+    const [code3, setCode3] = useState('0')
+    const [code4, setCode4] = useState('0')
+    
+    const router = useRouter()
+
+    const handleEmail = (e: { target: { value: string } }) => {
+        setEmail(e.target.value)
+    }
+
+    const handlePassword = (e: { target: { value: string } }) => {
+        setPassword(e.target.value)
+    }
 
     const handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault()
+        console.log(email)
+        console.log(password)
         setShowForm(false)
+    }
+
+    // Codigo de verificacion
+    const handleSendCodeSubmit = () => {
+        console.log(code1 + code2 + code3 + code4)
+        setShowDataForm(true)
+    }
+
+    const handleCode1 = (e: { target: { value: string } }) => {
+        setCode1(e.target.value)
+    }
+
+    const handleCode2 = (e: { target: { value: string } }) => {
+        setCode2(e.target.value)
+    }
+
+    const handleCode3 = (e: { target: { value: string } }) => {
+        setCode3(e.target.value)
+    }
+
+    const handleCode4 = (e: { target: { value: string } }) => {
+        setCode4(e.target.value)
     }
 
     const renderContent = () => {
@@ -47,7 +90,7 @@ export default function RegisterForm() {
                         </button>
                         <button className="flex items-center justify-center py-2.5 border rounded-lg hover:bg-gray-50 duration-150 active:bg-gray-100">
                             <svg className="w-5 h-5" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_910_21)">
+                                <g clipPath="url(#clip0_910_21)">
                                     <path fillRule="evenodd" clipRule="evenodd" d="M24.0005 1C18.303 1.00296 12.7923 3.02092 8.45374 6.69305C4.11521 10.3652 1.23181 15.452 0.319089 21.044C-0.593628 26.636 0.523853 32.3684 3.47174 37.2164C6.41963 42.0643 11.0057 45.7115 16.4099 47.5059C17.6021 47.7272 18.0512 46.9883 18.0512 46.36C18.0512 45.7317 18.0273 43.91 18.0194 41.9184C11.3428 43.3608 9.93197 39.101 9.93197 39.101C8.84305 36.3349 7.26927 35.6078 7.26927 35.6078C5.09143 34.1299 7.43223 34.1576 7.43223 34.1576C9.84455 34.3275 11.1123 36.6194 11.1123 36.6194C13.2504 40.2667 16.7278 39.2116 18.0949 38.5952C18.3095 37.0501 18.9335 35.999 19.621 35.4023C14.2877 34.8017 8.68408 32.7548 8.68408 23.6108C8.65102 21.2394 9.53605 18.9461 11.156 17.2054C10.9096 16.6047 10.087 14.1785 11.3905 10.8829C11.3905 10.8829 13.4054 10.2427 17.9916 13.3289C21.9253 12.2592 26.0757 12.2592 30.0095 13.3289C34.5917 10.2427 36.6026 10.8829 36.6026 10.8829C37.9101 14.1706 37.0875 16.5968 36.8411 17.2054C38.4662 18.9464 39.353 21.2437 39.317 23.6187C39.317 32.7824 33.7015 34.8017 28.3602 35.3905C29.2186 36.1334 29.9856 37.5836 29.9856 39.8122C29.9856 43.0051 29.9578 45.5736 29.9578 46.36C29.9578 46.9962 30.391 47.7391 31.6071 47.5059C37.0119 45.7113 41.5984 42.0634 44.5462 37.2147C47.4941 32.3659 48.611 26.6326 47.6972 21.0401C46.7835 15.4476 43.8986 10.3607 39.5587 6.68921C35.2187 3.01771 29.7067 1.00108 24.0085 1H24.0005Z" fill="#191717" />
                                     <path d="M9.08887 35.264C9.03721 35.3826 8.84645 35.4181 8.69146 35.3351C8.53646 35.2522 8.42122 35.098 8.47686 34.9755C8.5325 34.853 8.71928 34.8214 8.87428 34.9044C9.02927 34.9874 9.14848 35.1455 9.08887 35.264Z" fill="#191717" />
                                     <path d="M10.0626 36.3428C9.98028 36.384 9.88612 36.3955 9.79622 36.3753C9.70632 36.3551 9.62629 36.3045 9.56979 36.2321C9.41479 36.0662 9.38298 35.837 9.50221 35.7342C9.62143 35.6315 9.83606 35.6789 9.99105 35.8449C10.146 36.0108 10.1818 36.24 10.0626 36.3428Z" fill="#191717" />
@@ -77,8 +120,11 @@ export default function RegisterForm() {
                                 Email
                             </label>
                             <div className="flex justify-center items-center space-x-3">
-                                <input name="email" type="email" required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
-                                <span>a</span>
+                                <input name="email" type="email" onChange={handleEmail} required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
+                                {checkEmail 
+                                            ? <span>b</span>
+                                            : <span>a</span>
+                                }
                             </div>
                         </div>
                        <div>
@@ -86,10 +132,9 @@ export default function RegisterForm() {
                                 Contraseña
                             </label>
                             <div className="flex justify-center items-center space-x-3">
-                                <input name="password" type="password" required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
+                                <input name="password" type="password" onChange={handlePassword} required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
                                 <span>a</span>
                             </div>
-                            
                        </div>
                         <div>
                             <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
@@ -100,21 +145,94 @@ export default function RegisterForm() {
             </div>
                 
             )
-        } else {
+        } else if (!showDataForm && !showForm) {
             return (
                 <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
-                    <div className="mx-1">
+                    <div className="space-y-5 mx-5">
                         <div className="flex justify-center items-center">
                             <Image src="/logo.png" alt="" width="150" height="0" />
                         </div>
-                        <div>
-                            <p className="font-serif text-3xl ">
-                                Tienes que confirmar la dirección de correo electrónico para poder continuar
+                        <div className="flex justify-center items-center">
+                            <p className="flex font-serif text-center text-2xl">
+                                Se te ha enviado un código de verificación a {email} para verificar tu cuenta.
                             </p>
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-center">
+                                <label className="text-gray-600 row-span-1 col-span-1">
+                                    Verification code
+                                </label>
+                            </div>
+                            <form onSubmit={handleSendCodeSubmit}>
+                                <div className="flex items-center justify-center">
+                                    <div className="mt-2 flex items-center gap-x-5">
+                                        <input name="code1" type="text" onChange={handleCode1} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
+                                        />
+                                        <input name="code2" type="text" onChange={handleCode2} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
+                                        />
+                                        <input name="code3" type="text" onChange={handleCode3} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
+                                        />
+                                        <input name="code4" type="text" onChange={handleCode4} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-center pt-4">
+                                    <button type="submit" className="w-1/2 px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                                        Enviar
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             ) 
+        } else if (showDataForm) {
+            return (
+                <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
+                    <div className="space-y-5 mx-5">
+                        <div className="flex justify-center items-center">
+                            <Image src="/logo.png" alt="" width="150" height="0" />
+                        </div>
+                        <div>
+                            <h1 className="">Rellene el formulario para terminar de crear su cuenta</h1>
+                        </div>
+                        <form onSubmit={(e) => {
+                            e.preventDefault()
+                            router.push('/dashboard')
+                        }} className="space-y-5">
+                            <div>
+                                <label className="font-medium">
+                                    Nombre
+                                </label>
+                                <div className="flex justify-center items-center space-x-3">
+                                    <input name="nombre" type="text" placeholder="Nombre" required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="font-medium">
+                                    Apellidos
+                                </label>
+                                <div className="flex justify-center items-center space-x-3">
+                                    <input name="apellidos" type="text" placeholder="(Opcional)" className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="font-medium">
+                                    DNI
+                                </label>
+                                <div className="flex justify-center items-center space-x-3">
+                                    <input name="nif" type="text" placeholder="NIF" required className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"/>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-center pt-4">
+                                <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                                    Enviar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )
         }
     }
 

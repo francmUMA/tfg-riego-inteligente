@@ -1,14 +1,5 @@
 {
-  "node": {
-    "7c357d18f519ed5a7d7e4c7624458a4772705457": {
-      "workers": {
-        "app/login/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CFran%5C%5COneDrive%20-%20Universidad%20de%20M%C3%A1laga%5C%5CDocumentos%5C%5Ctfg-riego-inteligente%5C%5Cfrontend%5C%5Csrc%5C%5Capp%5C%5Cui%5C%5Clogin%5C%5CRegisterForm.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%5D&__client_imported__=!"
-      },
-      "layer": {
-        "app/login/page": "rsc"
-      }
-    }
-  },
+  "node": {},
   "edge": {},
-  "encryptionKey": "SjvptJAWn8R/+tAZC4Xif0kTbuSaa0Hnno5a95g/Czs="
+  "encryptionKey": "ZDGQweFHkhNm660EbLQpmWcWkS58fZyrQHgKlomfTFY="
 }
