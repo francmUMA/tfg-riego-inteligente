@@ -8,13 +8,13 @@ export default () => {
 
     // Replace javascript:void(0) path with your path
     const navigation = [
-        { title: "Technology", path: "" },
-        { title: "About", path: "" },
-        { title: "Contact", path: "" },
+        { title: "Tecnología", path: "" },
+        { title: "Sobre nosotros", path: "" },
+        { title: "Contacto", path: "" },
     ]
 
     return (
-        <nav className="bg-white w-full border-b md:border-0 md:static">
+        <nav className="w-full border-b md:border-0 md:static">
             <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
                 <div className="flex items-center justify-center md:py-5">
                     <Image src="/logo.png" alt="" width="80" height="0" />
@@ -37,7 +37,7 @@ export default () => {
                 </div>
                 <div className="hidden md:inline-block">
                     <a href="/register" className="py-3 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow">
-                        Sign Up
+                        Regístrate
                     </a>
                 </div>
             </div>
