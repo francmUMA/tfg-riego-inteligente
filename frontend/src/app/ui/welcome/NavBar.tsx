@@ -36,7 +36,7 @@ export default () => {
                     </ul>
                 </div>
                 <div className="hidden md:inline-block">
-                    <a href="/login" className="py-3 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow">
+                    <a href="/register" className="py-3 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow">
                         Sign Up
                     </a>
                 </div>
