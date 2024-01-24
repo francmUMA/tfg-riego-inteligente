@@ -1,4 +1,4 @@
-// File: /Users/dev-francm/Documents/tfg-riego-inteligente/frontend/src/app/login/layout.tsx
+// File: C:\Users\Fran\OneDrive - Universidad de Málaga\Documentos\tfg-riego-inteligente\frontend\src\app\login\layout.tsx
 import * as entry from '../../../../src/app/login/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

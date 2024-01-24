@@ -43,7 +43,7 @@ export default function RegisterForm() {
             setEmptyPassword(false)
             if (e.target.value.length >= 8 && e.target.value.length <= 16) {
                 if (validEmail) {
-                    let verifyPassword = await checkPassword(e.target.value as string)
+                    let verifyPassword = await checkPassword(e.target.value as string, email as string)
                     if (verifyPassword) {
                         setValidPassword(true)
                         setPassword(e.target.value)
@@ -122,7 +122,10 @@ export default function RegisterForm() {
                         <span className="block w-full h-px bg-gray-300"></span>
                         <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">O continúa con</p>
                     </div>
-                    <form
+                    <form onSubmit={e => { 
+                        e.preventDefault() 
+                        router.push('/dashboard')
+                    }}
                         className="space-y-5"
                     >
                         <div className="flex flex-col">

@@ -2,7 +2,7 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import checkEmail from "../../lib/checkEmail"
+import {checkRegisterEmail} from "../../lib/checkEmail"
 import registerUser from "../../lib/registerUser"
 
 export default function RegisterForm() {
@@ -48,7 +48,7 @@ export default function RegisterForm() {
             setEmptyEmail(true)
         } else {
             setEmptyEmail(false)
-            let verifyEmail = await checkEmail(e.target.value as string)
+            let verifyEmail = await checkRegisterEmail(e.target.value as string)
             if (verifyEmail == 0) {
                 setValidEmail(true)
                 setEmail(e.target.value)
