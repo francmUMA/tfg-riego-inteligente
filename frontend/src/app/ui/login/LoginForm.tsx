@@ -1,9 +1,10 @@
 'use client'
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { checkLoginEmail } from "../../lib/checkEmail"
 import checkPassword  from "../../lib/checkPassword"
+import { getCookie, setCookie } from "cookies-next"
 
 export default function RegisterForm() {
 
@@ -29,12 +30,19 @@ export default function RegisterForm() {
             if (verifyEmail) {
                 setValidEmail(true)
                 setEmail(e.target.value)
+                setCookie('email', e.target.value)
             } else {
                 setValidEmail(false)
                 setValidEmailMessage('Email no valido')
             }
         }
     }
+
+    useEffect(() => {
+        if (getCookie('email') !== undefined) {
+            router.push('/dashboard')
+        }
+    }, [])
 
     const handlePassword = async (e: { target: { value: string } }) => {
         if (e.target.value === '') {
@@ -224,3 +232,7 @@ export default function RegisterForm() {
     </main>
   )
 }
+function createCookie() {
+    throw new Error("Function not implemented.")
+}
+
