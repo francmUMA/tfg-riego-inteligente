@@ -108,3 +108,21 @@ export const get_user_by_email = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+export const check_password = async (req, res) => {
+    try {
+        let user = await userModel.findOne({ where: { email: req.body.email } })
+        if (user == null) {
+            res.status(404).send("User not found")
+            return
+        }
+
+        if (await bcrypt.compare(req.body.password, user.password)) {
+            res.status(200).send("Password match")
+        } else {
+            res.status(400).send("Password doesnt match")
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
