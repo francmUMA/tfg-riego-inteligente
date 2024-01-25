@@ -6,3 +6,6 @@
 
 # rust target
 /raspberry/target
+
+# next node modules
+/frontend/node_modules
