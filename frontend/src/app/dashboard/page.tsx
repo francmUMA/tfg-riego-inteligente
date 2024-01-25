@@ -2,15 +2,21 @@
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { checkToken } from "../lib/token"
 
 
 export default function Page() {
     const router = useRouter()
-    // useEffect(() => {
-    //     if (getCookie('email') === undefined) {
-    //         router.push('/login')
-    //     }
-    // }, [])
+    useEffect(() => {
+        const token = getCookie("token")
+        const verify = async (token: string) => {
+            let check = await checkToken(token)
+            if (!check) {
+                router.push("/login")
+            } 
+        }
+        verify(token as string)
+    }, [])
 
     return (
         <main className="grid grid-rows-3 grid-cols-3 gap-3 h-full w-full p-4">

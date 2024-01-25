@@ -1,11 +1,14 @@
 'use client'
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {checkRegisterEmail} from "../../lib/checkEmail"
 import registerUser from "../../lib/registerUser"
+import { getToken } from "../../lib/token"
+import { setCookie } from "cookies-next"
 
 export default function RegisterForm() {
+
     const [showForm, setShowForm] = useState(true)
 
     const [email, setEmail] = useState('')
@@ -136,10 +139,11 @@ export default function RegisterForm() {
             apellidos: surname,
             NIF: nif
         }
-        console.log(user)
         let createUser = await registerUser(user)
         if (createUser) {
             console.log('Usuario creado correctamente')
+            let token = await getToken(email as string)
+            setCookie('token', token)
             router.push('/dashboard')
         } else {
             console.log('Error al crear el usuario')

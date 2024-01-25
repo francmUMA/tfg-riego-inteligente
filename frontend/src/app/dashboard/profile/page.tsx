@@ -1,5 +1,8 @@
 'use client'
-import { useState } from "react"
+import { getCookie } from "cookies-next"
+import { useEffect, useState } from "react"
+import { checkToken } from "../../lib/token"
+import { useRouter } from "next/navigation"
 
 export default function Page() {
     const [nombre, setNombre] = useState('')
@@ -8,6 +11,21 @@ export default function Page() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    const router = useRouter()
+
+    useEffect(() => {
+        const token = getCookie("token")
+        const verify = async (token: string) => {
+            let check = await checkToken(token)
+            if (!check) {
+                router.push("/login")
+            } 
+        }
+        verify(token as string)
+
+        // Fetch data -- TODO
+
+    }, [])
 
     return (
         <main className="w-full h-full flex justify-center items-center">

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { checkLoginEmail } from "../../lib/checkEmail"
 import checkPassword  from "../../lib/checkPassword"
 import { getCookie, setCookie } from "cookies-next"
+import { getToken } from "../../lib/token"
 
 export default function RegisterForm() {
 
@@ -30,19 +31,12 @@ export default function RegisterForm() {
             if (verifyEmail) {
                 setValidEmail(true)
                 setEmail(e.target.value)
-                setCookie('email', e.target.value)
             } else {
                 setValidEmail(false)
                 setValidEmailMessage('Email no valido')
             }
         }
     }
-
-    // useEffect(() => {
-    //     if (getCookie('email') !== undefined) {
-    //         router.push('/dashboard')
-    //     }
-    // }, [])
 
     const handlePassword = async (e: { target: { value: string } }) => {
         if (e.target.value === '') {
@@ -130,9 +124,16 @@ export default function RegisterForm() {
                         <span className="block w-full h-px bg-gray-300"></span>
                         <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">O continúa con</p>
                     </div>
-                    <form onSubmit={e => { 
-                        e.preventDefault() 
-                        router.push('/dashboard')
+                    <form onSubmit={async (e) => { 
+                        e.preventDefault()
+                        if (validEmail && validPassword) {
+                            console.log('Usuario creado correctamente')
+                            let token = await getToken(email as string)
+                            setCookie('token', token)
+                            router.push('/dashboard')
+                        } else {
+                            console.log('Error al iniciar sesion')
+                        }
                     }}
                         className="space-y-5"
                     >

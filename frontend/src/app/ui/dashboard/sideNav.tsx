@@ -4,6 +4,7 @@ import NavLinks from './navlinks';
 import Image from 'next/image';
 import { PowerIcon, UserIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '../fonts';
+import { setCookie } from 'cookies-next';
 
 export default function SideNav() {
   return (
@@ -28,8 +29,8 @@ export default function SideNav() {
             <div className="hidden md:block">Profile</div>
           </Link>
           <Link 
-            href="/"
-          className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
+            href="/" onClick={() => setCookie('token', "", { expires: new Date(0) })}
+            className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
             <PowerIcon className="w-6" />
             <div className="hidden md:block">Sign Out</div>
           </Link>
