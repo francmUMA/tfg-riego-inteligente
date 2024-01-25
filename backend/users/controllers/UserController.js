@@ -126,3 +126,48 @@ export const check_password = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+export const update_user = async (req, res) => {
+    try {
+        // Verificar que el usuario existe
+        let user_NIF = await userModel.findOne({ where: { NIF: req.body.NIF } })
+        if (user_NIF == null) {
+            res.status(404).send("User not found")
+            return
+        }
+
+        // Una vez comprobado que dicho usuario existe vamos a coger la información que nos llega y vamos a actualizarla
+        // Solo se pueden cambiar nombre y apellidos
+        let new_info = {
+            nombre: req.body.nombre,
+            apellidos: req.body.apellidos,
+        }
+
+        // Comprobar el campo del nuevo nombre
+        if (new_info.nombre != undefined) {
+            // Longitud
+            if (new_info.nombre.length > 45) {
+                res.status(400).send("Invalid name")
+                return
+            }
+        } else {
+            res.status(400).send("Missing parameters")
+            return
+        }
+
+        // Comprobar el campo de los nuevos apellidos (si hay)
+        if (new_info.apellidos != undefined) {
+            // Longitud
+            if (new_info.apellidos.length > 45) {
+                res.status(400).send("Invalid surname")
+                return
+            }
+        }
+
+        // Actualizar la información
+        await userModel.update(new_info, { where: { NIF: req.body.NIF } })
+        res.status(200).send("User updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
