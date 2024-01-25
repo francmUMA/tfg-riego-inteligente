@@ -38,11 +38,11 @@ export default function RegisterForm() {
         }
     }
 
-    useEffect(() => {
-        if (getCookie('email') !== undefined) {
-            router.push('/dashboard')
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (getCookie('email') !== undefined) {
+    //         router.push('/dashboard')
+    //     }
+    // }, [])
 
     const handlePassword = async (e: { target: { value: string } }) => {
         if (e.target.value === '') {
