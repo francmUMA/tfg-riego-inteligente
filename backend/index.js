@@ -3,6 +3,7 @@ import cors from "cors";
 import db from "./database/db.js";
 import Cpu_temp_routes from "./monitors/routes/Cpu_temp_route.js"
 import userRoutes from "./users/routes/userRoutes.js"
+import tokenRoutes from "./token/routes/tokenRoutes.js"
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Routes
 app.use("/api/cpu_temp", Cpu_temp_routes);
 app.use("/api/users", userRoutes);
+app.use("/api/auth", tokenRoutes)
 
 
 
