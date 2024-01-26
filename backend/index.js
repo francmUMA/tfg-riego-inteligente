@@ -18,8 +18,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", tokenRoutes)
 
 
-
-
 // Conexion a la base de datos
 try {
     await db.authenticate();

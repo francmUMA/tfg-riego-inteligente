@@ -1,3 +1,4 @@
+import { getTokenInfo } from "../../token/controllers/tokenController.js";
 import userModel  from "../models/userModel.js";
 import bcrypt from "bcrypt";
 
@@ -129,9 +130,16 @@ export const check_password = async (req, res) => {
 
 export const update_user = async (req, res) => {
     try {
+        let email = await getTokenInfo(req.header('Authorization').replace('Bearer ', ''))
+    
+        if (email === undefined) {
+            res.status(401).send("Invalid token")
+            return
+        }
+
         // Verificar que el usuario existe
-        let user_NIF = await userModel.findOne({ where: { NIF: req.body.NIF } })
-        if (user_NIF == null) {
+        let user = await userModel.findOne({ where: { email: email } })
+        if (user == null) {
             res.status(404).send("User not found")
             return
         }
@@ -165,8 +173,26 @@ export const update_user = async (req, res) => {
         }
 
         // Actualizar la información
-        await userModel.update(new_info, { where: { NIF: req.body.NIF } })
+        await userModel.update(new_info, { where: { email: email } })
         res.status(200).send("User updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+export const get_user_by_token = async (req, res) => {
+    try {
+        let email = await getTokenInfo(req.header('Authorization').replace('Bearer ', ''))
+        if (email == undefined) {
+            res.status(401).send("Invalid token")
+            return
+        }
+        let user = await userModel.findOne({ where: { email: email } })
+        if (user == null) {
+            res.status(404).send("User not found")
+            return
+        }
+        res.status(200).json(user)
     } catch (error) {
         res.status(500).send(error.message)
     }

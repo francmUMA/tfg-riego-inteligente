@@ -34,3 +34,16 @@ export const verifyToken = (req, res) => {
         res.status(401).send(error.message)
     }
 }
+
+export const getTokenInfo = async (token) => {
+    let check = await jose.jwtVerify(token, Uint8Array.from((process.env.SECRET_KEY).split("").map(x => x.charCodeAt())))
+    .then((data) => {
+        if (data.payload.expired == 0) {
+            return undefined
+        }
+        return data.payload.email
+    }).catch((error) => {
+        return undefined
+    })
+    return check
+}
