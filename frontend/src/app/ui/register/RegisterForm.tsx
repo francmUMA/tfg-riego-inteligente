@@ -6,6 +6,7 @@ import {checkRegisterEmail} from "../../lib/checkEmail"
 import registerUser from "../../lib/registerUser"
 import { getToken } from "../../lib/token"
 import { setCookie } from "cookies-next"
+import"./bg-form.css"
 
 export default function RegisterForm() {
 
@@ -430,39 +431,16 @@ export default function RegisterForm() {
 
   return (
     <main className="w-full h-full flex rounded-xl shadow-xl">
-            <div className="relative flex-1 hidden items-center justify-center h-full bg-white lg:flex rounded-xl">
-                <div className="relative z-10 w-full max-w-md">
-                    <div>
-                        <h3 className="text-black text-serif text-3xl font-bold">En obras...</h3>
-                    </div>
-                    {/* <img src="https://floatui.com/logo-dark.svg" width={150} /> */}
-                    {/* <div className=" mt-16 space-y-3 overflow-hidden">
-                        <h3 className="text-white text-3xl font-bold">Empieza a ahorrar desde ahora mismo</h3>
-                        <p className="text-gray-300">
-                            Crea una cuenta y empieza a gestionar tu riego desde cualquier lugar.
-                        </p>
-                        <div className="flex items-center -space-x-2 overflow-hidden">
-                            <img src="https://randomuser.me/api/portraits/women/79.jpg" className="w-10 h-10 rounded-full border-2 border-white" />
-                            <img src="https://api.uifaces.co/our-content/donated/xZ4wg2Xj.jpg" className="w-10 h-10 rounded-full border-2 border-white" />
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=a72ca28288878f8404a795f39642a46f" className="w-10 h-10 rounded-full border-2 border-white" />
-                            <img src="https://randomuser.me/api/portraits/men/86.jpg" className="w-10 h-10 rounded-full border-2 border-white" />
-                            <img src="https://images.unsplash.com/photo-1510227272981-87123e259b17?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=3759e09a5b9fbe53088b23c615b6312e" className="w-10 h-10 rounded-full border-2 border-white" />
-                            <p className="text-sm text-gray-400 font-medium translate-x-5">
-                                Somos 5.000+ regantes
-                            </p>
-                        </div>
-                    </div> */}
-                </div>
-                {/* <div
-                    className="absolute inset-0 my-auto h-[500px]"
-                    style={{
-                        background: "linear-gradient(152.92deg, rgba(192, 132, 252, 0.2) 4.54%, rgba(232, 121, 249, 0.26) 34.2%, rgba(192, 132, 252, 0.1) 77.55%)", filter: "blur(118px)"
-                    }}
-                >
-
-                </div> */}
+        <div className="relative flex-1 shadow-xl bg-gray-100/10 flex-col hidden h-full bg-white lg:flex rounded-xl">
+            <div className="p-8 pt-20 gap-5 h-full w-full flex flex-col items-center justify-center">
+                <p className="text-3xl">Crea una cuenta</p>
+                <p className="text-center">Obtén acceso a nuestra IA de gestión de riego y controla todo tu riego de una forma centralizada</p>
             </div>
-            {renderContent()}
+            <div className="h-full w-full flex justify-center items-center">
+                <Image src={"/Login-rafiki.svg"} alt="" width="450" height={0}></Image>
+            </div>
+        </div>
+        {renderContent()}
     </main>
   )
 }
