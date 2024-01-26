@@ -9,6 +9,7 @@ export default function Page() {
     const router = useRouter()
     useEffect(() => {
         const token = getCookie("token")
+        if (token === undefined) router.push("/login")
         const verify = async (token: string) => {
             let check = await checkToken(token)
             if (!check) {

@@ -1,11 +1,19 @@
 'use client'
 import {
-  UserGroupIcon,
   HomeIcon,
-  CpuChipIcon
+  CpuChipIcon,
+  MapIcon
 } from '@heroicons/react/24/outline';
+import { PiPlant } from "react-icons/pi";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
+
+class CropIcon extends React.Component {
+  render() {
+    return <PiPlant size={24} />;
+  }
+}
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
@@ -16,7 +24,8 @@ const links = [
     href: '/dashboard/devices',
     icon: CpuChipIcon,
   },
-  { name: 'Map', href: '/dashboard/map', icon: UserGroupIcon },
+  { name: 'Map', href: '/dashboard/map', icon: MapIcon },
+  { name: 'Crops', href: '/dashboard/crop', icon: CropIcon},
 ];
 
 export default function NavLinks() {
