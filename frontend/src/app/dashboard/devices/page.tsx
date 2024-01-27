@@ -18,10 +18,8 @@ export default function Page() {
                                 </div>
                                 <div className="bg-red-50 w-full h-full">
                                     Informacion del dispositivo, tempratura cpu, sensores conectados, activo o inactivo, válvulas regando o cuadal acumulado en el momento
-                                </div>
-                                
+                                </div> 
                             </div>
-                            
                         </Link>
                     )
                 })
