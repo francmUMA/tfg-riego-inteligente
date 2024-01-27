@@ -197,3 +197,19 @@ export const get_user_by_token = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+export const get_nif_by_token = async (token) => {
+    try {
+        let email = await getTokenInfo(token)
+        if (email == undefined) {
+            return undefined
+        }
+        let user = await userModel.findOne({ where: { email: email } })
+        if (user == null) {
+            return undefined
+        }
+        return user.NIF
+    } catch (error) {
+        return undefined
+    }
+}
