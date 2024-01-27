@@ -3,7 +3,7 @@ export async function checkRegisterEmail(email: string) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (re.test(email)){
     // Comprobar si está duplicado
-    let check = await fetch("http://192.168.1.141:3000/api/users/email/" + email)
+    let check = await fetch("http://192.168.1.133:3000/api/users/email/" + email)
     if (check.status === 200) {
         return 2;
     }
@@ -17,7 +17,7 @@ export async function checkLoginEmail(email: string) {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (re.test(email)){
     // Comprobar si existe
-    let check = await fetch("http://192.168.1.141:3000/api/users/email/" + email)
+    let check = await fetch("http://192.168.1.133:3000/api/users/email/" + email)
     if (check.status === 200) {
         return true;
     }
