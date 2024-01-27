@@ -1,5 +1,6 @@
 import deviceModel from "../models/deviceModel.js";
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
+import ping from "ping"
 
 export const getDevices = async (req, res) => {
     // Validar token
@@ -71,5 +72,21 @@ export const addDevice = async (req, res) => {
         res.status(200).send("Device added") 
     } catch (error) {
         res.status(500).send(error.message)
+    }
+}
+
+export const checkDevices = async () => {
+    console.log("Checking devices...")
+    try {
+        let devices = await deviceModel.findAll({})
+        for (let i = 0; i < devices.length; i++) {
+            console.log("Checking device " + devices[i].ip)
+            ping.sys.probe(devices[i].ip, function(isAlive) {
+                isAlive ? devices[i].available = 1 : devices[i].available = 0
+                devices[i].save()
+            })
+        }
+    } catch (error) {
+        return false
     }
 }

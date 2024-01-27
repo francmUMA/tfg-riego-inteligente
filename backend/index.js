@@ -5,6 +5,8 @@ import Cpu_temp_routes from "./monitors/routes/Cpu_temp_route.js"
 import userRoutes from "./users/routes/userRoutes.js"
 import tokenRoutes from "./token/routes/tokenRoutes.js"
 import deviceRoutes from "./devices/routes/deviceRoutes.js"
+import schedule from "node-schedule"
+import { checkDevices } from "./devices/controllers/deviceController.js";
 
 const app = express();
 
@@ -32,3 +34,9 @@ try {
 app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);
 });
+
+// Ping a los dispositivos cada 5 minutos
+schedule.scheduleJob('* * * * *', checkDevices)
+
+
+
