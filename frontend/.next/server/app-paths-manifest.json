@@ -1,5 +1,8 @@
 {
   "/page": "app/page.js",
-  "/dashboard/profile/page": "app/dashboard/profile/page.js",
-  "/dashboard/devices/page": "app/dashboard/devices/page.js"
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/login/page": "app/login/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/devices/page": "app/dashboard/devices/page.js",
+  "/dashboard/map/page": "app/dashboard/map/page.js"
 }
