@@ -5,11 +5,15 @@ import { useEffect, useState } from "react"
 import { getDevices } from "../../lib/devicesInfo"
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
-import { EllipsisVerticalIcon  } from "@heroicons/react/24/outline"
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline"
+import Dialog from '@mui/material/Dialog';
+import { DialogTitle, ListItem } from "@mui/material"
 
 export default function Page() {
     const [devices, setDevices] = useState([])
     const [showDevicesInfo, setShowDevicesInfo] = useState<Array<boolean>>([])
+    const [IsOpenAddDeviceDialog, setIsOpenAddDeviceDialog] = useState(false)
+
     const router = useRouter()
 
     useEffect(() => {
@@ -56,10 +60,42 @@ export default function Page() {
         )
     }
 
+    const handleAddDeviceButton = () => {
+        setIsOpenAddDeviceDialog(true)
+    }
+
+    const closeDialog = () => {
+        setIsOpenAddDeviceDialog(false)
+    }
+
+    const AddDeviceDialog = () => {
+        return (
+            <Dialog open={IsOpenAddDeviceDialog} onClose={closeDialog}>
+                <DialogTitle className="border">Completa la IP y el identificador del dispositivo</DialogTitle>
+                <div className="w-full h-full flex flex-col justify-center items-center">
+                    <input className="border w-full h-full" type="text" />
+                    <input className="border w-full h-16" type="text" />
+                </div>
+            </Dialog>
+        )
+    }
+
+    const manageButton = () => {
+        return (
+            <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center overflow-scroll">
+                <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
+                <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
+                <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>
+                <button className="w-full h-full bg-red-200 border border-red-300 text-red-600 hover:bg-red-300 rounded-md"> Eliminar dispositivo </button>
+            </div>
+        )
+    }
+
     return (
         <main>
+            <AddDeviceDialog />
             <div className="pb-3 md:grid grid-cols-3 gap-5 min-w-60 h-16">
-                <button className="w-full h-full text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
+                <button onClick={handleAddDeviceButton} className="w-full h-full text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
                 <div></div>
                 <div></div>
             </div>
@@ -72,9 +108,9 @@ export default function Page() {
                             href={"/dashboard/devices/"}
                             className="bg-gray-50 border w-full h-full min-h-60 min-w-60 max-h-80 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out"
                         >
-                            <div className="w-full h-full flex justify-center items-center grid grid-rows-4">
+                            <div className="w-full h-full flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
                                 <div className="w-full h-full row-span-3">
-                                    {showDevicesInfo[index] && DeviceInfo(devices)}
+                                    {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton()}
                                 </div>
                                 <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
                                     <h1 className="col-span-4 p-5 text-2xl">#{devices.id}</h1>
