@@ -90,3 +90,25 @@ export const checkDevices = async () => {
         return false
     }
 }
+
+export const deleteDevice = async (req, res) => {
+    // Validar token
+    let nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    // Eliminar el dispositivo con el id pasado por parametro
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.params.id } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        device.destroy()
+        res.status(200).send("Device deleted")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
