@@ -82,7 +82,7 @@ export default function Page() {
 
     const manageButton = () => {
         return (
-            <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center overflow-scroll">
+            <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center">
                 <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
                 <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
                 <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>

@@ -1,12 +1,12 @@
-export async function getToken(email: string) {
+export async function getToken(email: string, password: string) {
     let options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email: email, password: password })
     }
-    let request = await fetch("http://192.168.1.133:3000/api/auth/", options)
+    let request = await fetch("http://192.168.1.148:3000/api/auth/", options)
     if (request.status === 200) {
         let response = await request.json()
         return response.token
@@ -22,7 +22,7 @@ export async function checkToken(token: string) {
             'Authorization': 'Bearer ' + token
         }
     }
-    let request = await fetch("http://192.168.1.133:3000/api/auth/check", options)
+    let request = await fetch("http://192.168.1.148:3000/api/auth/check", options)
     if (request.status === 200) {
         return true
     } else {

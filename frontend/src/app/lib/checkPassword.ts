@@ -3,7 +3,7 @@ export default async function checkPassword(password: string, email: string) {
         email: email,
         password: password
     }
-    const response = await fetch('http://192.168.1.133:3000/api/users/password-check', {
+    const response = await fetch('http://192.168.1.148:3000/api/users/password-check', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

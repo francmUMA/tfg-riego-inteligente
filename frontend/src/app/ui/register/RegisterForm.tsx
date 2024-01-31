@@ -143,7 +143,7 @@ export default function RegisterForm() {
         let createUser = await registerUser(user)
         if (createUser) {
             console.log('Usuario creado correctamente')
-            let token = await getToken(email as string)
+            let token = await getToken(email as string, password as string)
             setCookie('token', token)
             router.push('/dashboard')
         } else {

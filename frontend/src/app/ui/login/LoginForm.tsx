@@ -129,7 +129,7 @@ export default function RegisterForm() {
                         e.preventDefault()
                         if (validEmail && validPassword) {
                             console.log('Usuario creado correctamente')
-                            let token = await getToken(email as string)
+                            let token = await getToken(email as string, password as string)
                             setCookie('token', token)
                             router.push('/dashboard')
                         } else {

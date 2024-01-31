@@ -5,7 +5,7 @@ export const fetchUserInfo = async (token: string) => {
             'Authorization': 'Bearer ' + token
         }
     }
-    let request = await fetch("http://192.168.1.133:3000/api/users/token", options)
+    let request = await fetch("http://192.168.1.148:3000/api/users/token", options)
     if (request.status === 200) {
         let response = await request.json()
         return response
@@ -26,7 +26,7 @@ export const updateNameSurname = async (name: string, surname: string, token: st
             apellidos: surname
         })
     }
-    let request = await fetch("http://192.168.1.133:3000/api/users/", options)
+    let request = await fetch("http://192.168.1.148:3000/api/users/", options)
     if (request.status === 200) {
         return true
     } else {
