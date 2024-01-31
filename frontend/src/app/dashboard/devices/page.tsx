@@ -68,13 +68,76 @@ export default function Page() {
         setIsOpenAddDeviceDialog(false)
     }
 
+    const [ip, setIp] = useState("")
+    const [validIp, setValidIp] = useState(false)
+    const [emptyIp, setEmptyIp] = useState(true)
+    const [id, setId] = useState("")
+    const [validId, setValidId] = useState(false)
+    const [emptyId, setEmptyId] = useState(true)
+
+    const handleIP = (event: any) => {
+        // Cadena no vacia
+        if (event.target.value.length < 0){
+            setEmptyIp(true)
+            setValidIp(false)
+            return
+        }
+
+        // Formato de la IP
+        let ip_split = event.target.value.split(".")
+        if (ip_split.length != 4) {
+            setValidIp(false)
+            setEmptyIp(false)
+            return
+        }
+        for (let i = 0; i < 4; i++) {
+            if (ip_split[i].length < 0 || ip_split[i].length > 3) {
+                setValidIp(false)
+                setEmptyIp(false)
+                return
+            }
+            if (parseInt(ip_split[i]) < 0 || parseInt(ip_split[i]) > 255) {
+                setValidIp(false)
+                setEmptyIp(false)
+                return
+            }
+        }
+
+        // IP valida
+        setValidIp(true)
+        setEmptyIp(false)
+        setIp(event.target.value)
+        return
+    }
+
+    const handleId = (event: any) => {
+    }
+
     const AddDeviceDialog = () => {
         return (
             <Dialog open={IsOpenAddDeviceDialog} onClose={closeDialog}>
                 <DialogTitle className="border">Completa la IP y el identificador del dispositivo</DialogTitle>
                 <div className="w-full h-full flex flex-col justify-center items-center">
-                    <input className="border w-full h-full" type="text" />
-                    <input className="border w-full h-16" type="text" />
+                    <div className="w-full h-full p-4">
+                        <label> Identificador</label>
+                        <input className={`transition easy-in-out duration-200 
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                shadow-sm rounded-lg`} type="text" />
+                    </div>
+                    <div className="w-full h-full p-4">
+                        <label> IP</label>
+                        <input 
+                                onBlur={handleIP}
+                                className={`transition easy-in-out duration-200 
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                shadow-sm rounded-lg${
+                                    validIp ? " border-green-600" : " border-red-600"
+                                
+                                }`} type="text" />
+                    </div>
+                    <div className="w-full h-full p-4">
+                        <button className="w-full h-10 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 active:bg-indigo-600 transition duration-150"> Añadir dispositivo</button>
+                    </div>
                 </div>
             </Dialog>
         )

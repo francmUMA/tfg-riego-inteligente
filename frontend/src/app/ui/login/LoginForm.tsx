@@ -211,7 +211,4 @@ export default function RegisterForm() {
     </main>
   )
 }
-function createCookie() {
-    throw new Error("Function not implemented.")
-}
 
