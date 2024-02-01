@@ -74,7 +74,7 @@ export const verifyToken = (req, res) => {
                 return
             }
 
-            let password = await bcrypt.compare(data.payload.password, user.password)
+            let password = bcrypt.compare(data.payload.password, user.password)
             if (password === false) {
                 res.status(401).send("Invalid password")
                 return
