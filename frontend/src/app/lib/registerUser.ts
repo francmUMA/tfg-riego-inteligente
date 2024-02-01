@@ -6,7 +6,7 @@ export default async function registerUser(user: any) {
         },
         body: JSON.stringify(user)
     }
-    let request = await fetch("http://192.168.1.148:3000/api/users/", options)
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/users/", options)
     if (request.status === 200) {
         return true
     } else {

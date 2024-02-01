@@ -6,7 +6,7 @@ export async function getToken(email: string, password: string) {
         },
         body: JSON.stringify({ email: email, password: password })
     }
-    let request = await fetch("http://192.168.1.148:3000/api/auth/", options)
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/auth/", options)
     if (request.status === 200) {
         let response = await request.json()
         return response.token
@@ -22,7 +22,7 @@ export async function checkToken(token: string) {
             'Authorization': 'Bearer ' + token
         }
     }
-    let request = await fetch("http://192.168.1.148:3000/api/auth/check", options)
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/auth/check", options)
     if (request.status === 200) {
         return true
     } else {

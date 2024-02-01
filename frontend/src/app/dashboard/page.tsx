@@ -20,7 +20,7 @@ export default function Page() {
     }, [])
 
     return (
-        <main className="grid grid-rows-3 grid-cols-3 gap-3 h-full w-full p-4">
+        <main className="bg-white grid grid-rows-3 grid-cols-3 gap-3 h-full w-full p-4">
             <div className="col-span-2 bg-gray-50 rounded-md flex justify-center items-center">
                 <div className="bg-white w-full mx-4 h-5/6 rounded-md"></div>
             </div>
