@@ -222,3 +222,47 @@ export const updateIp = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+export const testConnection = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    // ------------------- POSIBLES ERRORES --------------------
+    if (req.body.id === undefined) {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    // ----------------------------------------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.params.id } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        ping.sys.probe(device.ip, function(isAlive) {
+            if (isAlive) {
+                device.available = 1
+                device.save()
+                res.status(200).send("Device is available")
+            } else {
+                device.available = 0
+                device.save()
+                res.status(404).send("Device is not available")
+            }
+        })
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
