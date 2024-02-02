@@ -239,7 +239,7 @@ export const testConnection = async (req, res) => {
     }
 
     // ------------------- POSIBLES ERRORES --------------------
-    if (req.body.id === undefined) {
+    if (req.params.id === undefined) {
         res.status(400).send("Missing id")
         return
     }
