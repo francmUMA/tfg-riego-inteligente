@@ -97,3 +97,17 @@ export async function updateDeviceIp (id: string, ip: string, token: string) {
         return false
     }
 }
+export async function testDeviceConnection (id: string, token: string) {
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/test/" + id, options)
+    if (response.status == 200) {
+        return true
+    } else {
+        return false
+    }
+}

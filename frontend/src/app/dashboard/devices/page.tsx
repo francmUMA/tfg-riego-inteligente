@@ -2,7 +2,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { getDevices, checkIP, createDevice, deleteDevice, updateDevicePosition, updateDeviceIp } from "../../lib/devicesUtils"
+import { getDevices, checkIP, createDevice, deleteDevice, updateDevicePosition, updateDeviceIp, testDeviceConnection } from "../../lib/devicesUtils"
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
@@ -96,9 +96,7 @@ export default function Page() {
     const [emptyIp, setEmptyIp] = useState(true)
     const [id, setId] = useState("")
     const [validId, setValidId] = useState(false)
-    const [validIdMessage, setValidIdMessage] = useState("")
     const [emptyId, setEmptyId] = useState(true)
-    const [validIpMessage, setValidIpMessage] = useState("")
 
     const handleIP = (e: { target: { value: string } }) => {
         if (e.target.value === '') {
@@ -172,7 +170,7 @@ export default function Page() {
             <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center">
                 <button onClick={() => openUpdatePositionDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
                 <button onClick={() => openUpdateIpDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
-                <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>
+                <button onClick={() => testConnectionButton(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>
                 <button className="w-full h-full bg-red-200 border border-red-300 text-red-600 hover:bg-red-300 rounded-md"
                     onClick={() => deleteDeviceButton(id)}> Eliminar dispositivo </button>
             </div>
@@ -270,7 +268,6 @@ export default function Page() {
     const [newIp, setNewIp] = useState("")
     const [validNewIp, setValidNewIp] = useState(false)
     const [emptyNewIp, setEmptyNewIp] = useState(true)
-    const [validNewIpMessage, setValidNewIpMessage] = useState("")
     const [IsOpenUpdateIpDialog, setIsOpenUpdateIpDialog] = useState(false)
 
     const handleNewIP = (e: { target: { value: string } }) => {
@@ -337,8 +334,10 @@ export default function Page() {
             </Dialog>
         )
     }
+
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
+    const [rotation, setRotation] = useState(180)
     const updateDevicesButton = async () => {
         const token = getCookie("token")
         const devices = await getDevices(token as string)
@@ -349,6 +348,19 @@ export default function Page() {
             setDevices(devices)
             setShowDevicesInfo(devices.map(() => true))
         }
+        setRotation(rotation == 180 ? -180 : 180);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    // ----------------------------------- Test de Conexion Boton ----------------------------------
+    const testConnectionButton = async (id: string) => {
+        const token = getCookie("token")
+        let res = await testDeviceConnection(id, token as string)
+        if (res) {
+            alert("El dispositivo está conectado")
+        } else {
+            alert("El dispositivo no está conectado")
+        }
     }
 
     return (
@@ -358,7 +370,13 @@ export default function Page() {
             {UpdateIpDialog()}
             <div className="flex flex-row justify-between py-4">
                 <button onClick={handleAddDeviceButton} className="w-1/3 h-12 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
-                <button onClick={updateDevicesButton} className="shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150">    <ArrowPathIcon className="w-6"/>
+                <button
+                    onClick={updateDevicesButton}
+                    className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}
+                    >
+                    <ArrowPathIcon
+                        className={`w-6`} 
+                        style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
                 </button>
             </div>
             <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
