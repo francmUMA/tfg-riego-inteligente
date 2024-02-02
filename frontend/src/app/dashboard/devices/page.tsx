@@ -17,7 +17,6 @@ export default function Page() {
 
     useEffect(() => {
         const token = getCookie("token")
-        console.log(token)
         if (token === undefined) router.push("/login")
         const fetchDevices = async (token: string) => {
             const devices = await getDevices(token)
@@ -110,7 +109,6 @@ export default function Page() {
                 setIp(e.target.value)
             } else {
                 setValidIp(false)
-                setValidIpMessage('')
             }
         }
     }
@@ -282,7 +280,6 @@ export default function Page() {
                 setNewIp(e.target.value)
             } else {
                 setValidNewIp(false)
-                setValidNewIpMessage('')
             }
         }
     }
@@ -383,14 +380,15 @@ export default function Page() {
             {
                 devices.map((devices, index) => {
                     return (
-                        <Link
-                            key={devices}
-                            href={"/dashboard/devices/"}
-                            className="bg-gray-50 border w-full h-full min-h-60 min-w-60 max-h-80 rounded-md shadow-md hover:shadow-lg transition duration-200 ease-in-out"
-                        >
-                            <div className="w-full h-full flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
+                            <div className="w-full h-full border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
                                 <div className="w-full h-full row-span-3">
-                                    {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
+                                    <Link
+                                        key={devices}
+                                        href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
+                                        className=""
+                                    >
+                                        {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
+                                    </Link>
                                 </div>
                                 <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
                                     <h1 className="col-span-4 p-5 text-2xl">#{devices.id}</h1>
@@ -401,7 +399,6 @@ export default function Page() {
                                     </button>
                                 </div>
                             </div>
-                        </Link>
                     )
                 })
             }
