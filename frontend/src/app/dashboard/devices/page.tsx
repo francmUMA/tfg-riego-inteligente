@@ -2,7 +2,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { getDevices, checkIP, createDevice, deleteDevice } from "../../lib/devicesInfo"
+import { getDevices, checkIP, createDevice, deleteDevice, updateDevicePosition, updateDeviceIp } from "../../lib/devicesUtils"
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
@@ -43,7 +43,7 @@ export default function Page() {
         )
         console.log(showDevicesInfo)
     }
-    
+
     const DeviceInfo = (device: any) => {
         return (
             <main className="w-full h-full flex justify-center items-center">
@@ -84,7 +84,7 @@ export default function Page() {
     }
 
     const handleAddDeviceButton = () => {
-        setIsOpenAddDeviceDialog(!IsOpenAddDeviceDialog)
+        setIsOpenAddDeviceDialog(true)
     }
 
     const closeDialog = () => {
@@ -128,7 +128,7 @@ export default function Page() {
         setId(e.target.value)
     }
 
-    const AddDeviceDialog = () => { 
+    const AddDeviceDialog = () => {
         return (
             <Dialog open={IsOpenAddDeviceDialog} onClose={closeDialog}>
                 <DialogTitle className="w-full h-full border-b">Añade la información del dispositivo</DialogTitle>
@@ -138,10 +138,10 @@ export default function Page() {
                     <div className="w-full h-full flex flex-col">
                         <label className="font-medium">Identificador</label>
                         <input name="id" type="text" onChange={handleId} onBlur={handleId} placeholder="Identificador" required
-                                    className={`transition easy-in-out duration-200 
-                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                    className={`transition easy-in-out duration-200
+                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
                                     shadow-sm rounded-lg ${
-                                        emptyId 
+                                        emptyId
                                         ? "border-[#d6d3d1]"
                                         : validId
                                             ? "border-green-500 text-[#22c55e] bg-gray-500/5"
@@ -151,8 +151,8 @@ export default function Page() {
                     <div className="w-full h-full flex flex-col">
                         <label>Dirección IP</label>
                         <input name="id" type="text" onChange={handleIP} onBlur={handleIP} placeholder="Dirección IP" required
-                                className={`transition easy-in-out duration-200 
-                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
+                                className={`transition easy-in-out duration-200
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
                                 shadow-sm rounded-lg ${
                                     emptyIp
                                     ? "border-[#d6d3d1]"
@@ -170,10 +170,10 @@ export default function Page() {
     const manageButton = (id: string) => {
         return (
             <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center">
-                <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
-                <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
+                <button onClick={() => openUpdatePositionDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
+                <button onClick={() => openUpdateIpDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
                 <button className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>
-                <button className="w-full h-full bg-red-200 border border-red-300 text-red-600 hover:bg-red-300 rounded-md" 
+                <button className="w-full h-full bg-red-200 border border-red-300 text-red-600 hover:bg-red-300 rounded-md"
                     onClick={() => deleteDeviceButton(id)}> Eliminar dispositivo </button>
             </div>
         )
@@ -204,15 +204,162 @@ export default function Page() {
         }
     }
 
+    // ------------------- Update Device Position -------------------
+    const [latitud, setLatitud] = useState(0.0)
+    const [longitud, setLongitud] = useState(0.0)
+    const [currentId, setCurrentId] = useState("")
+    const [IsOpenUpdatePositionDialog, setIsOpenUpdatePositionDialog] = useState(false)
+
+    const openUpdatePositionDialog = (id: string) => {
+        setIsOpenUpdatePositionDialog(true)
+        setCurrentId(id)
+    }
+
+    const closeUpdatePositionDialog = () => {
+        setIsOpenUpdatePositionDialog(false)
+    }
+
+    const handleLatitud = (e: { target: { value: string } }) => {
+        setLatitud(parseFloat(e.target.value))
+    }
+
+    const handleLongitud = (e: { target: { value: string } }) => {
+        setLongitud(parseFloat(e.target.value))
+    }
+
+    const UpdatePositionDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdatePositionDialog} onClose={closeUpdatePositionDialog}>
+                <DialogTitle className="w-full h-full border-b">Añade la información del dispositivo</DialogTitle>
+                <div className={`p-5 w-full h-full col-span-2 flex justify-center ${
+                    IsOpenUpdatePositionDialog ? "flex flex-col gap-5 justify-center items-center" : "hidden"
+                    }`}>
+                    <div className="w-full h-full flex flex-col">
+                        <label className="font-medium">Latitud</label>
+                        <input name="id" type="text" onChange={handleLatitud} placeholder="Latitud" required
+                                    className={`transition easy-in-out duration-200
+                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                    shadow-sm rounded-lg`}/>
+                    </div>
+                    <div className="w-full h-full flex flex-col">
+                        <label>Longitud</label>
+                        <input name="id" type="text" onChange={handleLongitud} placeholder="Longitud" required
+                                className={`transition easy-in-out duration-200
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                shadow-sm rounded-lg`}/>
+                    </div>
+                    <button onClick={() => updatePositionButton(currentId, latitud, longitud)} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Actualizar Dispositivo</button>
+                </div>
+            </Dialog>
+        )
+    }
+
+    const updatePositionButton = async (id: string, lat: number, lon: number) => {
+        const token = getCookie("token")
+        let res = await updateDevicePosition(id, lat, lon, token as string)
+        if (res) {
+            alert("Localización actualizada correctamente")
+        } else {
+            alert("No se ha podido actualizar el dispositivo")
+        }
+        closeUpdatePositionDialog()
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // ----------------------------- Update IP -----------------------------------------------------
+    const [newIp, setNewIp] = useState("")
+    const [validNewIp, setValidNewIp] = useState(false)
+    const [emptyNewIp, setEmptyNewIp] = useState(true)
+    const [validNewIpMessage, setValidNewIpMessage] = useState("")
+    const [IsOpenUpdateIpDialog, setIsOpenUpdateIpDialog] = useState(false)
+
+    const handleNewIP = (e: { target: { value: string } }) => {
+        if (e.target.value === '') {
+            setEmptyNewIp(true)
+            setValidNewIp(false)
+        } else {
+            setEmptyNewIp(false)
+            let check = checkIP(e.target.value as string)
+            if (check) {
+                setValidNewIp(true)
+                setNewIp(e.target.value)
+            } else {
+                setValidNewIp(false)
+                setValidNewIpMessage('')
+            }
+        }
+    }
+
+    const openUpdateIpDialog = (id: string) => {
+        setIsOpenUpdateIpDialog(true)
+        setCurrentId(id)
+    }
+
+    const closeUpdateIpDialog = () => {
+        setIsOpenUpdateIpDialog(false)
+    }
+
+    const updateIpButton = async (id: string, ip: string) => {
+        setEmptyNewIp(true)
+        setValidNewIp(false)
+        const token = getCookie("token")
+        let res = await updateDeviceIp(id, ip, token as string)
+        if (res) {
+            alert("Dirección IP actualizada correctamente")
+        } else {
+            alert("No se ha podido actualizar el dispositivo")
+        }
+        closeUpdateIpDialog()
+    }
+
+    const UpdateIpDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateIpDialog} onClose={closeUpdateIpDialog}>
+                <DialogTitle className="w-full h-full border-b">Añade la información del dispositivo</DialogTitle>
+                <div className={`p-5 w-full h-full col-span-2 flex justify-center ${
+                    IsOpenUpdateIpDialog ? "flex flex-col gap-5 justify-center items-center" : "hidden"
+                    }`}>
+                    <div className="w-full h-full flex flex-col">
+                        <label className="font-medium">Nueva dirección IP</label>
+                        <input name="id" type="text" onChange={handleNewIP} onBlur={handleNewIP} placeholder="Nueva dirección IP" required
+                                    className={`transition easy-in-out duration-200
+                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                    shadow-sm rounded-lg ${
+                                        emptyNewIp
+                                        ? "border-[#d6d3d1]"
+                                        : validNewIp
+                                            ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                            : "border-red-500 text-red-500 bg-gray-500/5"
+                        }`}/>
+                    </div>
+                    <button onClick={() => updateIpButton(currentId, newIp)} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Actualizar Dispositivo</button>
+                </div>
+            </Dialog>
+        )
+    }
+    // ---------------------------------------------------------------------------------------------
+    // ---------------------------------------------------------------------------------------------
+    const updateDevicesButton = async () => {
+        const token = getCookie("token")
+        const devices = await getDevices(token as string)
+        if (devices === undefined) {
+            console.log("No se han obtenido los dispositivos")
+            setDevices([])
+        } else {
+            setDevices(devices)
+            setShowDevicesInfo(devices.map(() => true))
+        }
+    }
+
     return (
         <main className="">
-            <div className="pb-3 md:grid grid-cols-3 gap-5 min-w-60 h-16">
-                <button onClick={handleAddDeviceButton} className="w-full h-full text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
-                {AddDeviceDialog()} 
-                <div className="w-full h-full bg-gray-100 justify-self-end">
-                    <button className="h-full w-10 flex items-center justify-center font-medium hover:bg-gray-100 border rounded-lg duration-150">    <ArrowPathIcon className="w-6"/> 
-                    </button>
-                </div>
+            {AddDeviceDialog()}
+            {UpdatePositionDialog()}
+            {UpdateIpDialog()}
+            <div className="flex flex-row justify-between py-4">
+                <button onClick={handleAddDeviceButton} className="w-1/3 h-12 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
+                <button onClick={updateDevicesButton} className="shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150">    <ArrowPathIcon className="w-6"/>
+                </button>
             </div>
             <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
             {
@@ -240,7 +387,7 @@ export default function Page() {
                     )
                 })
             }
-            </div>   
+            </div>
         </main>
     )
 }
