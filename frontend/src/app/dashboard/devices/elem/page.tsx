@@ -3,7 +3,6 @@ import { deleteDevice, getDeviceInfo } from "@/src/app/lib/devicesUtils";
 import { checkToken } from "@/src/app/lib/token";
 
 import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
-// import { WifiIcon } from "@heroicons/react/24/solid"
 import { Dialog, DialogTitle } from "@mui/material";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
@@ -167,7 +166,7 @@ export default function Page() {
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
                         <div className="w-full h-full border shadow-md rounded-md">
-
+                            <iframe src="http://192.168.1.139:3001/d-solo/d54ffab4-ba43-4532-b2a7-164b00904b4b/cpu-1?orgId=1&from=1706978416314&to=1706980568762&theme=light&panelId=1" width="450" height="200"></iframe>
                         </div>
                         <div className="w-full h-full border shadow-md rounded-md">
 
