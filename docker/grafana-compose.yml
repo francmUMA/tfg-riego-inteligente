@@ -9,6 +9,8 @@ services:
     user: '0'
     ports:
       - '3001:3000'
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
     # adding the mount volume point which we create earlier
     volumes:
       - '/grafana/data:/var/lib/grafana'
