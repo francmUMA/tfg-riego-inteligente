@@ -1,6 +1,6 @@
 'use client'
 import { checkToken } from "@/src/app/lib/token";
-import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { WifiIcon } from "@heroicons/react/24/solid"
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 export default function Page() {
     const [deviceId, setDeviceId] = useState<string | null>(null);
+    const [device, setDevice] = useState<any>(null);
     
     const router = useRouter();
 
@@ -28,12 +29,15 @@ export default function Page() {
         
 
         // Recuperar el identificador del dispositivo de la URL
-        const url = new URL(window.location.href);
-        let id = url.searchParams.get("id");
+        const url = new URL(window.location.href)
+        let id = url.searchParams.get("id")
         if (id === null) {
-            router.push("/dashboard/devices");
+            router.push("/dashboard/devices")
         }
-        setDeviceId(id);
+        setDeviceId(id)
+
+        // Obtener los datos del dispositivo
+        
     })
 
     // ------------------------------ ROTATION ------------------------------
@@ -66,15 +70,26 @@ export default function Page() {
                 </div>
                 <div className="w-full h-full flex flex-col gap-3">
                     <div className="w-full h-16 flex flex-row gap-3 items-center justify-center">
-                        <div className="w-56 h-full flex flex-row gap-4 p-2 justify-center items-center border shadow-md rounded-md">
-                            <WifiIcon className="w-6 text-indigo-600"></WifiIcon>
-                            <h1>Conectao o no</h1>
+                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                            <WifiIcon className="w-8 text-indigo-600"></WifiIcon>
+                            <div className="flex flex-col justify-center">
+                                <p className="text-sm text-slate-400">Estado</p>
+                                <p>Conectado</p>
+                            </div>
                         </div>
-                        <div className="w-56 h-full flex flex-row border shadow-md rounded-md">
-
+                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                            <EnvelopeIcon className="w-8 text-indigo-600"></EnvelopeIcon>
+                            <div className="flex flex-col justify-center">
+                                <p className="text-sm text-slate-400">Dirección IP</p>
+                                <p> 192.168.1.1 </p>
+                            </div>
                         </div>
-                        <div className="w-56 h-full flex flex-row border shadow-md rounded-md">
-                            
+                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                            <GlobeAltIcon className="w-8 text-indigo-600"></GlobeAltIcon>
+                            <div className="flex flex-col justify-center">
+                                <p className="text-sm text-slate-400">Localizacion</p>
+                                <p>(En obras)</p>
+                            </div>
                         </div>
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
