@@ -166,7 +166,7 @@ export default function Page() {
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
                         <div className="w-full h-full border shadow-md rounded-md">
-                            <iframe src="http://192.168.1.139:3001/d-solo/d54ffab4-ba43-4532-b2a7-164b00904b4b/cpu-1?orgId=1&from=1706978416314&to=1706980568762&theme=light&panelId=1" width="450" height="200"></iframe>
+                        <iframe src="http://192.168.1.139:3001/d-solo/f287f5b1-f129-487b-b239-e0845506a05f/test-dashboard?orgId=1&from=1706959007507&to=1707002207507&panelId=1" width="450" height="200"></iframe>
                         </div>
                         <div className="w-full h-full border shadow-md rounded-md">
 
