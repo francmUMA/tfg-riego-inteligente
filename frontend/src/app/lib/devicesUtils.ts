@@ -111,3 +111,19 @@ export async function testDeviceConnection (id: string, token: string) {
         return false
     }
 }
+
+export async function getDeviceInfo (id: string, token: string) {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/id/" + id, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return undefined
+    }
+}
