@@ -1,9 +1,10 @@
 'use client'
-import { getDeviceInfo } from "@/src/app/lib/devicesUtils";
+import { deleteDevice, getDeviceInfo } from "@/src/app/lib/devicesUtils";
 import { checkToken } from "@/src/app/lib/token";
 
-import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
-import { WifiIcon } from "@heroicons/react/24/solid"
+import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
+// import { WifiIcon } from "@heroicons/react/24/solid"
+import { Dialog, DialogTitle } from "@mui/material";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -43,8 +44,8 @@ export default function Page() {
             let deviceInfo = await getDeviceInfo(id, token)
             setDevice(deviceInfo)
         }
-        //fetchDeviceInfo(id as string, token as string)
-    }) 
+        fetchDeviceInfo(id as string, token as string)
+    }, [deviceId]) 
 
     // ------------------------------ ROTATION ------------------------------
     const [rotation, setRotation] = useState(0);
@@ -56,10 +57,58 @@ export default function Page() {
         setDevice(deviceInfo)
         setRotation(rotation + 180)
     }
+    //-----------------------------------------------------------------------
+    // ------------------------------ Eliminar dispositivo ------------------
+    const [IsOpenDeleteDeviceDialog, setIsOpenDeleteDeviceDialog] = useState(false);
+
+    const closeDeleteDeviceDialog = () => {
+        setIsOpenDeleteDeviceDialog(false);
+    }
+
+    const deleteDeviceButton = async () => {
+        setIsOpenDeleteDeviceDialog(true);
+    }
+
+    const confirmDeleteDevice = async () => {
+        const token = getCookie("token");
+        // Eliminar el dispositivo
+        let res = await deleteDevice(deviceId as string, token as string)
+        if (res) {
+            alert("Dispositivo eliminado correctamente")
+        } else {
+            alert("Error al eliminar el dispositivo")
+        }
+
+        // Cerrar el diálogo
+        closeDeleteDeviceDialog();
+
+        // Redirigir a la página de dispositivos
+        if (res) {
+            router.push("/dashboard/devices")
+        }
+    }
+
+    const deleteDeviceDialog = () => {
+        return (
+            <Dialog open={IsOpenDeleteDeviceDialog} onClose={closeDeleteDeviceDialog}>
+                <DialogTitle className="w-full h-full">¿Seguro que deseas eliminar este dispositivo?</DialogTitle>
+                <div className="flex flex-row p-4 gap-4">
+                    <button onClick={closeDeleteDeviceDialog} className="w-1/2 h-12 text-white bg-indigo-600 rounded-md hover:bg-indigo-500 duration-150">
+                        <p>Cancelar</p>
+                    </button>
+                    <button onClick={confirmDeleteDevice} className="w-1/2 h-12 text-white rounded-md bg-red-600 hover:bg-red-500 duration-150">
+                        <p>Eliminar</p>
+                    </button>
+
+                </div>
+            </Dialog>
+        )
+    }
 
     return (
         <main className="h-full w-full">
             <div className="w-full h-full p-4 flex flex-col gap-3">
+                {deleteDeviceDialog()}
                 <div className="w-full h-12 flex flex-row flex-grow gap-3">
                     <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
@@ -73,7 +122,9 @@ export default function Page() {
                         <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
                             <PlusCircleIcon className={`w-6 text-indigo-600`}/>
                         </button>
-                        <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-50 border-red-500 duration-150`}>
+                        <button
+                            onClick={() => {deleteDeviceButton()}} 
+                            className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-50 border-red-500 duration-150`}>
                             <XMarkIcon className={`w-6 text-red-500`}/>
                         </button>
                         <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
