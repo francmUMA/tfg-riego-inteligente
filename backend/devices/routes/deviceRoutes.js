@@ -1,9 +1,10 @@
 import express from "express";
-import { getDevices,addDevice,deleteDevice,updatePosition, updateIp, testConnection } from "../controllers/deviceController.js";
+import { getDevices,addDevice,deleteDevice,updatePosition, updateIp, testConnection, getDevice } from "../controllers/deviceController.js";
 
 const router = express.Router();
 
 router.get("/", getDevices)
+router.get("/id/:id", getDevice)
 router.post("/", addDevice)
 router.delete("/:id", deleteDevice)
 router.put("/position", updatePosition)
