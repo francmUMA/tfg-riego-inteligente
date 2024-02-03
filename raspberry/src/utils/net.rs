@@ -13,5 +13,6 @@ pub fn mk_url (protocol: String, address: String, path: String) -> String {
     url.push_str(&address);
     url.push_str("/");
     url.push_str(&path);
+    println!("URL: {}", url);
     url
 }

@@ -5,7 +5,7 @@ mod utils;
 
 
 fn main() {
-    let ip = "192.168.1.133";
+    let ip = "192.168.1.139";
     let port = "3000";
     let device_id = 1;
     loop {
