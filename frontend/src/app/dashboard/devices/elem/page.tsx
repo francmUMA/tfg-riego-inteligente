@@ -49,7 +49,6 @@ export default function Page() {
 
         // Obtener los datos de la temperatura del CPU
         const fetchDeviceCpuTemp = async (id: string, token: string) => {
-            console.log("Fetching CPU Temp")
             let deviceCpuTemp = await getDeviceCpuTemperature(id, token)
             setDeviceCpuTemp(deviceCpuTemp)
         }
