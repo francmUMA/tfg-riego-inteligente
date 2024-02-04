@@ -1,6 +1,7 @@
 'use client'
 import { deleteDevice, getDeviceInfo } from "@/src/app/lib/devicesUtils";
 import { checkToken } from "@/src/app/lib/token";
+import { CandleStickChart, ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 
 import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
 import { Dialog, DialogTitle } from "@mui/material";
@@ -104,6 +105,11 @@ export default function Page() {
         )
     }
 
+    //-----------------------------------------------------------------------
+    // ------------------------------ Graficos ------------------------------
+    const deviceCpuTemp = []
+    //---------------------------------------------------------------------------
+
     return (
         <main className="h-full w-full">
             <div className="w-full h-full p-4 flex flex-col gap-3">
@@ -165,15 +171,20 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-full border shadow-md rounded-md">
-                        <iframe src="http://192.168.1.139:3001/d-solo/f287f5b1-f129-487b-b239-e0845506a05f/test-dashboard?orgId=1&from=1706959007507&to=1707002207507&panelId=1" width="450" height="200"></iframe>                        </div>
+                        <div className="w-full h-full border shadow-md rounded-md" >
+                            
+                        </div>
                         <div className="w-full h-full border shadow-md rounded-md">
 
                         </div>
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
                         <div className="w-full h-full border shadow-md rounded-md">
-
+                            {
+                                deviceCpuTemp.length > 0
+                                    ? <ChartComponent className="w-full h-full flex justify-center items-center p-3"></ChartComponent>
+                                    : <p className="w-full h-full flex justify-center items-center p-3">No hay datos para mostrar</p>
+                            }
                         </div>
                         <div className="w-full h-full border shadow-md rounded-md">
 

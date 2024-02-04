@@ -127,3 +127,12 @@ export async function getDeviceInfo (id: string, token: string) {
         return undefined
     }
 }
+
+export async function getDeviceCpuTemperture (id: string, token: string) {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+}
