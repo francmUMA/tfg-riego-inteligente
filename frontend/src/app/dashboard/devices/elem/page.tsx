@@ -1,7 +1,7 @@
 'use client'
-import { deleteDevice, getDeviceInfo } from "@/src/app/lib/devicesUtils";
+import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
 import { checkToken } from "@/src/app/lib/token";
-import { CandleStickChart, ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
+import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 
 import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
 import { Dialog, DialogTitle } from "@mui/material";
@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 export default function Page() {
     const [deviceId, setDeviceId] = useState<string | null>(null);
     const [device, setDevice] = useState({});
+    const [deviceCpuTemp, setDeviceCpuTemp] = useState([]);
     
     const router = useRouter();
 
@@ -45,6 +46,14 @@ export default function Page() {
             setDevice(deviceInfo)
         }
         fetchDeviceInfo(id as string, token as string)
+
+        // Obtener los datos de la temperatura del CPU
+        const fetchDeviceCpuTemp = async (id: string, token: string) => {
+            console.log("Fetching CPU Temp")
+            let deviceCpuTemp = await getDeviceCpuTemperature(id, token)
+            setDeviceCpuTemp(deviceCpuTemp)
+        }
+        fetchDeviceCpuTemp(id as string, token as string)
     }, [deviceId]) 
 
     // ------------------------------ ROTATION ------------------------------
@@ -107,7 +116,7 @@ export default function Page() {
 
     //-----------------------------------------------------------------------
     // ------------------------------ Graficos ------------------------------
-    const deviceCpuTemp = []
+    
     //---------------------------------------------------------------------------
 
     return (
@@ -182,7 +191,7 @@ export default function Page() {
                         <div className="w-full h-full border shadow-md rounded-md">
                             {
                                 deviceCpuTemp.length > 0
-                                    ? <ChartComponent className="w-full h-full flex justify-center items-center p-3"></ChartComponent>
+                                    ? <ChartComponent className="w-full h-full flex justify-center items-center p-3" data={deviceCpuTemp}></ChartComponent>
                                     : <p className="w-full h-full flex justify-center items-center p-3">No hay datos para mostrar</p>
                             }
                         </div>

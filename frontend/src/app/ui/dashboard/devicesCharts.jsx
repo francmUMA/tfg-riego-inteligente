@@ -26,7 +26,8 @@ export const ChartComponent = props => {
 				width: chartContainerRef.current.clientWidth,
 				height: 300,
 			});
-			chart.timeScale().fitContent();
+
+			chart.timeScale().fitContent()
 
 			const newSeries = chart.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
 			newSeries.setData(data);
