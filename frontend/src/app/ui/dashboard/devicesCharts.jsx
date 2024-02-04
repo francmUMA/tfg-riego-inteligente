@@ -20,20 +20,46 @@ export const ChartComponent = props => {
 		() => {
 			const chart = createChart(chartContainerRef.current, {
 				layout: {
-					background: { type: ColorType.Solid, color: backgroundColor },
+					background: {
+						type: ColorType.Solid, 
+						color: backgroundColor,
+
+					},
 					textColor,
 				},
-				width: chartContainerRef.current.clientWidth,
-				height: 300,
+				width: 500,
+				height: 250,
+				autoSize: true,
 				timeScale: {
 					timeVisible: true,
 					secondsVisible: false,
+				},
+				rightPriceScale: {
+					visible: true,
+					scaleMargins: {
+						top: 0.3,
+						bottom: 0.25,
+					},
+				},
+				grid: {
+					vertLines: {
+						color: 'rgba(197, 203, 206, 0)',
+					},
+					horzLines: {
+						color: 'rgba(197, 203, 206, 0)',
+					},
 				}
 			})
 
 			chart.timeScale().fitContent()
 
-			const newSeries = chart.addAreaSeries({ lineColor, topColor: areaTopColor, bottomColor: areaBottomColor });
+			const newSeries = chart.addAreaSeries(
+			{ 
+				lineColor, 
+				topColor: areaTopColor, 
+				bottomColor: areaBottomColor,
+				priceLineVisible: false 
+			});
 			newSeries.setData(data);
 
 			return () => {

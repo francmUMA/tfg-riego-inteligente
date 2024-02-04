@@ -7,7 +7,7 @@ import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, Gl
 import { Dialog, DialogTitle } from "@mui/material";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 export default function Page() {
     const [deviceId, setDeviceId] = useState<string | null>(null);
@@ -63,6 +63,8 @@ export default function Page() {
         const token = getCookie("token");
         let deviceInfo = await getDeviceInfo(deviceId as string, token as string)
         setDevice(deviceInfo)
+        let deviceCpuTemp = await getDeviceCpuTemperature(deviceId as string, token as string)
+        setDeviceCpuTemp(deviceCpuTemp)
         setRotation(rotation + 180)
     }
     //-----------------------------------------------------------------------
@@ -115,7 +117,11 @@ export default function Page() {
 
     //-----------------------------------------------------------------------
     // ------------------------------ Graficos ------------------------------
-    
+    const fallback_component = () => {
+        return (
+            <p>Loading...</p>
+        )
+    }
     //---------------------------------------------------------------------------
 
     return (
@@ -187,12 +193,17 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-full flex justify-center items-center border shadow-md rounded-md">
+                        <div className="w-full h-full flex flex-col justify-center items-center border shadow-md rounded-md">
+                            <div className="p-3 flex justify-center items-center">
+                                <p className="text-slate-400">Temperatura de la CPU</p>
+                            </div>
+                            <Suspense fallback={fallback_component()}>
                             {
                                 deviceCpuTemp.length > 0
-                                    ? <ChartComponent className="w-full h-full flex justify-center items-center p-3" data={deviceCpuTemp}></ChartComponent>
-                                    : <p className="w-full h-full flex justify-center items-center p-3">No hay datos para mostrar</p>
+                                    ? <ChartComponent className="w-full h-full flex justify-center items-center p-2" data={deviceCpuTemp}></ChartComponent>
+                                    : <p className="flex w-full h-full justify-center items-center p-3">No hay datos para mostrar</p>
                             }
+                            </Suspense>
                         </div>
                         <div className="w-full h-full flex justify-center items-center border shadow-md rounded-md">
                             <p>En obras</p>
