@@ -1,5 +1,5 @@
 #[tokio::main]
-pub async fn send_temperature(ip: String , port: String, device_id: i8) -> bool{
+pub async fn send_temperature(ip: String , port: String, device_id: i8, created_time: u64) -> bool{
     use crate::device::temperature;
     use crate::utils::net;
     // Obtenemos la temperatura
@@ -16,6 +16,7 @@ pub async fn send_temperature(ip: String , port: String, device_id: i8) -> bool{
     let mut data: HashMap<&str, i8> = HashMap::new();
     data.insert("device", device_id);
     data.insert("value", temp as i8);
+    data.insert("time", created_time as i8);
 
     println!("Dirección: {}", address);
     println!("Información: {:?}", data);
