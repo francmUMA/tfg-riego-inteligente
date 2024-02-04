@@ -187,15 +187,15 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-full border shadow-md rounded-md">
+                        <div className="w-full h-full flex justify-center items-center border shadow-md rounded-md">
                             {
                                 deviceCpuTemp.length > 0
                                     ? <ChartComponent className="w-full h-full flex justify-center items-center p-3" data={deviceCpuTemp}></ChartComponent>
                                     : <p className="w-full h-full flex justify-center items-center p-3">No hay datos para mostrar</p>
                             }
                         </div>
-                        <div className="w-full h-full border shadow-md rounded-md">
-
+                        <div className="w-full h-full flex justify-center items-center border shadow-md rounded-md">
+                            <p>En obras</p>
                         </div>
                     </div>
                 </div>
