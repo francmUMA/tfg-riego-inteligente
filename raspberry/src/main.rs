@@ -11,7 +11,7 @@ fn main() {
     loop {
         let res = sends::temperature::send_temperature(ip.to_string(), port.to_string(), device_id);
         let get_time_now = utils::time::create_unix_timestamp();
-        print!("Tiempo actual: {}", get_time_now);
+        println!("Tiempo actual: {}", get_time_now);
         if res {
             println!("Información enviada");
         } else {
