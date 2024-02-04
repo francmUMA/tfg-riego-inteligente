@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Cpu_temps` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `device` INT NOT NULL,
   `value` INT NOT NULL,
-  `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `time` INT(11) NOT NULL DEFAULT 0,
   `createdAt` DATETIME NOT NULL,
   `updatedAt` DATETIME NOT NULL,
   INDEX `id_device_fk_idx` (`device` ASC) VISIBLE,
