@@ -13,10 +13,10 @@ pub async fn send_temperature(ip: String , port: String, device_id: i8, created_
     // Creamos la información
     let address = net::ip_port_concat(ip, port);
     use std::collections::HashMap;
-    let mut data: HashMap<&str, i8> = HashMap::new();
-    data.insert("device", device_id);
-    data.insert("value", temp as i8);
-    data.insert("time", created_time as i8);
+    let mut data: HashMap<&str, u64> = HashMap::new();
+    data.insert("device", device_id as u64);
+    data.insert("value", temp as u64);
+    data.insert("time", created_time);
 
     println!("Dirección: {}", address);
     println!("Información: {:?}", data);
