@@ -10,11 +10,13 @@ fn main() {
     let device_id = 1;
     loop {
         let res = sends::temperature::send_temperature(ip.to_string(), port.to_string(), device_id);
+        let get_time_now = utils::time::create_unix_timestamp();
+        print!("Tiempo actual: {}", get_time_now);
         if res {
             println!("Información enviada");
         } else {
             println!("Error al enviar la información");
         }
-        std::thread::sleep(std::time::Duration::from_secs(5));
+        std::thread::sleep(std::time::Duration::from_secs(60));
     }
 }
