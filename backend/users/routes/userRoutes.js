@@ -1,5 +1,5 @@
 import express from 'express'
-import { add_user, get_user_by_email, get_user_by_nif, check_password, update_user, get_user_by_token } from '../controllers/UserController.js'
+import { add_user, get_user_by_email, get_user_by_nif, check_password, update_user, get_user_by_token } from '../controllers/userController.js'
 
 const router = express.Router()
 router.post('/', add_user)
