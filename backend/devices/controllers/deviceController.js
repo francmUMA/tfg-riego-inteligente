@@ -1,5 +1,5 @@
 import deviceModel from "../models/deviceModel.js";
-import { get_nif_by_token } from "../../users/controllers/UserController.js";
+import { get_nif_by_token } from "../../users/controllers/userController.js";
 import ping from "ping"
 
 export const getDevices = async (req, res) => {

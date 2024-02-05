@@ -8,5 +8,10 @@ export default db.define("Areas", {
     },
     name: {
         type: DataTypes.STRING,
+        defaultValue: "New area"
+    },
+    user: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 })

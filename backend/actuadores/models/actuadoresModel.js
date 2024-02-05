@@ -15,4 +15,7 @@ export default db.define("Actuadores", {
     area: {
         type: DataTypes.INTEGER
     },
+    mode: {
+        type: DataTypes.TINYINT
+    }
 })

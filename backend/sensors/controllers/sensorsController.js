@@ -1,6 +1,8 @@
 import sensorsModel from "../models/sensorsModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
-import { get_nif_by_token } from "../../users/controllers/UserController.js"
+import areasModel from "../../areas/models/areasModel.js"
+import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
+import { get_nif_by_token } from "../../users/controllers/userController.js"
 
 export const getSensors = async (req, res) => {
     // Validar token
@@ -103,7 +105,7 @@ export const addSensor = async (req, res) => {
 
     // ----------------------------------------------------------
     try {
-        let sensor = await sensorsModel.create({ id: req.body.id, type: req.body.type, device: req.params.device })
+        await sensorsModel.create({ id: req.body.id, type: req.body.type, device: req.params.device })
         res.status(200).send("Sensor added")
     } catch (error) {
         res.status(500).send(error.message)
@@ -161,6 +163,231 @@ export const deleteSensor = async (req, res) => {
     try {
         await sensorsModel.destroy({ where: { id: req.body.id, device: req.params.device } })
         res.status(200).send("Sensor deleted")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+
+/*
+    @description: Actualiza el area de un sensor
+    @body: {
+        id: string,
+        area: int       // id del area        
+    }
+*/ 
+
+export const updateSensorArea = async (req, res) => {
+    //------------------- Validar token -------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+    if (req.body.area === undefined || req.body.area === null || req.body.area == "") {
+        res.status(400).send("Missing area")
+        return
+    }
+    // ------------------- Comprobar si el sensor existe ---------------------------
+    let sensor = await sensorsModel.findOne({ where: { id: req.body.id } })
+    if (sensor === null) {
+        res.status(404).send("Sensor not found")
+        return
+    }
+    // ------------------- Comprobar si el area existe ---------------------------
+    try {
+        let area = await areasModel.findOne({ where: { id: req.body.area, user: nif } })
+        if (area === null) {
+            res.status(404).send("Area not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    //-------------------  Comprobar que el sensor pertenezca al usuario ---------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: sensor.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ------------------------------------- Asignar area -------------------------------------------
+    try {
+        await sensorsModel.update({ area: req.body.area }, { where: { id: req.body.id } })
+        res.status(200).send("Area updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+
+}
+
+/*
+    @description: Actualiza el pin del dispositivo al que está conectado el sensor
+    @body: {
+        id: string,         // id del sensor
+        device_pin: int       
+    }
+
+*/
+export const updateSensorDevicePin = async (req, res) => {
+    //------------------------------------- Validar token ---------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------------------------------------------------------
+    //------------------------------------- Validar datos ---------------------------------------------------------
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+    if (req.body.device_pin === undefined || req.body.device_pin === null || req.body.device_pin < 0 || req.body.device_pin > 40) {
+        res.status(400).send("Missing device_pin or bad device_pin")
+        return
+    }
+    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
+    let sensor
+    try {
+        sensor = await sensorsModel.findOne({ where: { id: req.body.id } })
+        if (sensor === null) {
+            res.status(404).send("Sensor not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: sensor.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ------------------------------------- Comprobar que el pin no este en uso por otro sensor o actuador -------------
+    try {
+        let actuador = await actuadoresModel.findOne({ where: { device_pin: req.body.device_pin, device: sensor.device } })
+        if (actuador !== null) {
+            res.status(409).send("Pin already in use")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    try {
+        let used_sensor = await sensorsModel.findOne({ where: { device_pin: req.body.device_pin, device: sensor.device } })
+        if (used_sensor !== null) {
+            res.status(409).send("Pin already in use")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ------------------------------------ Actualizar pin ---------------------------------------------------------
+    try {
+        sensor.device_pin = req.body.device_pin
+        sensor.save()
+        res.status(200).send("Sensor pin updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+
+}
+
+/*
+    @description: Actualiza el dispositivo al que está conectado el sensor
+    @body: {
+        id: string,         // id del sensor
+        device: int         // id del dispositivo       
+    }
+
+*/
+export const updateSensorDevice = async (req, res) => {
+    //------------------------------------- Validar token ---------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------------------------------------------------------
+    //------------------------------------- Validar datos ---------------------------------------------------------
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+    if (req.body.device === undefined || req.body.device === null) {
+        res.status(400).send("Missing device")
+        return
+    }
+    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
+    let sensor
+    try {
+        sensor = await sensorsModel.findOne({ where: { id: req.body.id } })
+        if (sensor === null) {
+            res.status(404).send("Sensor not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: sensor.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ------------------------------------- Comprobar que el dispositivo existe -----------------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.body.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ------------------------------------ Actualizar pin ---------------------------------------------------------
+    try {
+        sensor.device = req.body.device
+        sensor.save()
+        res.status(200).send("Sensor device updated")
     } catch (error) {
         res.status(500).send(error.message)
     }
