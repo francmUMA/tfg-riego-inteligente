@@ -20,6 +20,8 @@ export default db.define("Devices", {
     },
     available: {
         type: DataTypes.TINYINT
+    },
+    area: {
+        type: DataTypes.STRING
     }
-
 })

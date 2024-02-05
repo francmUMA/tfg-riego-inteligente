@@ -5,6 +5,7 @@ import Cpu_temp_routes from "./monitors/routes/Cpu_temp_route.js"
 import userRoutes from "./users/routes/userRoutes.js"
 import tokenRoutes from "./token/routes/tokenRoutes.js"
 import deviceRoutes from "./devices/routes/deviceRoutes.js"
+import actuadoresRoutes from "./actuadores/routes/actuadoresRoutes.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
 
@@ -20,6 +21,7 @@ app.use("/api/cpu_temp", Cpu_temp_routes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", tokenRoutes)
 app.use("/api/devices", deviceRoutes)
+app.use("/api/actuadores", actuadoresRoutes)
 
 
 // Conexion a la base de datos
