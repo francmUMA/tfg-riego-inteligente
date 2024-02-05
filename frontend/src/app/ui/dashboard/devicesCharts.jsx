@@ -58,7 +58,8 @@ export const ChartComponent = props => {
 				lineColor, 
 				topColor: areaTopColor, 
 				bottomColor: areaBottomColor,
-				priceLineVisible: false 
+				priceLineVisible: false ,
+				lineType: 2
 			});
 			newSeries.setData(data);
 
