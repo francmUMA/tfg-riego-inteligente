@@ -2,6 +2,7 @@ import { getTokenInfo } from "../../token/controllers/tokenController.js";
 import userModel  from "../models/userModel.js";
 import bcrypt from "bcrypt";
 
+
 export const add_user = async (req, res) => {
     try {
         let user = {
