@@ -1,5 +1,5 @@
 import Cpu_temp_Model from '../models/Cpu_temp_model.js';
-import { get_nif_by_token } from '../../users/controllers/UserController.js';
+import { get_nif_by_token } from '../../users/controllers/userController.js';
 
 export const add_value = async (req, res) => {
     try {
