@@ -1,8 +1,8 @@
-import actuadoresModel from "../models/actuadoresModel.js"
+import sensorsModel from "../models/sensorsModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 
-export const getActuadores = async (req, res) => {
+export const getSensors = async (req, res) => {
     // Validar token
     let nif
     try {
@@ -38,7 +38,7 @@ export const getActuadores = async (req, res) => {
 
     // Buscar los actuadores de este dispositivo
     try {
-        let actuadores = await actuadoresModel.findAll({ where: { device: req.params.device } })
+        let actuadores = await sensorsModel.findAll({ where: { device: req.params.device } })
         res.status(200).send(actuadores)
     
     } catch (error) {
@@ -47,7 +47,7 @@ export const getActuadores = async (req, res) => {
 
 }
 
-export const addActuador = async (req, res) => {
+export const addSensor = async (req, res) => {
     // Validar token
     let nif
     try {
@@ -78,32 +78,39 @@ export const addActuador = async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
-
+    
+    // Comprobar que se han enviado los datos necesarios
     if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
         res.status(400).send("Missing id")
         return
     }
 
-    // Comprobar si el actuador ya existe
+    // Comprobar si el sensor ya existe
     try {
-        let actuador = await actuadoresModel.findOne({ where: { id: req.body.id, device: req.params.device } })
-        if (actuador !== null) {
-            res.status(409).send("Actuator already exists")
+        let sensor = await sensorsModel.findOne({ where: { id: req.body.id, device: req.params.device } })
+        if (sensor !== null) {
+            res.status(409).send("Sensor already exists")
             return
         }
     } catch (error) {
         res.status(500).send(error.message)
     }
+
+    if (req.body.type === undefined || req.body.type === null || req.body.type == "") {
+        res.status(400).send("Missing type")
+        return
+    }
+
     // ----------------------------------------------------------
     try {
-        let actuador = await actuadoresModel.create({ id: req.body.id, device: req.params.device })
-        res.status(200).send(actuador)
+        let sensor = await sensorsModel.create({ id: req.body.id, type: req.body.type, device: req.params.device })
+        res.status(200).send("Sensor added")
     } catch (error) {
         res.status(500).send(error.message)
     }
 }
 
-export const deleteActuador = async (req, res) => {
+export const deleteSensor = async (req, res) => {
     // Validar token
     let nif
     try {
@@ -142,9 +149,9 @@ export const deleteActuador = async (req, res) => {
 
     // Comprobar si el actuador existe
     try {
-        let actuador = await actuadoresModel.findOne({ where: { id: req.body.id, device: req.params.device } })
-        if (actuador === null) {
-            res.status(404).send("Actuator not found")
+        let sensor = await sensorsModel.findOne({ where: { id: req.body.id, device: req.params.device } })
+        if (sensor === null) {
+            res.status(404).send("Sensor not found")
             return
         }
     } catch (error) {
@@ -152,8 +159,8 @@ export const deleteActuador = async (req, res) => {
     }
     // ----------------------------------------------------------
     try {
-        await actuadoresModel.destroy({ where: { id: req.body.id, device: req.params.device } })
-        res.status(200).send("Actuator deleted")
+        await sensorsModel.destroy({ where: { id: req.body.id, device: req.params.device } })
+        res.status(200).send("Sensor deleted")
     } catch (error) {
         res.status(500).send(error.message)
     }
