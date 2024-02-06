@@ -1,6 +1,6 @@
 'use client'
 import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
-import { addSensor, checkSensorId, getSensors } from "@/src/app/lib/sensorsUtils";
+import { addSensor, checkSensorId, getSensors, updateSensorArea } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 
@@ -14,6 +14,11 @@ import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
 import { FaTemperatureQuarter } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
+import { FaFaucetDrip } from "react-icons/fa6";
+import { FaRobot } from "react-icons/fa";
+
+import { addActuador, checkActuador, getActuadores, updateActuadorArea, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
+import { Area, getAreas } from "@/src/app/lib/areasUtils";
 
 
 export default function Page() {
@@ -61,6 +66,8 @@ export default function Page() {
         }
         fetchDeviceCpuTemp(id as string, token as string)
         fetchDeviceSensors(id as string, token as string)
+        fetchDeviceActuadores(id as string, token as string)
+        fetchAreas()
     }, [deviceId]) 
 
     // ------------------------------ ROTATION ------------------------------
@@ -75,6 +82,8 @@ export default function Page() {
         setDeviceCpuTemp(deviceCpuTemp)
         let deviceSensors = await getSensors(deviceId as string, token as string)
         setDeviceSensors(deviceSensors)
+        let deviceActuadores = await getActuadores(deviceId as string, token as string)
+        setDeviceActuadores(deviceActuadores)
         setRotation(rotation + 180)
     }
     //-----------------------------------------------------------------------
@@ -141,6 +150,15 @@ export default function Page() {
         setDeviceSensors(res)
     }
     //--------------------------------------------------------------------------------------------------
+    // ------------------------------ Actuadores -------------------------------------------
+    const [deviceActuadores, setDeviceActuadores] = useState([])
+
+    const fetchDeviceActuadores = async (id: string, token: string) => {
+        let res = await getActuadores(id, token)
+        setDeviceActuadores(res)
+    }
+
+    //--------------------------------------------------------------------------------------------------
     // ------------------------------ Añadir sensores o actuadores -------------------------------------
     const [sensorActuador, setSensorActuador] = useState(true)
     const [IsOpenSensorActuadorDialog, setIsOpenSensorActuadorDialog] = useState(false)
@@ -150,7 +168,7 @@ export default function Page() {
     const [emptySensorId, setEmptySensorId] = useState(true)
 
 
-    const [actudadorId, setActuadorId] = useState("")
+    const [actuadorId, setActuadorId] = useState("")
     const [validActuadorId, setValidActuadorId] = useState(false)
     const [emptyActuadorId, setEmptyActuadorId] = useState(true)
 
@@ -200,7 +218,6 @@ export default function Page() {
     }
 
     const handleAddSensor = async () => {
-        console.log(sensorType)
         if (validSensorId) {
             const token = getCookie("token");
             let res = await addSensor(sensorId, deviceId as string, token as string, sensorType)
@@ -208,6 +225,35 @@ export default function Page() {
                 alert("Sensor añadido correctamente")
             } else {
                 alert("Error al añadir el sensor")
+            }
+            closeSensorActuadorDialog()
+        }
+    }
+
+    const handleActuadorId = (e: any) => {
+        if (e.target.value == "") {
+            setEmptyActuadorId(true)
+            setValidActuadorId(false)
+        } else {
+            setEmptyActuadorId(false)
+            let check = checkActuador(deviceActuadores, e.target.value)
+            if (check) {
+                setValidActuadorId(true)
+                setActuadorId(e.target.value)
+            } else {
+                setValidActuadorId(false)
+            }
+        }
+    }
+
+    const handleAddActuador = async () => {
+        if (validActuadorId) {
+            const token = getCookie("token");
+            let res = await addActuador(actuadorId, deviceId as string, token as string)
+            if (res) {
+                alert("Actuador añadido correctamente")
+            } else {
+                alert("Error al añadir el actuador")
             }
             closeSensorActuadorDialog()
         }
@@ -233,7 +279,7 @@ export default function Page() {
                                         <input onChange={handleSensorId} onBlur={handleSensorId} name="id" type="text" placeholder="Identificador" required
                                                     className={`transition easy-in-out duration-200
                                                     w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                                    shadow-sm rounded-lg${
+                                                    shadow-sm rounded-lg ${
                                                         emptySensorId
                                                             ? "border-[#d6d3d1]"
                                                             : validSensorId
@@ -256,12 +302,18 @@ export default function Page() {
                                     </div>
                                 :   <div className="w-full h-full flex flex-col">
                                         <label className="font-medium">Identificador</label>
-                                        <input name="id" type="text" placeholder="Identificador" required
+                                        <input onChange={handleActuadorId} onBlur={handleActuadorId} name="id" type="text" placeholder="Identificador" required
                                                     className={`transition easy-in-out duration-200
                                                     w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                                    shadow-sm rounded-lg`}/>
+                                                    shadow-sm rounded-lg ${
+                                                        emptyActuadorId
+                                                            ? "border-[#d6d3d1]"
+                                                            : validActuadorId
+                                                                ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                                                : "border-red-500 text-red-500 bg-gray-500/5"
+                                                    }`}/>
                                         <div className="w-full h-full flex flex-col pt-3">
-                                            <button className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                                            <button onClick={handleAddActuador} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
                                                 Añadir actuador
                                             </button>
                                         </div>
@@ -272,13 +324,208 @@ export default function Page() {
             </Dialog>
         )
     }
-    //--------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------
+    // ------------------------------ Modificar modo -----------------------------------
+    const handleActuadorMode = async (index: number) => {
+        const token = getCookie("token");
+        let actuador = deviceActuadores[index]
+        let res = await updateActuadorMode(actuador.id, !actuador.mode, token as string)
+        if (res) {
+            let newActuadores = await getActuadores(deviceId as string, token as string)
+            setDeviceActuadores(newActuadores)
+        } 
+    }
+    // ---------------------------------------------------------------------------------
+    // ------------------------------ Modificar Pin ------------------------------------
+    const [newActuadorPin, setNewActuadorPin] = useState(1)
+
+    const [IsOpenUpdateActuadorPinDialog, setIsOpenUpdateActuadorPinDialog] = useState(false)
+    const [actuadorIndex, setActuadorIndex] = useState(0)
+
+    const handleActuadorPin = async () => {
+        const token = getCookie("token");
+        let actuador = deviceActuadores[actuadorIndex]
+        let res = await updateActuadorPin(actuador.id, newActuadorPin, token as string)
+        if (res) {
+            let newActuadores = await getActuadores(deviceId as string, token as string)
+            setDeviceActuadores(newActuadores)
+            closeUpdateActuadorPinDialog()
+        }
+    }
+
+    const handleSelectNewActuadorPin = (e: any) => {
+        setNewActuadorPin(e.target.value)
+    }
+
+    const closeUpdateActuadorPinDialog = async () => {
+        setIsOpenUpdateActuadorPinDialog(false)
+        setNewActuadorPin(1)
+    }
+
+    const handleOpenUpdateActuadorPinDialogButton = (index: number) => {
+        setActuadorIndex(index)
+        setIsOpenUpdateActuadorPinDialog(true)
+    }
+
+    const updateActuadorPinDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateActuadorPinDialog} onClose={closeUpdateActuadorPinDialog}>
+                <DialogTitle className="w-full h-full border">Añade un nuevo pin</DialogTitle>
+                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                    <div className="w-full h-full">
+                        <label className="font-medium">Elige un pin</label>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                        <select className="w-full h-10" onChange={handleSelectNewActuadorPin}>
+                            {
+                                Array.from({length: 40}, (_, i) => i + 1).map((pin, index) => {
+                                    return (
+                                        <option key={index} value={pin}>{pin}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button onClick={handleActuadorPin} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <p>Actualizar pin</p>
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
+        )
+    }
+    // ---------------------------------------------------------------------------------
+    // ------------------------------ Area ---------------------------------------------
+    const [areas, setAreas] = useState<[Area]>([{id: 0, name: ""}])
+
+    const fetchAreas = async () => {
+        const token = getCookie("token")
+        let res = await getAreas(token as string)
+        setAreas(res)
+        setNewActuadorArea(res[0].id)
+    }
+
+    // ------------------------------ Modificar Area -----------------------------------
+    const [newActuadorArea, setNewActuadorArea] = useState(areas[0].id)
+    const [IsOpenUpdateActuadorAreaDialog, setIsOpenUpdateActuadorAreaDialog] = useState(false)
+
+    const handleActuadorArea = async () => {
+        const token = getCookie("token");
+        let actuador = deviceActuadores[actuadorIndex]
+        let res = await updateActuadorArea(actuador.id, newActuadorArea, token as string)
+        if (res) {
+            let newActuadores = await getActuadores(deviceId as string, token as string)
+            setDeviceActuadores(newActuadores)
+            closeUpdateActuadorAreaDialog()
+        }
+    }
+
+    const handleSelectNewActuadorArea = (e: any) => {
+        setNewActuadorArea(e.target.value)
+    }
+
+    const closeUpdateActuadorAreaDialog = async () => {
+        setIsOpenUpdateActuadorAreaDialog(false)
+        setNewActuadorArea(areas[0].id)
+    }
+
+    const handleOpenUpdateActuadorAreaDialogButton = (index: number) => {
+        setActuadorIndex(index)
+        setIsOpenUpdateActuadorAreaDialog(true)
+    }
+
+    const updateActuadorAreaDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateActuadorAreaDialog} onClose={closeUpdateActuadorAreaDialog}>
+                <DialogTitle className="w-full h-full border">Modifica la zona del actuador</DialogTitle>
+                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                    <div className="w-full h-full">
+                        <label className="font-medium">Elige una zona</label>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                        <select className="w-full h-10" onChange={handleSelectNewActuadorArea}>
+                            {
+                                areas.map((area, index) => {
+                                    return (
+                                        <option key={index} value={area.id}>{area.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button onClick={handleActuadorArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <p>Actualizar Zona</p>
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
+        )
+    }
+    // ----------------------------------------------------------------------------------------------------
+    // ------------------------------ Modificar area del sensor -------------------------------------------
+    const [newSensorArea, setNewSensorArea] = useState(areas[0].id)
+    const [IsOpenUpdateSensorAreaDialog, setIsOpenUpdateSensorAreaDialog] = useState(false)
+    const [sensorIndex, setSensorIndex] = useState(0)
+
+    const handleSensorArea = async () => {
+        const token = getCookie("token");
+        let sensor = deviceSensors[sensorIndex]
+        let res = await updateSensorArea(sensor.id, newSensorArea, token as string)
+        if (res) {
+            let newSensors = await getSensors(deviceId as string, token as string)
+            setDeviceSensors(newSensors)
+            closeUpdateSensorAreaDialog()
+        }
+    }
+
+    const handleSelectNewSensorArea = (e: any) => {
+        console.log(e.target.value)
+        setNewSensorArea(e.target.value)
+    }
+
+    const closeUpdateSensorAreaDialog = async () => {
+        setIsOpenUpdateSensorAreaDialog(false)
+        setNewSensorArea(areas[0].id)
+    }
+
+    const handleOpenUpdateSensorAreaDialogButton = (index: number) => {
+        setSensorIndex(index)
+        setIsOpenUpdateSensorAreaDialog(true)
+    }
+
+    const updateSensorAreaDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateSensorAreaDialog} onClose={closeUpdateSensorAreaDialog}>
+                <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
+                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                    <div className="w-full h-full">
+                        <label className="font-medium">Elige una zona</label>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                        <select className="w-full h-10" onChange={handleSelectNewSensorArea}>
+                            {
+                                areas.map((area, index) => {
+                                    return (
+                                        <option key={index} value={area.id}>{area.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button onClick={handleSensorArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <p>Actualizar Zona</p>
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
+        )
+    }
 
     return (
         <main className="h-full w-full">
             <div className="w-full h-full p-4 flex flex-col gap-3">
                 {deleteDeviceDialog()}
                 {SensorActuadorDialog()}
+                {updateActuadorPinDialog()}
+                {updateActuadorAreaDialog()}
+                {updateSensorAreaDialog()}
                 <div className="w-full h-12 flex flex-row flex-grow gap-3">
                     <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
@@ -336,8 +583,64 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-60 border shadow-md rounded-md" >
-                            
+                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md" >
+                            <div className="p-3 flex justify-center items-center">
+                                <p className="text-slate-400">Actuadores</p>
+                            </div>
+                            {
+                                deviceActuadores.length > 0
+                                    ?   <div className="w-full h-full overflow-y-auto rounded-md">
+                                            {
+                                                deviceActuadores.map((actuador, index) => {
+                                                    return (
+                                                        <div key={index} className={`w-full h-12 flex flex-row gap-3 items-center justify-between ${
+                                                            index % 2 == 0
+                                                                ? "bg-blue-100"
+                                                                : "bg-gray-50"
+                                                        }`}>
+                                                            <div className="px-3 w-28 h-full flex flex-row justify-center items-center">
+                                                                <FaFaucetDrip size={20} className="w-9 text-indigo-600"></FaFaucetDrip>
+                                                                {actuador.id}
+                                                            </div>
+                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
+                                                                <button onClick={() => handleOpenUpdateActuadorAreaDialogButton(index)} className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
+                                                                </button>
+                                                                {
+                                                                    actuador.area == null
+                                                                        ? "Descolocado"
+                                                                        : areas.map((area, index) => {
+                                                                            if (area.id == actuador.area) {
+                                                                                return area.name
+                                                                            }
+                                                                        })
+                                                                }
+                                                            </div>
+                                                            <div className="px-3 w-52 h-full flex flex-row gap-2 items-center">
+                                                                <button onClick={() => handleOpenUpdateActuadorPinDialogButton(index)} 
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
+                                                                </button>
+                                                                {
+                                                                    actuador.device_pin == null
+                                                                        ? "Desconectado"
+                                                                        : actuador.device_pin
+                                                                }
+                                                            </div>
+                                                            <button onClick={() => handleActuadorMode(index)} className="px-3 w-1/5 h-2/5 flex items-center">
+                                                                {
+                                                                    actuador.mode == 1
+                                                                        ? <FaRobot className="w-full h-full text-indigo-600"></FaRobot>
+                                                                        : <FaRobot className="w-full h-full text-indigo-300"></FaRobot>
+                                                                }
+                                                            </button>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    :   <p className="flex w-full h-full justify-center items-center p-3">No hay actuadores disponibles</p>
+                            }
                         </div>
                         <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md">
                             <div className="p-3 flex justify-center items-center">
@@ -345,16 +648,16 @@ export default function Page() {
                             </div>
                             {
                                 deviceSensors.length > 0
-                                    ?   <div className="w-full h-full overflow-y-auto overflow-x-auto rounded-md">
+                                    ?   <div className="w-full h-full overflow-y-auto rounded-md">
                                             {
                                                 deviceSensors.map((sensor, index) => {
                                                     return (
                                                         <div key={index} className={`w-full h-12 flex flex-row gap-3 items-center justify-between ${
                                                             index % 2 == 0
                                                                 ? "bg-blue-100"
-                                                                : ""
+                                                                : "bg-gray-50"
                                                         }`}>
-                                                            <p className="px-3 w-full h-full border-r border-indigo-300 flex justify-center items-center">
+                                                            <p className="px-3 w-full h-full flex justify-center items-center">
                                                                 {
                                                                     sensor.type == "DHT"
                                                                         ? <WiHumidity size={30} className="w-12 px-2 text-indigo-600"></WiHumidity>
@@ -366,20 +669,30 @@ export default function Page() {
                                                                 }
                                                                 {sensor.id}
                                                             </p>
-                                                            <p className="px-3 w-full h-full border-r border-indigo-300 flex justify-center items-center">
-                                                                <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
-                                                            {
-                                                                sensor.area == null
-                                                                    ? "Sin ubicacion"
-                                                                    : sensor.area
-                                                            }</p>
-                                                            <p className="px-3 w-full h-full flex justify-center items-center">
-                                                                <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
-                                                            {
-                                                                sensor.device_pin == null
-                                                                    ? "Sin conectar"
-                                                                    : sensor.device_pin
-                                                            }</p>
+                                                            <div className="px-3 w-full h-full flex flex-row gap-2 justify-center items-center">
+                                                                <button onClick={() => handleOpenUpdateSensorAreaDialogButton(index)} className="h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
+                                                                </button>
+                                                                {
+                                                                    sensor.area == null
+                                                                        ? "Descolocado"
+                                                                        : areas.map((area, index) => {
+                                                                            if (area.id == sensor.area) {
+                                                                                return area.name
+                                                                            }
+                                                                        })
+                                                                }
+                                                            </div>
+                                                            <div className="px-3 w-full h-full flex flex-row gap-2 justify-center items-center">
+                                                                <button className="w-2/3 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
+                                                                </button>
+                                                                {
+                                                                    sensor.device_pin == null
+                                                                        ? "Desconectado"
+                                                                        : sensor.device_pin
+                                                                }
+                                                            </div>
                                                         </div>
                                                     )
                                                 })

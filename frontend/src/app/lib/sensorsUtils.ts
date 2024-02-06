@@ -9,7 +9,7 @@ export async function getSensors(device: string, token: string) {
     if (request.status === 200) {
         return await request.json()
     } else {
-        return undefined
+        return []
     }
 }
 
@@ -27,6 +27,23 @@ export async function addSensor(id: string, device: string, token: string, type:
         body: JSON.stringify({id: id, type: type})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+}
+
+export async function updateSensorArea(id: string, area: number, token: string) {
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id: id, area: area})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/area", options)
     if (request.status === 200) {
         return true
     } else {

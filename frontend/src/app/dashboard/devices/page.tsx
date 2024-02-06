@@ -7,6 +7,8 @@ import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { Dialog, DialogTitle } from "@mui/material"
+import { MdAddLocationAlt } from "react-icons/md";
+import { addArea, getAreas } from "../../lib/areasUtils"
 
 export default function Page() {
     const [devices, setDevices] = useState([])
@@ -28,6 +30,7 @@ export default function Page() {
                 setShowDevicesInfo(devices.map(() => true))
             }
         }
+        fetchAreas(token as string)
         fetchDevices(token as string)
     }, [])
 
@@ -359,22 +362,140 @@ export default function Page() {
             alert("El dispositivo no está conectado")
         }
     }
+    //----------------------------------------------------------------------------------------------
+    // ----------------------------------- Boton para añadir un area -------------------------------
+    const [IsOpenAddAreaDialog, setIsOpenAddAreaDialog] = useState(false)
+    const [areas, setAreas] = useState([])
+    const [areaId, setAreaId] = useState("")
+    const [validAreaId, setValidAreaId] = useState(false)
+    const [emptyAreaId, setEmptyAreaId] = useState(true)
+    const [areaName, setAreaName] = useState("")
+    const [validAreaName, setValidAreaName] = useState(false)
+    const [emptyAreaName, setEmptyAreaName] = useState(true)
+
+    const fetchAreas = async (token: string) => {
+        const areas = await getAreas(token)
+        setAreas(areas)
+    }
+
+    const openAddAreaDialogButton = () => {
+        setIsOpenAddAreaDialog(true)
+    }
+    const closeAddAreaDialog = () => {
+        setIsOpenAddAreaDialog(false)
+    }
+
+    const handleAreaId = (e: { target: { value: string } }) => {
+        if (e.target.value == ""){
+            setEmptyAreaId(true)
+            setValidAreaId(false)
+        } else {
+            setEmptyAreaId(false)
+            // Comprobar que el id no existe en las areas
+            let exists = areas.find((area: any) => area.id == e.target.value)
+            if (exists) {
+                setValidAreaId(false)
+            } else {
+                setValidAreaId(true)
+                setAreaId(e.target.value)
+            }
+        }
+    }
+
+    const handleAreaName = (e: { target: { value: string } }) => {
+        if (e.target.value == ""){
+            setEmptyAreaName(true)
+            setValidAreaName(false)
+        } else {
+            setEmptyAreaName(false)
+            let exists = areas.find((area: any) => area.name == e.target.value)
+            if (exists || e.target.value.length > 45) {
+                setValidAreaName(false)
+            } else {
+                setValidAreaName(true)
+                setAreaName(e.target.value)
+            }
+        }
+    }
+
+    const handleAddAreaButton = async () => {
+        if (validAreaId && validAreaName) {
+            // Añadir el area
+            const token = getCookie("token")
+            let res = await addArea(areaId, areaName, token as string)
+            if (res) {
+                alert("Area añadida correctamente")
+            } else {
+                alert("No se ha podido añadir el area")
+            }
+            closeAddAreaDialog()
+        }
+    }
+
+    const AddAreaDialog = () => {
+        return (
+            <Dialog open={IsOpenAddAreaDialog} onClose={closeAddAreaDialog}>
+                <DialogTitle className="w-full h-full border-b">Añade la información de la nueva zona</DialogTitle>
+                <div className={`p-5 w-full h-full col-span-2 flex flex-col gap-5 justify-center`}>
+                    <div className="w-full h-full flex flex-col">
+                        <label className="font-medium">Identificador</label>
+                        <input name="id" type="text" onChange={handleAreaId} onBlur={handleAreaId} placeholder="Identificador" required
+                                    className={`transition easy-in-out duration-200
+                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                    shadow-sm rounded-lg ${
+                                        emptyAreaId
+                                        ? "border-[#d6d3d1]"
+                                        : validAreaId
+                                            ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                            : "border-red-500 text-red-500 bg-gray-500/5"
+                        }`}/>
+                    </div>
+                    <div className="w-full h-full flex flex-col">
+                        <label>Nombre</label>
+                        <input name="id" type="text" onChange={handleAreaName} onBlur={handleAreaName} placeholder="Nombre" required
+                                className={`transition easy-in-out duration-200
+                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                shadow-sm rounded-lg ${
+                                    emptyAreaName
+                                    ? "border-[#d6d3d1]"
+                                    : validAreaName
+                                        ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                        : "border-red-500 text-red-500 bg-gray-500/5"
+                        }`}/>
+                    </div>
+                    <button onClick={handleAddAreaButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                        Añadir Zona
+                    </button>
+                </div>
+            </Dialog>
+        )
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     return (
         <main className="">
             {AddDeviceDialog()}
             {UpdatePositionDialog()}
             {UpdateIpDialog()}
+            {AddAreaDialog()}
             <div className="flex flex-row justify-between py-4">
                 <button onClick={handleAddDeviceButton} className="w-1/3 h-12 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
-                <button
-                    onClick={updateDevicesButton}
-                    className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}
-                    >
-                    <ArrowPathIcon
-                        className={`w-6`} 
-                        style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
-                </button>
+                <div className="flex gap-3 justify-end flex-grow">
+                    <button 
+                        onClick={openAddAreaDialogButton}
+                        className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                        <MdAddLocationAlt size={24} className="w-6"/>
+                    </button>
+                    <button
+                        onClick={updateDevicesButton}
+                        className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}
+                        >
+                        <ArrowPathIcon
+                            className={`w-6`} 
+                            style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
+                    </button>
+                </div>
             </div>
             <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
             {
