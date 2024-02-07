@@ -1,4 +1,5 @@
 import deviceModel from "../models/deviceModel.js";
+import areaModel from "../../areas/models/areasModel.js";
 import { get_nif_by_token } from "../../users/controllers/userController.js";
 import ping from "ping"
 
@@ -299,4 +300,79 @@ export const getDevice = async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
+}
+
+/*
+    @description: Actualiza el area de un dispositivo
+    @params: {
+        id: integer,
+        area: integer
+    }
+*/
+
+export const updateArea = async (req, res) => {
+    //------------------------------------------ Validar token --------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------------------------ Comprobar errores ----------------------------------------------------
+    if (req.body.id === undefined) {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (req.body.area === undefined) {
+        res.status(400).send("Missing area")
+        return
+    }
+
+    if (req.body.area < 0) {
+        res.status(400).send("Invalid area")
+        return
+    }
+
+    // Comprobar que el dispositivo existe y pertenece al usuario
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.body.id, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+
+    // Comprobar que el area existe
+    try {
+        let area = await areaModel.findOne({ where: { id: req.body.area, user: nif } })
+        if (area === null) {
+            res.status(404).send("Area not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------------------------ Actualizar area -----------------------------------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.body.id } })
+        device.area = req.body.area
+        device.save()
+        res.status(200).send("Area updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+
 }
