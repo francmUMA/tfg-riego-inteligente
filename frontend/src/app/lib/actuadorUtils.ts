@@ -1,3 +1,11 @@
+export interface Actuador {
+    id: string,
+    mode: number,
+    device: number,
+    device_pin: number,
+    area: number
+
+}
 export function checkActuador(actuadores: any, id: string) {
     return !(actuadores.find((actuador: any) => actuador.id == id))
 }
@@ -79,6 +87,23 @@ export async function updateActuadorPin(id: string, pin: number, token: string) 
         body: JSON.stringify({id: id, device_pin: pin})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/pin", options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+}
+
+export async function deleteActuador(id: string, device: string, token: string) {
+    let options = {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id: id})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/" + device, options)
     if (request.status === 200) {
         return true
     } else {

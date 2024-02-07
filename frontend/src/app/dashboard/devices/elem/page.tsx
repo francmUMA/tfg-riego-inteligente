@@ -1,6 +1,6 @@
 'use client'
 import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
-import { addSensor, checkSensorId, getSensors, updateSensorArea } from "@/src/app/lib/sensorsUtils";
+import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorArea, updateSensorPin } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 
@@ -16,8 +16,10 @@ import { FaTemperatureQuarter } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
 import { FaFaucetDrip } from "react-icons/fa6";
 import { FaRobot } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { IoIosCellular } from "react-icons/io";
 
-import { addActuador, checkActuador, getActuadores, updateActuadorArea, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
+import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorArea, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
 
 
@@ -143,7 +145,7 @@ export default function Page() {
     }
     //---------------------------------------------------------------------------
     // ------------------------------ Sensores -----------------------------------
-    const [deviceSensors, setDeviceSensors] = useState([])
+    const [deviceSensors, setDeviceSensors] = useState<[Sensor]>([{id: "", type: "", area: 0, device_pin: 0, device: 0}])
 
     const fetchDeviceSensors = async (id: string, token: string) => {
         let res = await getSensors(id, token)
@@ -151,7 +153,7 @@ export default function Page() {
     }
     //--------------------------------------------------------------------------------------------------
     // ------------------------------ Actuadores -------------------------------------------
-    const [deviceActuadores, setDeviceActuadores] = useState([])
+    const [deviceActuadores, setDeviceActuadores] = useState<[Actuador]>([{id: "", area: 0, device_pin: 0, device: 0, mode: 0}])
 
     const fetchDeviceActuadores = async (id: string, token: string) => {
         let res = await getActuadores(id, token)
@@ -329,7 +331,7 @@ export default function Page() {
     const handleActuadorMode = async (index: number) => {
         const token = getCookie("token");
         let actuador = deviceActuadores[index]
-        let res = await updateActuadorMode(actuador.id, !actuador.mode, token as string)
+        let res = await updateActuadorMode(actuador.id, actuador.mode ? 0 : 1, token as string)
         if (res) {
             let newActuadores = await getActuadores(deviceId as string, token as string)
             setDeviceActuadores(newActuadores)
@@ -518,6 +520,123 @@ export default function Page() {
         )
     }
 
+    // ----------------------------------------------------------------------------------------------------
+    // ------------------------------ Modificar pin del sensor --------------------------------------------
+    const [newSensorPin, setNewSensorPin] = useState(1)
+
+    const [IsOpenUpdateSensorPinDialog, setIsOpenUpdateSensorPinDialog] = useState(false)
+
+    const handleSensorPin = async () => {
+        const token = getCookie("token");
+        let sensor = deviceSensors[sensorIndex]
+        let res = await updateSensorPin(sensor.id, newSensorPin, token as string)
+        if (res) {
+            let newSensors = await getSensors(deviceId as string, token as string)
+            setDeviceSensors(newSensors)
+            closeUpdateSensorPinDialog()
+        }
+    }
+
+    const handleSelectNewSensorPin = (e: any) => {
+        setNewSensorPin(e.target.value)
+    }
+
+    const closeUpdateSensorPinDialog = async () => {
+        setIsOpenUpdateSensorPinDialog(false)
+        setNewSensorPin(1)
+    }
+
+    const handleOpenUpdateSensorPinDialogButton = (index: number) => {
+        setSensorIndex(index)
+        setIsOpenUpdateSensorPinDialog(true)
+    }
+
+    const updateSensorPinDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateSensorPinDialog} onClose={closeUpdateSensorPinDialog}>
+                <DialogTitle className="w-full h-full border">Añade un nuevo pin</DialogTitle>
+                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                    <div className="w-full h-full">
+                        <label className="font-medium">Elige un pin</label>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                        <select className="w-full h-10" onChange={handleSelectNewSensorPin}>
+                            {
+                                Array.from({length: 40}, (_, i) => i + 1).map((pin, index) => {
+                                    return (
+                                        <option key={index} value={pin}>{pin}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button onClick={handleSensorPin} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <p>Actualizar pin</p>
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
+        )
+    }
+    // ----------------------------------------------------------------------------------------------------
+    // ------------------------------ Eliminar un elemento ------------------------------------------------
+    const [IsOpenDeleteElemDialog, setIsOpenDeleteElemDialog] = useState(false)
+
+    const closeDeleteElemDialog = () => {
+        setIsOpenDeleteElemDialog(false)
+        setSensorIndex(0)
+        setActuadorIndex(0)
+    }
+
+    const confirmDeleteElem = async () => {
+        const token = getCookie("token")
+        if (sensorActuador) {
+            let res = await deleteSensor(deviceSensors[sensorIndex].id, deviceId as string, token as string)
+            if (res) {
+                let newSensors = await getSensors(deviceId as string, token as string)
+                setDeviceSensors(newSensors)
+            }
+        } else {
+            let res = await deleteActuador(deviceActuadores[actuadorIndex].id, deviceId as string, token as string)
+            if (res) {
+                let newActuadores = await getActuadores(deviceId as string, token as string)
+                setDeviceActuadores(newActuadores)
+            }
+        }
+        closeDeleteElemDialog()
+    }
+
+    const handleOpenDeleteElemDialogButton = (index: number, sensor: boolean) => {
+        if (sensor) {
+            setSensorActuador(true)
+            setSensorIndex(index)
+        } else {
+            setSensorActuador(false)
+            setActuadorIndex(index)
+        }
+        setIsOpenDeleteElemDialog(true)
+    }
+
+    const DeleteElemDialog = () => {
+        return (
+            <Dialog open={IsOpenDeleteElemDialog} onClose={closeDeleteElemDialog}>
+                <DialogTitle className="w-full h-full">¿Seguro que deseas eliminar el {sensorActuador 
+                    ? "sensor " + deviceSensors[sensorIndex].id
+                    : "actuador " + deviceActuadores[actuadorIndex].id
+                    }?</DialogTitle>
+                <div className="flex flex-row p-4 gap-4">
+                    <button onClick={closeDeleteElemDialog} className="w-1/2 h-12 text-white bg-indigo-600 rounded-md hover:bg-indigo-500 duration-150">
+                        <p>Cancelar</p>
+                    </button>
+                    <button onClick={confirmDeleteElem} className="w-1/2 h-12 text-white rounded-md bg-red-600 hover:bg-red-500 duration-150">
+                        <p>Eliminar</p>
+                    </button>
+
+                </div>
+            </Dialog>
+        )
+    }
+    // ----------------------------------------------------------------------------------------------------
+
     return (
         <main className="h-full w-full">
             <div className="w-full h-full p-4 flex flex-col gap-3">
@@ -526,6 +645,8 @@ export default function Page() {
                 {updateActuadorPinDialog()}
                 {updateActuadorAreaDialog()}
                 {updateSensorAreaDialog()}
+                {updateSensorPinDialog()}
+                {DeleteElemDialog()}
                 <div className="w-full h-12 flex flex-row flex-grow gap-3">
                     <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
@@ -552,7 +673,7 @@ export default function Page() {
                         </button>
                     </div>
                 </div>
-                <div className="w-full h-full flex flex-col gap-3">
+                <div className="w-full h-full flex flex-col gap-3 overflow-auto">
                     <div className="w-full h-16 flex flex-row gap-3 items-center justify-center">
                         <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <WifiIcon className="w-8 text-indigo-600"></WifiIcon>
@@ -578,12 +699,31 @@ export default function Page() {
                             <GlobeAltIcon className="w-8 text-indigo-600"></GlobeAltIcon>
                             <div className="flex flex-col justify-center">
                                 <p className="text-sm text-slate-400">Localizacion</p>
-                                <p>(En obras)</p>
+                                <p>
+                                    { device.area == null
+                                        ? "Desconocido"
+                                        : areas.map((area) => {
+                                            if (area.id == device.area) {
+                                                return area.name
+                                            }
+                                        })
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                            <IoIosCellular size={26} className="w-9 text-indigo-600"></IoIosCellular>
+                            <div className="flex flex-col justify-center">
+                                <p className="text-sm text-slate-400">Elementos</p>
+                                <p>
+                                    { deviceSensors.length + deviceActuadores.length
+                                    }
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md" >
+                    <div className="w-full h-full flex flex-row gap-3 items-center justify-center overflow-auto">
+                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md overflow-auto" >
                             <div className="p-3 flex justify-center items-center">
                                 <p className="text-slate-400">Actuadores</p>
                             </div>
@@ -609,14 +749,14 @@ export default function Page() {
                                                                 {
                                                                     actuador.area == null
                                                                         ? "Descolocado"
-                                                                        : areas.map((area, index) => {
+                                                                        : areas.map((area) => {
                                                                             if (area.id == actuador.area) {
                                                                                 return area.name
                                                                             }
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-52 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 w-44 h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorPinDialogButton(index)} 
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
@@ -627,13 +767,18 @@ export default function Page() {
                                                                         : actuador.device_pin
                                                                 }
                                                             </div>
-                                                            <button onClick={() => handleActuadorMode(index)} className="px-3 w-1/5 h-2/5 flex items-center">
+                                                            <button onClick={() => handleActuadorMode(index)} className="w-16 h-5 flex items-center">
                                                                 {
                                                                     actuador.mode == 1
                                                                         ? <FaRobot className="w-full h-full text-indigo-600"></FaRobot>
                                                                         : <FaRobot className="w-full h-full text-indigo-300"></FaRobot>
                                                                 }
                                                             </button>
+                                                            <div className="px-2 w-12 h-2/3 flex justify-center items-center">
+                                                                <button onClick={() => handleOpenDeleteElemDialogButton(index, false)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     )
                                                 })
@@ -642,7 +787,7 @@ export default function Page() {
                                     :   <p className="flex w-full h-full justify-center items-center p-3">No hay actuadores disponibles</p>
                             }
                         </div>
-                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md">
+                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md overflow-auto">
                             <div className="p-3 flex justify-center items-center">
                                 <p className="text-slate-400">Sensores</p>
                             </div>
@@ -657,19 +802,19 @@ export default function Page() {
                                                                 ? "bg-blue-100"
                                                                 : "bg-gray-50"
                                                         }`}>
-                                                            <p className="px-3 w-full h-full flex justify-center items-center">
+                                                            <p className="px-3 w-28 h-full flex flex-row justify-center items-center">
                                                                 {
                                                                     sensor.type == "DHT"
-                                                                        ? <WiHumidity size={30} className="w-12 px-2 text-indigo-600"></WiHumidity>
+                                                                        ? <WiHumidity size={24} className="w-9 text-indigo-600"></WiHumidity>
                                                                         : sensor.type == "TMP"
-                                                                            ? <FaTemperatureQuarter size={24} className="w-10 px-2 text-indigo-600"></FaTemperatureQuarter>
+                                                                            ? <FaTemperatureQuarter size={22} className="w-9 text-indigo-600"></FaTemperatureQuarter>
                                                                             : sensor.type == "CAU"
-                                                                                ? <IoWaterOutline size={24} className="w-10 px-2 text-indigo-600"></IoWaterOutline>
+                                                                                ? <IoWaterOutline size={22} className="w-9 text-indigo-600"></IoWaterOutline>
                                                                                 : <p>?</p>
                                                                 }
                                                                 {sensor.id}
                                                             </p>
-                                                            <div className="px-3 w-full h-full flex flex-row gap-2 justify-center items-center">
+                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateSensorAreaDialogButton(index)} className="h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
                                                                 </button>
@@ -683,8 +828,10 @@ export default function Page() {
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-full h-full flex flex-row gap-2 justify-center items-center">
-                                                                <button className="w-2/3 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                            <div className="px-3 w-44 h-full flex flex-row gap-2 items-center">
+                                                                <button
+                                                                    onClick={() => handleOpenUpdateSensorPinDialogButton(index)}
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
                                                                 </button>
                                                                 {
@@ -692,6 +839,11 @@ export default function Page() {
                                                                         ? "Desconectado"
                                                                         : sensor.device_pin
                                                                 }
+                                                            </div>
+                                                            <div className="px-2 w-12 h-2/3 flex justify-center items-center">
+                                                                <button onClick={() => handleOpenDeleteElemDialogButton(index, true)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     )
