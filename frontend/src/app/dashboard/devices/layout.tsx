@@ -4,8 +4,8 @@ export default function Layout(
   {
     return (
         
-        <div className="flex h-full flex-col md:flex-row md:overflow-hidden">
-          <div className="flex-grow px-4 md:overflow-y-auto">
+        <div className="w-full h-full">
+          <div className="w-full h-full">
             {children}
           </div>
         </div>

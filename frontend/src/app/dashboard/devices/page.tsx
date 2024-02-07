@@ -2,13 +2,13 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { getDevices, checkIP, createDevice, deleteDevice, updateDevicePosition, updateDeviceIp, testDeviceConnection } from "../../lib/devicesUtils"
+import { getDevices, checkIP, createDevice, deleteDevice, updateDevicePosition, updateDeviceIp, testDeviceConnection, updateDeviceArea } from "../../lib/devicesUtils"
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { Dialog, DialogTitle } from "@mui/material"
 import { MdAddLocationAlt } from "react-icons/md";
-import { addArea, getAreas } from "../../lib/areasUtils"
+import { Area, addArea, getAreas } from "../../lib/areasUtils"
 
 export default function Page() {
     const [devices, setDevices] = useState([])
@@ -66,18 +66,12 @@ export default function Page() {
                             {device.available == true ? " Connected" : " Not Connected"}
                         </p>
                     </div>
-                    <div className="w-full h-full px-2 grid grid-cols-4 grid-rows-2 flex items-center">
+                    <div className="w-full h-full p-2 grid grid-cols-4 grid-rows-2 flex items-center">
                         <div className="flex items-center"><MapPinIcon className="w-6" /></div>
                         <div className="col-span-3 flex items-center"> {
-                            device.Latitud === null
-                                ? "Sin latitud"
-                                : device.Latitud
-                        }</div>
-                        <div></div>
-                        <div className="col-span-3 flex items-center"> {
-                            device.Longitud === null
-                                ? "Sin longitud"
-                                : device.Longitud
+                            device.area === null
+                                ? "Descolocado"
+                                : areas.find((area: Area) => device.area == area.id)?.name
                         }</div>
                     </div>
                 </div>
@@ -169,7 +163,7 @@ export default function Page() {
     const manageButton = (id: string) => {
         return (
             <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center">
-                <button onClick={() => openUpdatePositionDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
+                <button onClick={() => openUpdateAreaDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
                 <button onClick={() => openUpdateIpDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
                 <button onClick={() => testConnectionButton(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>
                 <button className="w-full h-full bg-red-200 border border-red-300 text-red-600 hover:bg-red-300 rounded-md"
@@ -202,69 +196,6 @@ export default function Page() {
             alert("No se ha podido eliminar el dispositivo")
         }
     }
-
-    // ------------------- Update Device Position -------------------
-    const [latitud, setLatitud] = useState(0.0)
-    const [longitud, setLongitud] = useState(0.0)
-    const [currentId, setCurrentId] = useState("")
-    const [IsOpenUpdatePositionDialog, setIsOpenUpdatePositionDialog] = useState(false)
-
-    const openUpdatePositionDialog = (id: string) => {
-        setIsOpenUpdatePositionDialog(true)
-        setCurrentId(id)
-    }
-
-    const closeUpdatePositionDialog = () => {
-        setIsOpenUpdatePositionDialog(false)
-    }
-
-    const handleLatitud = (e: { target: { value: string } }) => {
-        setLatitud(parseFloat(e.target.value))
-    }
-
-    const handleLongitud = (e: { target: { value: string } }) => {
-        setLongitud(parseFloat(e.target.value))
-    }
-
-    const UpdatePositionDialog = () => {
-        return (
-            <Dialog open={IsOpenUpdatePositionDialog} onClose={closeUpdatePositionDialog}>
-                <DialogTitle className="w-full h-full border-b">Añade la información del dispositivo</DialogTitle>
-                <div className={`p-5 w-full h-full col-span-2 flex justify-center ${
-                    IsOpenUpdatePositionDialog ? "flex flex-col gap-5 justify-center items-center" : "hidden"
-                    }`}>
-                    <div className="w-full h-full flex flex-col">
-                        <label className="font-medium">Latitud</label>
-                        <input name="id" type="text" onChange={handleLatitud} placeholder="Latitud" required
-                                    className={`transition easy-in-out duration-200
-                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                    shadow-sm rounded-lg`}/>
-                    </div>
-                    <div className="w-full h-full flex flex-col">
-                        <label>Longitud</label>
-                        <input name="id" type="text" onChange={handleLongitud} placeholder="Longitud" required
-                                className={`transition easy-in-out duration-200
-                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                shadow-sm rounded-lg`}/>
-                    </div>
-                    <button onClick={() => updatePositionButton(currentId, latitud, longitud)} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Actualizar Dispositivo</button>
-                </div>
-            </Dialog>
-        )
-    }
-
-    const updatePositionButton = async (id: string, lat: number, lon: number) => {
-        const token = getCookie("token")
-        let res = await updateDevicePosition(id, lat, lon, token as string)
-        if (res) {
-            alert("Localización actualizada correctamente")
-        } else {
-            alert("No se ha podido actualizar el dispositivo")
-        }
-        closeUpdatePositionDialog()
-    }
-
-    // ---------------------------------------------------------------------------------------------
     // ----------------------------- Update IP -----------------------------------------------------
     const [newIp, setNewIp] = useState("")
     const [validNewIp, setValidNewIp] = useState(false)
@@ -365,7 +296,7 @@ export default function Page() {
     //----------------------------------------------------------------------------------------------
     // ----------------------------------- Boton para añadir un area -------------------------------
     const [IsOpenAddAreaDialog, setIsOpenAddAreaDialog] = useState(false)
-    const [areas, setAreas] = useState([])
+    const [areas, setAreas] = useState<[Area]>([{id: 0, name: ""}])
     const [areaId, setAreaId] = useState("")
     const [validAreaId, setValidAreaId] = useState(false)
     const [emptyAreaId, setEmptyAreaId] = useState(true)
@@ -470,13 +401,74 @@ export default function Page() {
             </Dialog>
         )
     }
+    // ---------------------------------------------------------------------------------------------
+    // ------------------- Update Device Position -------------------
+    const [newArea, setNewArea] = useState(areas[0].id)
+    const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
+    const [currentId, setCurrentId] = useState("")
+
+    const handleUpdateArea = async () => {
+        const token = getCookie("token");
+        let res = await updateDeviceArea(currentId, newArea, token as string)
+        if (res) {
+            alert("Zona actualizada correctamente")
+            let newDevices = await getDevices(token as string)
+            setDevices(newDevices)
+            closeUpdateAreaDialog()
+        } else {
+            alert("No se ha podido actualizar la zona")
+        }
+    }
+
+    const handleSelectNewArea = (e: any) => {
+        setNewArea(e.target.value)
+    }
+
+    const closeUpdateAreaDialog = async () => {
+        setIsOpenUpdateAreaDialog(false)
+        setNewArea(areas[0].id)
+    }
+
+    const openUpdateAreaDialog = (index: string) => {
+        setCurrentId(index)
+        setIsOpenUpdateAreaDialog(true)
+    }
+
+    const UpdateDeviceAreaDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateAreaDialog} onClose={closeUpdateAreaDialog}>
+                <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
+                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                    <div className="w-full h-full">
+                        <label className="font-medium">Elige una zona</label>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                        <select className="w-full h-10" onChange={handleSelectNewArea}>
+                            {
+                                areas.map((area, index) => {
+                                    return (
+                                        <option key={index} value={area.id}>{area.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button onClick={handleUpdateArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <p>Actualizar Zona</p>
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
+        )
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     // ---------------------------------------------------------------------------------------------
 
     return (
         <main className="">
             {AddDeviceDialog()}
-            {UpdatePositionDialog()}
+            {UpdateDeviceAreaDialog()}
             {UpdateIpDialog()}
             {AddAreaDialog()}
             <div className="flex flex-row justify-between py-4">

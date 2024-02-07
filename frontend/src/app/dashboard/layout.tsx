@@ -6,11 +6,11 @@ export default function Layout(
 {
   return (
       
-      <div className="flex bg-white h-screen flex-col md:flex-row md_overflow-hidden">
+      <div className="flex bg-white h-screen flex-col md:flex-row">
         <div className="w-full flex-none md:w-64">
           <SideNav />
         </div>
-        <div className="h-full w-full">
+        <div className="h-full w-full overflow-y-auto p-1">
           {children}
         </div>
       </div>

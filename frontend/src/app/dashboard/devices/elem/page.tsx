@@ -1,5 +1,5 @@
 'use client'
-import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
+import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo, updateDeviceArea } from "@/src/app/lib/devicesUtils";
 import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorArea, updateSensorPin } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
@@ -636,10 +636,68 @@ export default function Page() {
         )
     }
     // ----------------------------------------------------------------------------------------------------
+    // ------------------- Update Device Position -------------------
+    const [newArea, setNewArea] = useState(areas[0].id)
+    const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
+
+    const handleUpdateArea = async () => {
+        const token = getCookie("token");
+        let res = await updateDeviceArea(deviceId as string, newArea, token as string)
+        if (res) {
+            alert("Zona actualizada correctamente")
+            let newInfo = await getDeviceInfo(deviceId as string, token as string)
+            setDevice(newInfo)
+            closeUpdateAreaDialog()
+        } else {
+            alert("No se ha podido actualizar la zona")
+        }
+    }
+
+    const handleSelectNewArea = (e: any) => {
+        setNewArea(e.target.value)
+    }
+
+    const closeUpdateAreaDialog = async () => {
+        setIsOpenUpdateAreaDialog(false)
+        setNewArea(areas[0].id)
+    }
+
+    const openUpdateAreaDialog = () => {
+        setIsOpenUpdateAreaDialog(true)
+    }
+
+    const UpdateDeviceAreaDialog = () => {
+        return (
+            <Dialog open={IsOpenUpdateAreaDialog} onClose={closeUpdateAreaDialog}>
+                <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
+                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                    <div className="w-full h-full">
+                        <label className="font-medium">Elige una zona</label>
+                    </div>
+                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                        <select className="w-full h-10" onChange={handleSelectNewArea}>
+                            {
+                                areas.map((area, index) => {
+                                    return (
+                                        <option key={index} value={area.id}>{area.name}</option>
+                                    )
+                                })
+                            }
+                        </select>
+                        <button onClick={handleUpdateArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <p>Actualizar Zona</p>
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
+        )
+    }
+
+    // ---------------------------------------------------------------------------------------------
 
     return (
         <main className="h-full w-full">
-            <div className="w-full h-full p-4 flex flex-col gap-3">
+            <div className="w-full h-full p-3 flex flex-col gap-3">
                 {deleteDeviceDialog()}
                 {SensorActuadorDialog()}
                 {updateActuadorPinDialog()}
@@ -647,14 +705,15 @@ export default function Page() {
                 {updateSensorAreaDialog()}
                 {updateSensorPinDialog()}
                 {DeleteElemDialog()}
-                <div className="w-full h-12 flex flex-row flex-grow gap-3">
+                {UpdateDeviceAreaDialog()}
+                <div id="botones" className="w-full h-12 flex flex-row gap-3">
                     <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
                             router.push("/dashboard/devices")
                         }} className={`w-6 text-indigo-600`}/>
                     </button>
                     <div className="flex gap-3 justify-end flex-grow">
-                        <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
+                        <button onClick={openUpdateAreaDialog} className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
                             <MapPinIcon className={`w-6 text-indigo-600`}/>
                         </button>
                         <button onClick={addSensorActuador}  className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
@@ -673,8 +732,8 @@ export default function Page() {
                         </button>
                     </div>
                 </div>
-                <div className="w-full h-full flex flex-col gap-3 overflow-auto">
-                    <div className="w-full h-16 flex flex-row gap-3 items-center justify-center">
+                <div id="datos" className="w-full h-full flex flex-col gap-3">
+                    <div id="info-general" className="w-full h-full min-h-16 flex flex-row gap-3 items-center md:justify-center overflow-x-scroll">
                         <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <WifiIcon className="w-8 text-indigo-600"></WifiIcon>
                             <div className="flex flex-col justify-center">
@@ -722,27 +781,27 @@ export default function Page() {
                             </div>
                         </div>
                     </div>
-                    <div className="w-full h-full flex flex-row gap-3 items-center justify-center overflow-auto">
-                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md overflow-auto" >
+                    <div id="tablas" className="w-full h-full flex flex-col gap-3 items-center justify-center">
+                        <div id="actuadores-table" className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md" >
                             <div className="p-3 flex justify-center items-center">
                                 <p className="text-slate-400">Actuadores</p>
                             </div>
                             {
                                 deviceActuadores.length > 0
-                                    ?   <div className="w-full h-full overflow-y-auto rounded-md">
+                                    ?   <div className="w-full h-full rounded-md overflow-x-scroll">
                                             {
                                                 deviceActuadores.map((actuador, index) => {
                                                     return (
-                                                        <div key={index} className={`w-full h-12 flex flex-row gap-3 items-center justify-between ${
+                                                        <div key={index} className={`w-dvw md:w-full h-12 flex flex-row gap-3 items-center justify-between ${
                                                             index % 2 == 0
                                                                 ? "bg-blue-100"
                                                                 : "bg-gray-50"
                                                         }`}>
-                                                            <div className="px-3 w-28 h-full flex flex-row justify-center items-center">
+                                                            <div className="px-3 w-28 h-full flex flex-row justify-between items-center">
                                                                 <FaFaucetDrip size={20} className="w-9 text-indigo-600"></FaFaucetDrip>
                                                                 {actuador.id}
                                                             </div>
-                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 w-48 h-full flex gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorAreaDialogButton(index)} className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
                                                                 </button>
@@ -756,7 +815,7 @@ export default function Page() {
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-44 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorPinDialogButton(index)} 
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
@@ -787,7 +846,7 @@ export default function Page() {
                                     :   <p className="flex w-full h-full justify-center items-center p-3">No hay actuadores disponibles</p>
                             }
                         </div>
-                        <div className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md overflow-auto">
+                        <div id="sensores-table" className="w-full h-60 flex flex-col justify-center items-center border shadow-md rounded-md">
                             <div className="p-3 flex justify-center items-center">
                                 <p className="text-slate-400">Sensores</p>
                             </div>
@@ -797,7 +856,7 @@ export default function Page() {
                                             {
                                                 deviceSensors.map((sensor, index) => {
                                                     return (
-                                                        <div key={index} className={`w-full h-12 flex flex-row gap-3 items-center justify-between ${
+                                                        <div key={index} className={`w-dvw md:w-full h-12 flex flex-row gap-3 items-center justify-between ${
                                                             index % 2 == 0
                                                                 ? "bg-blue-100"
                                                                 : "bg-gray-50"
@@ -839,7 +898,7 @@ export default function Page() {
                                                                         ? "Desconectado"
                                                                         : sensor.device_pin
                                                                 }
-                                                            </div>
+                                                            </div>                                                   
                                                             <div className="px-2 w-12 h-2/3 flex justify-center items-center">
                                                                 <button onClick={() => handleOpenDeleteElemDialogButton(index, true)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>
@@ -854,7 +913,7 @@ export default function Page() {
                             }
                         </div>
                     </div>
-                    <div className="w-full h-full flex flex-row gap-3 items-center justify-center">
+                    <div id="graficas" className="w-full h-full flex flex-col md:flex-row gap-3 items-center justify-center">
                         <div className="w-full h-full flex flex-col justify-center items-center border shadow-md rounded-md">
                             <div className="p-3 flex justify-center items-center">
                                 <p className="text-slate-400">Temperatura de la CPU</p>
