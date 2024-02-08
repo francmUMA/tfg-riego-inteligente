@@ -1,5 +1,12 @@
+'use client'
+import MapComponent from "../../ui/dashboard/map/MapComponent"
+
 export default function Page() {
     return (
-        <h1>Map page</h1>
+        <main className="w-full h-full">
+            <div className="w-full h-full shadow-md rounded-md">
+                <MapComponent />
+            </div>
+        </main>
     )
 }
