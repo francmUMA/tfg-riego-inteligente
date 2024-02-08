@@ -6,7 +6,7 @@ import { Polygon } from "./Polygon.tsx"
 const App = () => (
   <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
     <Map defaultZoom={10} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
-      <Marker
+      {/* <Marker
         draggable  
         position={{lat: 53.54992, lng: 10.00678}}>
       </Marker>
@@ -55,7 +55,7 @@ const App = () => (
         }}
         editable
         draggable
-      />
+      /> */}
     </Map>
   </APIProvider>
 );
