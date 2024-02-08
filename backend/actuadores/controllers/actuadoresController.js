@@ -2,7 +2,7 @@ import actuadoresModel from "../models/actuadoresModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
 import areasModel from "../../areas/models/areasModel.js"
 import sensorModel from "../../sensors/models/sensorsModel.js"
-import { get_nif_by_token } from "../../users/controllers/userController.js"
+import { get_nif_by_token } from "../../users/controllers/UserController.js"
 
 export const getActuadores = async (req, res) => {
     // Validar token
