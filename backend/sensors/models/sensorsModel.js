@@ -17,5 +17,11 @@ export default db.define("Sensores", {
     },
     type: {
         type: DataTypes.STRING
-    }
+    },
+    Latitud: {
+        type: DataTypes.FLOAT
+    },
+    Longitud: {
+        type: DataTypes.FLOAT
+    },
 })

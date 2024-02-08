@@ -17,5 +17,11 @@ export default db.define("Actuadores", {
     },
     mode: {
         type: DataTypes.TINYINT
-    }
+    },
+    Latitud: {
+        type: DataTypes.FLOAT
+    },
+    Longitud: {
+        type: DataTypes.FLOAT
+    },
 })

@@ -447,3 +447,72 @@ export const updateActuadorDevice = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/*
+    @description: Actualiza la localización de un actuador
+    @body: {
+        id: string,         // id del actuador
+        Latitud: float,
+        Longitud: float
+    }
+
+*/
+export const updateActuadorPosition = async (req, res) => {
+        //------------------------------------- Validar token ---------------------------------------------------------
+        let nif
+        try {
+            nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+        } catch (error) {
+            res.status(401).send("Invalid token")
+            return
+        }
+    
+        if (nif === undefined) {
+            res.status(401).send("Invalid token")
+            return
+        }
+        // -----------------------------------------------------------------------------------------------------------
+        //------------------------------------- Validar datos ---------------------------------------------------------
+        if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+            res.status(400).send("Missing id")
+            return
+        }
+        if (req.body.Latitud === undefined || req.body.Latitud === null) {
+            res.status(400).send("Missing Latitud")
+            return
+        }
+        if (req.body.Longitud === undefined || req.body.Longitud === null) {
+            res.status(400).send("Missing Longitud")
+            return
+        }
+        // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
+        let actuador
+        try {
+            actuador = await actuadoresModel.findOne({ where: { id: req.body.id } })
+            if (actuador === null) {
+                res.status(404).send("Actuator not found")
+                return
+            }
+        } catch (error) {
+            res.status(500).send(error.message)
+        }
+        // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+        try {
+            let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+            if (device === null) {
+                res.status(404).send("Device not found")
+                return
+            }
+        } catch (error) {
+            res.status(500).send(error.message)
+        }
+        // ------------------------------------ Actualizar posicion ---------------------------------------------------------
+        try {
+            actuador.Latitud = req.body.Latitud
+            actuador.Longitud = req.body.Longitud
+            actuador.save()
+            res.status(200).send("Position updated")
+        } catch (error) {
+            res.status(500).send(error.message)
+        }
+}

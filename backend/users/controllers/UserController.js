@@ -214,3 +214,49 @@ export const get_nif_by_token = async (token) => {
         return undefined
     }
 }
+
+/*
+    @description: Actualiza la localizacion de centrado del mapa del usuario
+    @body: {
+        Latitud: float,
+        Longitud: float
+    }
+
+*/
+export const updateUserPosition = async (req, res) => {
+    //------------------------------------- Validar token ---------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------------------------------------------------------
+    //------------------------------------- Validar datos ---------------------------------------------------------
+    if (req.body.Latitud === undefined || req.body.Latitud === null) {
+        res.status(400).send("Missing Latitud")
+        return
+    }
+    if (req.body.Longitud === undefined || req.body.Longitud === null) {
+        res.status(400).send("Missing Longitud")
+        return
+    }
+    // ------------------------------------ Actualizar posicion ---------------------------------------------------------
+    try {
+        let user = await userModel.findOne({ where: { NIF: nif } })
+        if (user === null) {
+            res.status(404).send("User not found")
+            return
+        }
+        await userModel.update({ Latitud: req.body.Latitud, Longitud: req.body.Longitud }, { where: { NIF: nif } })
+        res.status(200).send("Position updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
