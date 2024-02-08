@@ -10,7 +10,7 @@ export async function getDevices (token: string) {
         let response = await request.json()
         return response
     } else {
-        return undefined
+        return []
     }
 }
 
@@ -71,7 +71,6 @@ export async function updateDevicePosition (id: string, lat: number, lon: number
         },
         body: JSON.stringify({id: id, Latitud: lat, Longitud: lon})
     }
-
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/position", options)
     if (response.status == 200) {
         return true
