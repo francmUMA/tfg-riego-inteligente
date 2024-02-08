@@ -5,6 +5,7 @@ import { Polygon } from "./Polygon.tsx"
 import { useEffect, useState } from 'react';
 import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
+import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 
 
 const App = () => {
@@ -17,9 +18,9 @@ const App = () => {
       const token = getCookie('token')
       const response = await getDevices(token)
       setDevices(response)
-      setCenterLat(response[0].Latitud)
-      setCenterLng(response[0].Longitud)
-      console.log(response[0].Latitud, response[0].Longitud)
+      let userinfo = await fetchUserInfo(token)
+      setCenterLat(userinfo.Latitud)
+      setCenterLng(userinfo.Longitud)
     }
     fetchDevices()
   },  []);
