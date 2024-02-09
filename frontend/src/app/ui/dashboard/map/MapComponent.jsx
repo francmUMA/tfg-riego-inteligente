@@ -7,8 +7,8 @@ import { Dialog, DialogTitle } from "@mui/material"
 import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
 import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
-import { getSensors } from '@/src/app/lib/sensorsUtils.ts';
-import { getActuadores } from '@/src/app/lib/actuadorUtils.ts';
+import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
+import { getActuadores, addActuador } from '@/src/app/lib/actuadorUtils.ts';
 
 
 const App = () => {
@@ -18,19 +18,20 @@ const App = () => {
   const [centerLat, setCenterLat] = useState(0.0)
   const [centerLng, setCenterLng] = useState(0.0)
 
-  useEffect(() => {
-    const fetchDevices = async () => {
-      const token = getCookie('token')
-      let response = await getDevices(token)
-      setDevices(response)
-      let sensors = await getSensors(1, token)
-      console.log(sensors)
-      let userinfo = await fetchUserInfo(token)
-      setCenterLat(userinfo.Latitud)
-      setCenterLng(userinfo.Longitud)
-    }
-    fetchDevices()
+  useEffect( () => {
+    fetchAllInfo()
   },  []);
+
+  const fetchAllInfo = async () => {
+    const token = getCookie('token')
+    let response = await getDevices(token)
+    setDevices(response)
+    let sensors = await getSensors(response[0].id,token)
+    setSensors(sensors)
+    let userinfo = await fetchUserInfo(token)
+    setCenterLat(userinfo.Latitud)
+    setCenterLng(userinfo.Longitud)
+  }
 
   const handleDragDeviceMarker = async (event, id) => {
     const token = getCookie('token')
@@ -52,6 +53,16 @@ const App = () => {
   // ----------------------------------- Update Device Area Dialog ---------------------------------------------
 
   const [IsOpenPlaceMarkerDialog, setIsOpenPlaceMarkerDialog] = useState(false)
+  const [selectedDevice, setSelectedDevice] = useState(1)
+  const [selectedSensor, setSelectedSensor] = useState("DHT001")
+
+  const handleSelectedDevice = (event) => {
+    setSelectedDevice(event.target.value)
+  }
+
+  const handleSelectedSensor = (event) => {
+    setSelectedSensor(event.target.value)
+  }
 
   const closePlaceMarkerDialog = () => {
     setIsOpenPlaceMarkerDialog(false)
@@ -61,36 +72,59 @@ const App = () => {
     setIsOpenPlaceMarkerDialog(true)
   }
 
+  const handlePlaceMarkerButton = async () => {
+    const token = getCookie('token')
+    let response = await updateSensorPosition(selectedSensor, centerLat, centerLng, token)
+    if (response) {
+      let sensors = await getSensors(selectedDevice, token)
+      setSensors(sensors)
+      closePlaceMarkerDialog()
+    } else {
+      console.log('Error updating device position')
+    }
+  }
+
   const PlaceMarkerDialog = () => {
     return (
-        <Dialog open={IsOpenPlaceMarkerDialog} onClose={closePlaceMarkerDialog}>
-            <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
-            <div className="flex flex-col justify-center items-center p-4 gap-4">
-                <div className="w-full h-full">
-                    <label className="font-medium">Elige una zona</label>
-                </div>
-                <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                    {
-                      devices.length > 0
-                        ? <select>
-                            {devices.map((device) => (
-                              <option key={device.id} value={device.id}>{device.id}</option>
-                            ))}
-                          </select>
-                        : <p>No hay dispositivos</p>
-                    }
-                    <button className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                        <p>Actualizar Zona</p>
-                    </button>
-                </div>
+      <Dialog open={IsOpenPlaceMarkerDialog} onClose={closePlaceMarkerDialog}>
+        <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
+        <div className="flex flex-col justify-center items-center p-4 gap-4">
+            <div className="w-full h-full">
+                <label className="font-medium">Elige una zona</label>
             </div>
-        </Dialog>
+            <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+                {
+                    devices.length > 0
+                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectedDevice}>
+                            {devices.map((device) => (
+                                <option key={device.id} value={device.id}>{device.id}</option>
+                            ))}
+                        </select>
+                        : <p>No hay dispositivos</p>
+                }
+                {
+                    sensors.length > 0
+                        ? <select className="w-full h-10" value={selectedSensor} onChange={handleSelectedSensor}>
+                            {sensors.map((sensor) => (
+                                sensor.device == selectedDevice &&
+                                  <option key={sensor.id} value={sensor.id}>{sensor.id}</option>
+                            ))}
+                        </select>
+                        : <p>No hay sensores</p>
+                }
+                <button onClick={handlePlaceMarkerButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                    <p>Colocar marcador</p>
+                </button>
+            </div>
+        </div>
+      </Dialog>
     )
-}
+  }
+  //------------------------------------------------------------------------------------------------------------
 
   return (
     <div className='w-full h-full'>
-      <PlaceMarkerDialog/>
+      {PlaceMarkerDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
         <Map onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
           {devices.map((device) => (
@@ -101,6 +135,17 @@ const App = () => {
               position={{lat: device.Latitud, lng: device.Longitud}}
               draggable
               onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
+            >
+            </Marker>
+          ))}
+          {sensors.map((sensor) => (
+            sensor.Latitud && sensor.Longitud &&
+            <Marker
+              key={sensor.id}
+              icon={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bWFzayBpZD0iaXBUQ2hpcDAiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0Ij48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMzYiIHg9IjEyIiB5PSI2IiBmaWxsPSIjNTU1IiByeD0iMiIvPjxwYXRoIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZD0iTTEyIDEySDZtNiA4SDZtNiA4SDZtNiA4SDZtMzYtMjRoLTZtNiA4aC02bTYgOGgtNm02IDhoLTYiLz48L2c+PC9tYXNrPjwvZGVmcz48cGF0aCBmaWxsPSIjNTNkNWZkIiBkPSJNMCAwaDQ4djQ4SDB6IiBtYXNrPSJ1cmwoI2lwVENoaXAwKSIvPjwvc3ZnPg=="}
+              position={{lat: sensor.Latitud, lng: sensor.Longitud}}
+              draggable
+              onDragEnd={(e) => handleDragDeviceMarker(e, sensor.id)}
             >
             </Marker>
           ))}
