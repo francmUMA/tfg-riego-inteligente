@@ -402,12 +402,16 @@ export default function Page() {
     const fetchAreas = async () => {
         const token = getCookie("token")
         let res = await getAreas(token as string)
+        if (res.length > 0) {
         setAreas(res)
         setNewActuadorArea(res[0].id)
+        } else {
+            setAreas([{id: 0, name: ""}])
+        }
     }
 
     // ------------------------------ Modificar Area -----------------------------------
-    const [newActuadorArea, setNewActuadorArea] = useState(areas[0].id)
+    const [newActuadorArea, setNewActuadorArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
     const [IsOpenUpdateActuadorAreaDialog, setIsOpenUpdateActuadorAreaDialog] = useState(false)
 
     const handleActuadorArea = async () => {
@@ -446,7 +450,7 @@ export default function Page() {
                     <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
                         <select className="w-full h-10" onChange={handleSelectNewActuadorArea}>
                             {
-                                areas.map((area, index) => {
+                                areas !== undefined && areas[0].name == "" && areas.map((area, index) => {
                                     return (
                                         <option key={index} value={area.id}>{area.name}</option>
                                     )
@@ -463,7 +467,7 @@ export default function Page() {
     }
     // ----------------------------------------------------------------------------------------------------
     // ------------------------------ Modificar area del sensor -------------------------------------------
-    const [newSensorArea, setNewSensorArea] = useState(areas[0].id)
+    const [newSensorArea, setNewSensorArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
     const [IsOpenUpdateSensorAreaDialog, setIsOpenUpdateSensorAreaDialog] = useState(false)
     const [sensorIndex, setSensorIndex] = useState(0)
 
@@ -504,7 +508,8 @@ export default function Page() {
                     <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
                         <select className="w-full h-10" onChange={handleSelectNewSensorArea}>
                             {
-                                areas.map((area, index) => {
+
+                                areas !== undefined && areas[0].name == "" && areas.map((area, index) => {
                                     return (
                                         <option key={index} value={area.id}>{area.name}</option>
                                     )
@@ -637,7 +642,7 @@ export default function Page() {
     }
     // ----------------------------------------------------------------------------------------------------
     // ------------------- Update Device Position -------------------
-    const [newArea, setNewArea] = useState(areas[0].id)
+    const [newArea, setNewArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
     const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
 
     const handleUpdateArea = async () => {

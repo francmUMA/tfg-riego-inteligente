@@ -50,16 +50,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/loading.js"
     ],
-    "/dashboard/devices/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/devices/page.js"
-    ],
-    "/dashboard/devices/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/devices/layout.js"
-    ],
     "/dashboard/map/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

@@ -2,7 +2,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { getDevices, checkIP, createDevice, deleteDevice, updateDevicePosition, updateDeviceIp, testDeviceConnection, updateDeviceArea } from "../../lib/devicesUtils"
+import { getDevices, checkIP, createDevice, deleteDevice, updateDeviceIp, testDeviceConnection, updateDeviceArea } from "../../lib/devicesUtils"
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
@@ -403,7 +403,7 @@ export default function Page() {
     }
     // ---------------------------------------------------------------------------------------------
     // ------------------- Update Device Position -------------------
-    const [newArea, setNewArea] = useState(areas[0].id)
+    const [newArea, setNewArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
     const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
     const [currentId, setCurrentId] = useState("")
 
