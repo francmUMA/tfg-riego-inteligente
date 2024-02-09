@@ -9,6 +9,7 @@ import { getCookie } from 'cookies-next';
 import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
 import { getActuadores, addActuador } from '@/src/app/lib/actuadorUtils.ts';
+import { WiHumidity } from "react-icons/wi";
 
 
 const App = () => {
@@ -50,14 +51,30 @@ const App = () => {
     setCenterLng(event.detail.center.lng)
   }
 
-  // ----------------------------------- Update Device Area Dialog ---------------------------------------------
+  // ----------------------------------- Update Sensor Position Dialog ---------------------------------------------
 
   const [IsOpenPlaceMarkerDialog, setIsOpenPlaceMarkerDialog] = useState(false)
-  const [selectedDevice, setSelectedDevice] = useState(1)
-  const [selectedSensor, setSelectedSensor] = useState("DHT001")
+  const [selectedDevice, setSelectedDevice] = useState(0)
+  const [selectedSensor, setSelectedSensor] = useState(undefined)
+
+  const handleDragSensorMarker = async (event, id) => {
+    const token = getCookie('token')
+    let response = await updateSensorPosition(id, event.latLng.lat(), event.latLng.lng(), token)
+    if (response) {
+      let newSensors = []
+      for (let device of devices) {
+        let sensors = await getSensors(device.id, token)
+        newSensors.push(...sensors)
+      }
+      setSensors(newSensors) 
+    } else {
+      console.log('Error updating device position')
+    }
+  }
 
   const handleSelectedDevice = (event) => {
     setSelectedDevice(event.target.value)
+    setSelectedSensor(sensors.find(sensor => sensor.device == event.target.value)?.id)
   }
 
   const handleSelectedSensor = (event) => {
@@ -72,12 +89,28 @@ const App = () => {
     setIsOpenPlaceMarkerDialog(true)
   }
 
+  useEffect(() => {
+    setSelectedDevice(devices[0]?.id)
+  }, [devices])
+
+  useEffect(() => {
+    // Primer sensor sin posición del device seleccionado
+    let sensor = sensors.find(sensor => sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null)
+    setSelectedSensor(sensor?.id)
+  }, 
+  [selectedDevice, sensors])
+
   const handlePlaceMarkerButton = async () => {
     const token = getCookie('token')
+    console.log(selectedSensor)
     let response = await updateSensorPosition(selectedSensor, centerLat, centerLng, token)
     if (response) {
-      let sensors = await getSensors(selectedDevice, token)
-      setSensors(sensors)
+      let newSensors = []
+      for (let device of devices) {
+        let sensors = await getSensors(device.id, token)
+        newSensors.push(...sensors)
+      }
+      setSensors(newSensors)
       closePlaceMarkerDialog()
     } else {
       console.log('Error updating device position')
@@ -87,12 +120,12 @@ const App = () => {
   const PlaceMarkerDialog = () => {
     return (
       <Dialog open={IsOpenPlaceMarkerDialog} onClose={closePlaceMarkerDialog}>
-        <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
+        <DialogTitle className="w-full h-full border">Coloca un sensor</DialogTitle>
         <div className="flex flex-col justify-center items-center p-4 gap-4">
             <div className="w-full h-full">
-                <label className="font-medium">Elige una zona</label>
+                <label className="font-medium">Elige un dispositivo</label>
             </div>
-            <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
+            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
                 {
                     devices.length > 0
                         ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectedDevice}>
@@ -102,11 +135,14 @@ const App = () => {
                         </select>
                         : <p>No hay dispositivos</p>
                 }
+                <div className="w-full h-full flex items-center">
+                  <label className="font-medium">Elige un sensor</label>
+                </div>
                 {
                     sensors.length > 0
                         ? <select className="w-full h-10" value={selectedSensor} onChange={handleSelectedSensor}>
                             {sensors.map((sensor) => (
-                                sensor.device == selectedDevice &&
+                                sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null &&
                                   <option key={sensor.id} value={sensor.id}>{sensor.id}</option>
                             ))}
                         </select>
@@ -126,12 +162,12 @@ const App = () => {
     <div className='w-full h-full'>
       {PlaceMarkerDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
-        <Map onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
+        <Map disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
           {devices.map((device) => (
             device.Latitud && device.Longitud &&
             <Marker
               key={device.id}
-              icon={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bWFzayBpZD0iaXBUQ2hpcDAiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0Ij48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMzYiIHg9IjEyIiB5PSI2IiBmaWxsPSIjNTU1IiByeD0iMiIvPjxwYXRoIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZD0iTTEyIDEySDZtNiA4SDZtNiA4SDZtNiA4SDZtMzYtMjRoLTZtNiA4aC02bTYgOGgtNm02IDhoLTYiLz48L2c+PC9tYXNrPjwvZGVmcz48cGF0aCBmaWxsPSIjNTNkNWZkIiBkPSJNMCAwaDQ4djQ4SDB6IiBtYXNrPSJ1cmwoI2lwVENoaXAwKSIvPjwvc3ZnPg=="}
+              icon={"/chip.svg"}
               position={{lat: device.Latitud, lng: device.Longitud}}
               draggable
               onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
@@ -141,18 +177,20 @@ const App = () => {
           {sensors.map((sensor) => (
             sensor.Latitud && sensor.Longitud &&
             <Marker
+              clickable
+              onClick={() => console.log('sensor clicked')}
               key={sensor.id}
-              icon={"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0OCA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bWFzayBpZD0iaXBUQ2hpcDAiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0Ij48cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMzYiIHg9IjEyIiB5PSI2IiBmaWxsPSIjNTU1IiByeD0iMiIvPjxwYXRoIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZD0iTTEyIDEySDZtNiA4SDZtNiA4SDZtNiA4SDZtMzYtMjRoLTZtNiA4aC02bTYgOGgtNm02IDhoLTYiLz48L2c+PC9tYXNrPjwvZGVmcz48cGF0aCBmaWxsPSIjNTNkNWZkIiBkPSJNMCAwaDQ4djQ4SDB6IiBtYXNrPSJ1cmwoI2lwVENoaXAwKSIvPjwvc3ZnPg=="}
+              icon={"/humidity-percentage.svg"}
               position={{lat: sensor.Latitud, lng: sensor.Longitud}}
               draggable
-              onDragEnd={(e) => handleDragDeviceMarker(e, sensor.id)}
+              onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
             >
             </Marker>
           ))}
           <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
             <div id='add-sensor-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
               <button onClick={openPlaceMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
-                <MdAddLocationAlt size={24} className="w-6"/>
+                <img src="/humidity-percentage.svg" className="w-8"/>
               </button>
             </div>
             <div id='add-actuador-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
@@ -162,7 +200,7 @@ const App = () => {
             </div>
             <div id='add-device-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
               <button className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
-                <MdAddLocationAlt size={24} className="w-6"/>
+                <img src="/chip.svg" className="w-8"/>
               </button>
             </div>
           </MapControl>

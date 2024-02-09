@@ -720,6 +720,9 @@ video {
 .h-screen {
   height: 100vh;
 }
+.h-1 {
+  height: 0.25rem;
+}
 .min-h-16 {
   min-height: 4rem;
 }
@@ -1246,9 +1249,6 @@ video {
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-.filter {
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 .transition {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;

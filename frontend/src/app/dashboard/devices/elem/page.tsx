@@ -625,8 +625,8 @@ export default function Page() {
         return (
             <Dialog open={IsOpenDeleteElemDialog} onClose={closeDeleteElemDialog}>
                 <DialogTitle className="w-full h-full">¿Seguro que deseas eliminar el {sensorActuador 
-                    ? "sensor " + deviceSensors[sensorIndex].id
-                    : "actuador " + deviceActuadores[actuadorIndex].id
+                    ? "sensor " + deviceSensors[sensorIndex]?.id
+                    : "actuador " + deviceActuadores[actuadorIndex]?.id
                     }?</DialogTitle>
                 <div className="flex flex-row p-4 gap-4">
                     <button onClick={closeDeleteElemDialog} className="w-1/2 h-12 text-white bg-indigo-600 rounded-md hover:bg-indigo-500 duration-150">
