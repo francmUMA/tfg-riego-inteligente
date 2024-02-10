@@ -110,3 +110,20 @@ export async function deleteActuador(id: string, device: string, token: string) 
         return false
     }
 }
+
+export async function updatePositionActuador(id: string, Latitud: number, Longitud: number, token: string) {
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id: id, Latitud: Latitud, Longitud: Longitud})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/position", options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+}

@@ -8,8 +8,7 @@ import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts'
 import { getCookie } from 'cookies-next';
 import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
-import { getActuadores, addActuador } from '@/src/app/lib/actuadorUtils.ts';
-import { WiHumidity } from "react-icons/wi";
+import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
 
 
 const App = () => {
@@ -27,9 +26,19 @@ const App = () => {
     const token = getCookie('token')
     let response = await getDevices(token)
     setDevices(response)
-    let sensors = await getSensors(response[0].id,token)
+    let sensors = []
+    for (let device of response) {
+      let sensors_device = await getSensors(device.id,token)
+      sensors.push(...sensors_device)
+    }
     setSensors(sensors)
     let userinfo = await fetchUserInfo(token)
+    let actuadores = []
+    for (let device of response) {
+      let actuadores_device = await getActuadores(device.id,token)
+      actuadores.push(...actuadores_device)
+    }
+    setActuadores(actuadores)
     setCenterLat(userinfo.Latitud)
     setCenterLng(userinfo.Longitud)
   }
@@ -139,7 +148,7 @@ const App = () => {
                   <label className="font-medium">Elige un sensor</label>
                 </div>
                 {
-                    sensors.length > 0
+                    sensors.filter(sensor => sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null).length > 0
                         ? <select className="w-full h-10" value={selectedSensor} onChange={handleSelectedSensor}>
                             {sensors.map((sensor) => (
                                 sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null &&
@@ -195,7 +204,7 @@ const App = () => {
             <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
                 {
                     devices.length > 0
-                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectedDevice}>
+                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleOnlySelectDevice}>
                             {devices.map((device) => (
                                 <option key={device.id} value={device.id}>{device.id}</option>
                             ))}
@@ -210,14 +219,115 @@ const App = () => {
       </Dialog>
     )
   }
+  // ----------------------------------- Update Actuador Position Dialog ---------------------------------------------
 
+  const [IsOpenPlaceActuadorMarkerDialog, setIsOpenPlaceActuadorMarkerDialog] = useState(false)
+  const [selectedActuador, setSelectedActuador] = useState(undefined)
+
+  const handleDragActuadorMarker = async (event, id) => {
+    const token = getCookie('token')
+    let response = await updatePositionActuador(id, event.latLng.lat(), event.latLng.lng(), token)
+    if (response) {
+      let newActuadores = []
+      for (let device of devices) {
+        let actuadores = await getActuadores(device.id, token)
+        newActuadores.push(...actuadores)
+      }
+      setActuadores(newActuadores) 
+    } else {
+      console.log('Error updating actuador position')
+    }
+  }
+
+  const handleSelectActuadorDevice = (event) => {
+    setSelectedDevice(event.target.value)
+    setSelectedActuador(actuadores.find(actuador => actuador.device == event.target.value)?.id)
+  }
+
+  const handleSelectedActuador = (event) => {
+    setSelectedActuador(event.target.value)
+  }
+
+  const closePlaceActuadorMarkerDialog = () => {
+    setIsOpenPlaceActuadorMarkerDialog(false)
+  }
+
+  const openPlaceActuadorMarkerDialog = () => {
+    setIsOpenPlaceActuadorMarkerDialog(true)
+  }
+
+  useEffect(() => {
+    // Primer sensor sin posición del device seleccionado
+    let actuador = actuadores.find(actuador => actuador.device == selectedDevice && actuador.Latitud == null && actuador.Longitud == null)
+    setSelectedActuador(actuador?.id)
+  }, 
+  [selectedDevice, actuadores])
+
+  const handlePlaceActuadorMarkerButton = async () => {
+    const token = getCookie('token')
+    console.log(selectedActuador)
+    let response = await updatePositionActuador(selectedActuador, centerLat, centerLng, token)
+    if (response) {
+      let newActuadores = []
+      for (let device of devices) {
+        let actuadores = await getActuadores(device.id, token)
+        newActuadores.push(...actuadores)
+      }
+      setActuadores(newActuadores)
+      closePlaceActuadorMarkerDialog()
+    } else {
+      console.log('Error updating device position')
+    }
+  }
+
+  const PlaceActuadorMarkerDialog = () => {
+    return (
+      <Dialog open={IsOpenPlaceActuadorMarkerDialog} onClose={closePlaceActuadorMarkerDialog}>
+        <DialogTitle className="w-full h-full border">Coloca un actuador</DialogTitle>
+        <div className="flex flex-col justify-center items-center p-4 gap-4">
+            <div className="w-full h-full">
+                <label className="font-medium">Elige un dispositivo</label>
+            </div>
+            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
+                {
+                    devices.length > 0
+                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectActuadorDevice}>
+                            {devices.map((device) => (
+                                <option key={device.id} value={device.id}>{device.id}</option>
+                            ))}
+                        </select>
+                        : <p>No hay dispositivos</p>
+                }
+                <div className="w-full h-full flex items-center">
+                  <label className="font-medium">Elige un actuador</label>
+                </div>
+                {
+                    actuadores.filter(actuador => actuador.device == selectedDevice && actuador.Latitud == null && actuador.Longitud == null).length > 0
+                        ? <select className="w-full h-10" value={selectedActuador} onChange={handleSelectedActuador}>
+                            {actuadores.map((actuador) => (
+                                actuador.device == selectedDevice && actuador.Latitud == null && actuador.Longitud == null &&
+                                  <option key={actuador.id} value={actuador.id}>{actuador.id}</option>
+                            ))}
+                        </select>
+                        : <p>No hay actuadores</p>
+                }
+                <button onClick={handlePlaceActuadorMarkerButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                    <p>Colocar marcador</p>
+                </button>
+            </div>
+        </div>
+      </Dialog>
+    )
+  }
+  //----------------------------------------------------------------------------------------------------------------
 
   return (
     <div className='w-full h-full'>
       {PlaceMarkerDialog()}
       {PlaceDeviceMarkerDialog()}
+      {PlaceActuadorMarkerDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
-        <Map disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
+        <Map mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
           {devices.map((device) => (
             device.Latitud && device.Longitud &&
             <Marker
@@ -242,6 +352,19 @@ const App = () => {
             >
             </Marker>
           ))}
+          {actuadores.map((actuador) => (
+            actuador.Latitud && actuador.Longitud &&
+            <Marker
+              clickable
+              onClick={() => console.log('actuador clicked')}
+              key={actuador.id}
+              icon={"/faucet.svg"}
+              position={{lat: actuador.Latitud, lng: actuador.Longitud}}
+              draggable
+              onDragEnd={(e) => handleDragActuadorMarker(e, actuador.id)}
+            >
+            </Marker>
+          ))}
           <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
             <div id='add-sensor-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
               <button onClick={openPlaceMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
@@ -249,8 +372,8 @@ const App = () => {
               </button>
             </div>
             <div id='add-actuador-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
-                <MdAddLocationAlt size={24} className="w-6"/>
+              <button onClick={openPlaceActuadorMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
+                <img src="/faucet.svg" className="w-8"/>
               </button>
             </div>
             <div id='add-device-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
