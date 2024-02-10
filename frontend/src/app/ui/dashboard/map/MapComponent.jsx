@@ -156,11 +156,66 @@ const App = () => {
       </Dialog>
     )
   }
-  //------------------------------------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------------------------------------------
+  // ----------------------------------- Update Device Position Dialog ---------------------------------------------
+  const [IsOpenPlaceDeviceMarkerDialog, setIsOpenPlaceDeviceMarkerDialog] = useState(false)
+
+  const handleOnlySelectDevice = (event) => {
+    setSelectedDevice(event.target.value)
+  }
+
+  const closePlaceDeviceMarkerDialog = () => {
+    setIsOpenPlaceDeviceMarkerDialog(false)
+  }
+
+  const openPlaceDeviceMarkerDialog = () => {
+    setIsOpenPlaceDeviceMarkerDialog(true)
+  }
+
+  const handlePlaceDeviceMarkerButton = async () => {
+    const token = getCookie('token')
+    let response = await updateDevicePosition(selectedDevice, centerLat, centerLng, token)
+    if (response) {
+      let newDevices = await getDevices(token)
+      setDevices(newDevices)
+      closePlaceDeviceMarkerDialog()
+    } else {
+      console.log('Error updating device position')
+    }
+  }
+
+  const PlaceDeviceMarkerDialog = () => {
+    return (
+      <Dialog open={IsOpenPlaceDeviceMarkerDialog} onClose={closePlaceDeviceMarkerDialog}>
+        <DialogTitle className="w-full h-full border">Coloca un dispositivo</DialogTitle>
+        <div className="flex flex-col justify-center items-center p-4 gap-4">
+            <div className="w-full h-full">
+                <label className="font-medium">Elige un dispositivo</label>
+            </div>
+            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
+                {
+                    devices.length > 0
+                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectedDevice}>
+                            {devices.map((device) => (
+                                <option key={device.id} value={device.id}>{device.id}</option>
+                            ))}
+                        </select>
+                        : <p>No hay dispositivos</p>
+                }
+                <button onClick={handlePlaceDeviceMarkerButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                    <p>Colocar dispositivo</p>
+                </button>
+            </div>
+        </div>
+      </Dialog>
+    )
+  }
+
 
   return (
     <div className='w-full h-full'>
       {PlaceMarkerDialog()}
+      {PlaceDeviceMarkerDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
         <Map disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
           {devices.map((device) => (
@@ -199,7 +254,7 @@ const App = () => {
               </button>
             </div>
             <div id='add-device-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
+              <button onClick={openPlaceDeviceMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
                 <img src="/chip.svg" className="w-8"/>
               </button>
             </div>
