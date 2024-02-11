@@ -71,9 +71,10 @@ import {
     // update the path with the encodedPath
     useMemo(() => {
       if (!encodedPaths || !geometryLibrary) return;
-      const paths = encodedPaths.map(path =>
-        geometryLibrary.encoding.decodePath(path)
+      const paths = encodedPaths.map(path =>{
+        geometryLibrary.encoding.decodePath(path)}
       );
+      console.log('paths', paths);
       polygon.setPaths(paths);
     }, [polygon, encodedPaths, geometryLibrary]);
   

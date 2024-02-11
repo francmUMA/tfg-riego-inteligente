@@ -1,0 +1,34 @@
+export async function addCoords(Latitud: number, Longitud: number, area: number, token: string) {
+    let options = {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            Latitud: Latitud,
+            Longitud: Longitud,
+        })
+    }
+    const response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/coords/" + area, options)
+    if (response.status == 200) {
+        return true
+    } else {
+        return false
+    }
+}
+
+export async function deleteCoords(area: number, token: string) {
+    let options = {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    const response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/coords/" + area, options)
+    if (response.status == 200) {
+        return true
+    } else {
+        return false
+    }
+}

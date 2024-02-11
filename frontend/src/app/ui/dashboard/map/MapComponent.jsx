@@ -1,14 +1,14 @@
-import {APIProvider, Map, Marker, MapControl, ControlPosition, useMapsLibrary} from '@vis.gl/react-google-maps';
+import {APIProvider, Map, Marker, MapControl, ControlPosition, useMapsLibrary, GoogleMapsContext} from '@vis.gl/react-google-maps';
 import { Circle } from "./Circle.tsx"
 import { Polygon } from "./Polygon.tsx"
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTitle } from "@mui/material"
 import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
 import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
 import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
-
+import { addCoords, deleteCoords } from '@/src/app/lib/coordsUtils.ts';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -38,8 +38,10 @@ const App = () => {
       actuadores.push(...actuadores_device)
     }
     setActuadores(actuadores)
-    setCenterLat(userinfo.Latitud)
-    setCenterLng(userinfo.Longitud)
+    if (userinfo.Latitud != null && userinfo.Longitud != null) {
+      setCenterLat(userinfo.Latitud)
+      setCenterLng(userinfo.Longitud)
+    }
   }
 
   const handleDragDeviceMarker = async (event, id) => {
@@ -320,14 +322,31 @@ const App = () => {
     )
   }
   //----------------------------------------------------------------------------------------------------------------
+  // ----------------------------------- Manejo de coordenadas de figuras ------------------------------------------
+  const polygonRef = useRef(null)
 
+  const handleDragPolygon = async (area, polygon) => {
+    const token = getCookie('token')
+    let delRes = await deleteCoords(area, token)
+    if (delRes && polygon != null) {
+      polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
+        if (index > 0) {
+          let res = await addCoords(point.lat(), point.lng(), area, token)
+          if (!res) {
+            console.log('Error updating polygon position')
+          }
+        } 
+      })
+    }
+  }
+  //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
       {PlaceMarkerDialog()}
       {PlaceDeviceMarkerDialog()}
       {PlaceActuadorMarkerDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
-        <Map mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} center={{lat: centerLat, lng: centerLng}}>
+        <Map id='map' mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
           {devices.map((device) => (
             device.Latitud && device.Longitud &&
             <Marker
@@ -394,12 +413,17 @@ const App = () => {
             }}
             editable
             draggable
-          />
+          /> */}
           <Polygon
+            ref={polygonRef}
+            onDragEnd={() => {
+              const polygon = polygonRef.current
+              handleDragPolygon(3, polygon)
+            }}
             paths={[
-              {lat: 53.54992, lng: 10.00678},
-              {lat: 53.54992, lng: 10.08678},
-              {lat: 53.56002, lng: 10.04678},
+              {lat: 53.55407580010735, lng: 10.00257429626464},
+              {lat: 53.55407580010735, lng: 10.00257429626464},
+              {lat: 53.55540149096023, lng: 9.994377465515129},
             ]}
             options={{
               fillColor: 'red',
@@ -410,7 +434,7 @@ const App = () => {
             }}
             editable
             draggable
-          /> */}
+          />
         </Map>
       </APIProvider>
     </div>
