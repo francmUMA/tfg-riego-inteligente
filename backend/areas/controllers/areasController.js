@@ -101,3 +101,48 @@ export const delete_area = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+/*
+    @description: Actualiza el tipo de poligono asociado a un area
+    @params: URLparam: identificador del area
+    @body:  {
+                polygon_type: tipo de poligono (0: circulo, 1: poligono)
+            }
+*/
+export const updatePolygonType = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (req.body.polygon_type === undefined || req.body.polygon_type === null || req.body.polygon_type > 1 || req.body.polygon_type < 0) {
+        res.status(400).send("Missing polygon type or invalid value")
+        return
+    }
+    let area = await areasModel.findOne({ where: { user: nif, id: req.params.id } })
+    if (area === null) {
+        res.status(404).send("Area not found")
+        return
+    }
+    // ------------------- Actualizar tipo de poligono ---------------------------
+    try {
+        await areasModel.update({ polygon_type: req.body.polygon_type }, { where: { user: nif, id: req.params.id } })
+        res.status(200).send("Polygon type updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}

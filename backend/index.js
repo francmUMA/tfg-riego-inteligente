@@ -8,6 +8,7 @@ import deviceRoutes from "./devices/routes/deviceRoutes.js"
 import actuadoresRoutes from "./actuadores/routes/actuadoresRoutes.js"
 import sensorsRoutes from "./sensors/routes/sensorsRoutes.js"
 import areasRoutes from "./areas/routes/areasRoutes.js"
+import coordsRoutes from "./coordenadas/routes/coordsRoute.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
 
@@ -26,6 +27,7 @@ app.use("/api/devices", deviceRoutes)
 app.use("/api/actuadores", actuadoresRoutes)
 app.use("/api/sensores", sensorsRoutes)
 app.use("/api/areas", areasRoutes)
+app.use("/api/coords", coordsRoutes)
 
 
 // Conexion a la base de datos
