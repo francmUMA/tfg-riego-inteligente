@@ -1,5 +1,4 @@
 import {APIProvider, Map, Marker, MapControl, ControlPosition, useMapsLibrary} from '@vis.gl/react-google-maps';
-import { MdAddLocationAlt } from "react-icons/md";
 import { Circle } from "./Circle.tsx"
 import { Polygon } from "./Polygon.tsx"
 import { useEffect, useState } from 'react';
@@ -203,9 +202,10 @@ const App = () => {
             </div>
             <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
                 {
-                    devices.length > 0
+                    devices.filter(device => device.Latitud == null && device.Longitud == null).length > 0
                         ? <select className="w-full h-10" value={selectedDevice} onChange={handleOnlySelectDevice}>
                             {devices.map((device) => (
+                                device.Latitud == null && device.Longitud == null &&
                                 <option key={device.id} value={device.id}>{device.id}</option>
                             ))}
                         </select>
