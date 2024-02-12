@@ -8,7 +8,8 @@ import { getCookie } from 'cookies-next';
 import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
 import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
-import { addCoords, deleteCoords } from '@/src/app/lib/coordsUtils.ts';
+import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
+import { getAreas } from '@/src/app/lib/areasUtils.ts';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -16,6 +17,8 @@ const App = () => {
   const [actuadores, setActuadores] = useState([])
   const [centerLat, setCenterLat] = useState(0.0)
   const [centerLng, setCenterLng] = useState(0.0)
+  const [coords, setCoords] = useState([])
+  const [areas, setAreas] = useState([])
 
   useEffect( () => {
     fetchAllInfo()
@@ -42,6 +45,17 @@ const App = () => {
       setCenterLat(userinfo.Latitud)
       setCenterLng(userinfo.Longitud)
     }
+    let resAreas = await getAreas(token)
+    setAreas(resAreas)
+    let polygonsArea = []
+    for (let area of resAreas) {
+      let polys = await getCoordsArea(area.id, token)
+      if (polys.length > 0) {
+        polygonsArea.push(...polys)
+      }
+    }
+    console.log("polygonsArea", polygonsArea)
+    setCoords(polygonsArea)
   }
 
   const handleDragDeviceMarker = async (event, id) => {
@@ -330,14 +344,23 @@ const App = () => {
     let delRes = await deleteCoords(area, token)
     if (delRes && polygon != null) {
       polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
-        if (index > 0) {
-          let res = await addCoords(point.lat(), point.lng(), area, token)
-          if (!res) {
-            console.log('Error updating polygon position')
-          }
-        } 
+        console.log("coord ", index, "Lat: ", point.lat(), "Lng: ", point.lng())
+        let res = await addCoords(point.lat(), point.lng(), area, token)
+        if (!res) {
+          console.log('Error updating polygon position')
+        }
       })
     }
+  }
+
+  const filterCoords = (areaId) => {
+    let polCoords = coords.filter(coord => coord.area == areaId)
+    let coordList = []
+    for (let coord of polCoords) {
+      let elem = {lat: coord.Latitud, lng: coord.Longitud}
+      coordList.push(elem)
+    }
+    return coordList
   }
   //----------------------------------------------------------------------------------------------------------------
   return (
@@ -414,27 +437,29 @@ const App = () => {
             editable
             draggable
           /> */}
-          <Polygon
-            ref={polygonRef}
-            onDragEnd={() => {
-              const polygon = polygonRef.current
-              handleDragPolygon(3, polygon)
-            }}
-            paths={[
-              {lat: 53.55407580010735, lng: 10.00257429626464},
-              {lat: 53.55407580010735, lng: 10.00257429626464},
-              {lat: 53.55540149096023, lng: 9.994377465515129},
-            ]}
-            options={{
-              fillColor: 'red',
-              fillOpacity: 0.2,
-              strokeColor: 'red',
-              strokeOpacity: 0.4,
-              strokeWeight: 2,
-            }}
-            editable
-            draggable
-          />
+          {
+            areas.map((area) => (
+              <Polygon
+              ref={polygonRef}
+              onDragEnd={() => {
+                const polygon = polygonRef.current
+                handleDragPolygon(3, polygon)
+              }}
+              paths={
+                filterCoords(area.id)
+              }
+              options={{
+                fillColor: 'red',
+                fillOpacity: 0.2,
+                strokeColor: 'red',
+                strokeOpacity: 0.4,
+                strokeWeight: 2,
+              }}
+              editable
+              draggable
+            />
+            ))
+          }
         </Map>
       </APIProvider>
     </div>

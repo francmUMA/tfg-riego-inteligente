@@ -32,3 +32,19 @@ export async function deleteCoords(area: number, token: string) {
         return false
     }
 }
+
+export async function getCoordsArea(area: number, token: string) {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    const response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/coords/' + area, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
+    }
+}
