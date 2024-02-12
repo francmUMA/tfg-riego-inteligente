@@ -355,7 +355,7 @@ const App = () => {
 
   const orderCoords = (coords) => {
     let orderedCoords = []
-    for (i = 0; i < coords.length; i++) {
+    for (let i = 0; i < coords.length; i++) {
       let coord = coords.find(coord => coord.index == i)
       orderedCoords.push(coord)
     }
@@ -447,17 +447,16 @@ const App = () => {
             editable
             draggable
           /> */}
-          {
-            areas.map((area) => (
-              <Polygon
+          <Polygon
               ref={polygonRef}
               onDragEnd={() => {
                 const polygon = polygonRef.current
-                handleDragPolygon(3, polygon)
+                handleDragPolygon(1, polygon)
               }}
-              paths={
-                filterCoords(area.id)
-              }
+              paths={[
+                {lat: 53.54992, lng: 10.00678},
+                {lat: 53.54992, lng: 10.00678}
+              ]}
               options={{
                 fillColor: 'red',
                 fillOpacity: 0.2,
@@ -468,7 +467,28 @@ const App = () => {
               editable
               draggable
             />
-            ))
+          {
+            // areas.map((area) => (
+            //   <Polygon
+            //   ref={polygonRef}
+            //   onDragEnd={() => {
+            //     const polygon = polygonRef.current
+            //     handleDragPolygon(3, polygon)
+            //   }}
+            //   paths={
+            //     filterCoords(area.id)
+            //   }
+            //   options={{
+            //     fillColor: 'red',
+            //     fillOpacity: 0.2,
+            //     strokeColor: 'red',
+            //     strokeOpacity: 0.4,
+            //     strokeWeight: 2,
+            //   }}
+            //   editable
+            //   draggable
+            // />
+            // ))
           }
         </Map>
       </APIProvider>
