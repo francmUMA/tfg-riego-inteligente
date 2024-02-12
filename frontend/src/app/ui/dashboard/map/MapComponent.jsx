@@ -1,7 +1,7 @@
 import {APIProvider, Map, Marker, MapControl, ControlPosition, useMapsLibrary, GoogleMapsContext} from '@vis.gl/react-google-maps';
 import { Circle } from "./Circle.tsx"
 import { Polygon } from "./Polygon.tsx"
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTitle } from "@mui/material"
 import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
@@ -10,6 +10,8 @@ import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts'
 import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { getAreas } from '@/src/app/lib/areasUtils.ts';
+import { TbPolygon } from "react-icons/tb";
+import { Mali } from 'next/font/google/index.js';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -54,7 +56,6 @@ const App = () => {
         polygonsArea.push(...polys)
       }
     }
-    console.log("polygonsArea", polygonsArea)
     setCoords(polygonsArea)
   }
 
@@ -70,7 +71,16 @@ const App = () => {
     }
   }
 
-  const handleMoveCenter = (event) => {
+  const handleMoveCenter = async (event) => {
+    const token = getCookie('token')
+    let polygonsArea = []
+    for (let area of areas) {
+      let polys = await getCoordsArea(area.id, token)
+      if (polys.length > 0) {
+        polygonsArea.push(...polys)
+      }
+    }
+    setCoords(polygonsArea)
     setCenterLat(event.detail.center.lat)
     setCenterLng(event.detail.center.lng)
   }
@@ -337,19 +347,19 @@ const App = () => {
   }
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- Manejo de coordenadas de figuras ------------------------------------------
-  const polygonRef = useRef(null)
 
   const handleDragPolygon = async (area, polygon) => {
     const token = getCookie('token')
     let delRes = await deleteCoords(area, token)
     if (delRes && polygon != null) {
-      polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
-        console.log("coord ", index, "Lat: ", point.lat(), "Lng: ", point.lng())
-        let res = await addCoords(point.lat(), point.lng(), area, index, token)
-        if (!res) {
-          console.log('Error updating polygon position')
-        }
-      })
+      if (polygon.latLngs.Fg[0] !== undefined && polygon.latLngs.Fg[0].Fg.length > 0)
+        polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
+          let res = await addCoords(point.lat(), point.lng(), area, index, token)
+          if (!res) {
+            console.log('Error updating polygon position')
+          }
+        })
+      
     }
   }
 
@@ -367,10 +377,68 @@ const App = () => {
     let orderPolCoords = orderCoords(polCoords)
     let coordList = []
     for (let coord of orderPolCoords) {
-      let elem = {lat: coord.Latitud, lng: coord.Longitud}
-      coordList.push(elem)
+      if (coord !== undefined && coord.Latitud != null && coord.Longitud != null) {
+        let elem = {lat: coord.Latitud, lng: coord.Longitud}
+        coordList.push(elem)
+      }
     }
     return coordList
+  }
+  //----------------------------------------------------------------------------------------------------------------
+  //------------------------------------ Dialog adicion de figuras -------------------------------------------------
+  const [IsOpenPlacePolygonDialog, setIsOpenPlacePolygonDialog] = useState(false)
+  const [selectedArea, setSelectedArea] = useState(areas !== undefined ? areas[0]?.id : 0)
+
+  const polygonRef = useRef([])
+
+  const openPlacePolygonDialog = () => {
+    setIsOpenPlacePolygonDialog(true)
+  }
+
+  const closePlacePolygonDialog = () => {
+    setIsOpenPlacePolygonDialog(false)
+  }
+
+  useEffect(() => {
+    setSelectedArea(areas !== undefined && areas.length > 0 ? areas[0]?.id : 0)
+    polygonRef.current = polygonRef.current.slice(0, areas.length)
+  }, [areas])
+
+  const handlePlacePolygonButton = async () => {
+    const token = getCookie('token')
+    let coord1 = await addCoords(centerLat, centerLng, selectedArea, 0, token)
+    let coord2 = await addCoords(centerLat + 0.0001, centerLng, selectedArea, 1, token)
+    if (!coord1 || !coord2) {
+      alert('Error placing polygon')
+    }
+    closePlacePolygonDialog()
+  }
+
+  const PlacePolygonDialog = () => {
+    return (
+      <Dialog open={IsOpenPlacePolygonDialog} onClose={closePlacePolygonDialog}>
+        <DialogTitle className="w-full h-full border">Coloca un polígono</DialogTitle>
+        <div className="flex flex-col justify-center items-center p-4 gap-4">
+            <div className="w-full h-full">
+                <label className="font-medium">Elige un área</label>
+            </div>
+            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
+                {
+                    areas.length > 0
+                        ? <select className="w-full h-10" value={selectedArea} onChange={(event) => setSelectedArea(event.target.value)}>
+                            {areas.map((area) => (
+                                <option key={area.id} value={area.id}>{area.name}</option>
+                            ))}
+                        </select>
+                        : <p>No hay áreas</p>
+                }
+                <button onClick={handlePlacePolygonButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                    <p>Colocar polígono</p>
+                </button>
+            </div>
+        </div>
+      </Dialog>
+    )
   }
   //----------------------------------------------------------------------------------------------------------------
   return (
@@ -378,6 +446,7 @@ const App = () => {
       {PlaceMarkerDialog()}
       {PlaceDeviceMarkerDialog()}
       {PlaceActuadorMarkerDialog()}
+      {PlacePolygonDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
         <Map id='map' mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
           {devices.map((device) => (
@@ -433,6 +502,11 @@ const App = () => {
                 <img src="/chip.svg" className="w-8"/>
               </button>
             </div>
+            <div id='add-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+              <button onClick={openPlacePolygonDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
+                <TbPolygon size={30} className='w-9'></TbPolygon>
+              </button>
+            </div>
           </MapControl>
           {/* <Circle
             center={{lat: 53.54992, lng: 10.00678}}
@@ -447,16 +521,21 @@ const App = () => {
             editable
             draggable
           /> */}
-          <Polygon
-              ref={polygonRef}
-              onDragEnd={() => {
-                const polygon = polygonRef.current
-                handleDragPolygon(1, polygon)
+          {
+            areas.map((area, index) => (
+              <Polygon
+              ref={pol => polygonRef[index] = pol}
+              onMouseOver={() => {
+                const polygon = polygonRef.current[index]
+                handleDragPolygon(area.id, polygon)
               }}
-              paths={[
-                {lat: 53.54992, lng: 10.00678},
-                {lat: 53.54992, lng: 10.00678}
-              ]}
+              onDragEnd={() => {
+                const polygon = polygonRef.current[index]
+                handleDragPolygon(area.id, polygon)
+              }}
+              paths={
+                filterCoords(area.id)
+              }
               options={{
                 fillColor: 'red',
                 fillOpacity: 0.2,
@@ -466,29 +545,8 @@ const App = () => {
               }}
               editable
               draggable
-            />
-          {
-            // areas.map((area) => (
-            //   <Polygon
-            //   ref={polygonRef}
-            //   onDragEnd={() => {
-            //     const polygon = polygonRef.current
-            //     handleDragPolygon(3, polygon)
-            //   }}
-            //   paths={
-            //     filterCoords(area.id)
-            //   }
-            //   options={{
-            //     fillColor: 'red',
-            //     fillOpacity: 0.2,
-            //     strokeColor: 'red',
-            //     strokeOpacity: 0.4,
-            //     strokeWeight: 2,
-            //   }}
-            //   editable
-            //   draggable
-            // />
-            // ))
+              />
+            ))
           }
         </Map>
       </APIProvider>
