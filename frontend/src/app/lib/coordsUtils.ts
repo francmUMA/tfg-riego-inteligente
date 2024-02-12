@@ -1,4 +1,4 @@
-export async function addCoords(Latitud: number, Longitud: number, area: number, token: string) {
+export async function addCoords(Latitud: number, Longitud: number, area: number, index: number, token: string) {
     let options = {
         method: 'POST',
         headers: {
@@ -8,6 +8,7 @@ export async function addCoords(Latitud: number, Longitud: number, area: number,
         body: JSON.stringify({
             Latitud: Latitud,
             Longitud: Longitud,
+            index: index
         })
     }
     const response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/coords/" + area, options)

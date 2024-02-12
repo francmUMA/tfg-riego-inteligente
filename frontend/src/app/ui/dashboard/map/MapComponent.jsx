@@ -345,7 +345,7 @@ const App = () => {
     if (delRes && polygon != null) {
       polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
         console.log("coord ", index, "Lat: ", point.lat(), "Lng: ", point.lng())
-        let res = await addCoords(point.lat(), point.lng(), area, token)
+        let res = await addCoords(point.lat(), point.lng(), area, index, token)
         if (!res) {
           console.log('Error updating polygon position')
         }
@@ -353,10 +353,20 @@ const App = () => {
     }
   }
 
+  const orderCoords = (coords) => {
+    let orderedCoords = []
+    for (i = 0; i < coords.length; i++) {
+      let coord = coords.find(coord => coord.index == i)
+      orderedCoords.push(coord)
+    }
+    return orderedCoords
+  }
+
   const filterCoords = (areaId) => {
     let polCoords = coords.filter(coord => coord.area == areaId)
+    let orderPolCoords = orderCoords(polCoords)
     let coordList = []
-    for (let coord of polCoords) {
+    for (let coord of orderPolCoords) {
       let elem = {lat: coord.Latitud, lng: coord.Longitud}
       coordList.push(elem)
     }
