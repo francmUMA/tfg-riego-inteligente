@@ -17,5 +17,8 @@ export default db.define("Coordenadas", {
     },
     radius: {
         type: DataTypes.INTEGER
+    },
+    index: {
+        type: DataTypes.INTEGER
     }
 })
