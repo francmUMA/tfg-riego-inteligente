@@ -7,7 +7,8 @@ import areasModel from "../../areas/models/areasModel.js"
     @params: identificador del área
              {
                 Latitud: float,
-                Longitud: float
+                Longitud: float,
+                index: int
              }
 */
 
@@ -37,6 +38,11 @@ export const addCoords = async (req, res) => {
         return
     }
 
+    if (req.body.index === undefined || req.body.index === null || req.body.index < 0) {
+        res.status(400).send("Invalid index")
+        return
+    }
+
     if (req.params.area === undefined || req.params.area === null) {
         res.status(400).send("Invalid area")
         return
@@ -58,7 +64,8 @@ export const addCoords = async (req, res) => {
         await coordsModel.create({
             Latitud: req.body.Latitud,
             Longitud: req.body.Longitud,
-            area: req.params.area
+            area: req.params.area,
+            index: req.body.index
         })
         res.status(200).send("Coordinates added")
     } catch (error) {
