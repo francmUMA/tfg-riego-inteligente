@@ -53,7 +53,7 @@ import {
       onDragStart,
       onDragEnd,
       onMouseOver,
-      onMouseOut
+      onMouseOut,
     });
   
     const geometryLibrary = useMapsLibrary('geometry');
@@ -106,7 +106,7 @@ import {
         ['dragstart', 'onDragStart'],
         ['dragend', 'onDragEnd'],
         ['mouseover', 'onMouseOver'],
-        ['mouseout', 'onMouseOut']
+        ['mouseout', 'onMouseOut'],
       ].forEach(([eventName, eventCallback]) => {
         gme.addListener(polygon, eventName, (e: google.maps.MapMouseEvent) => {
           const callback = callbacks.current[eventCallback];

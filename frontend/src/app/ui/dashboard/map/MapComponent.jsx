@@ -10,7 +10,7 @@ import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts'
 import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { getAreas } from '@/src/app/lib/areasUtils.ts';
-import { TbPolygon } from "react-icons/tb";
+import { TbPolygon } from "react-icons/tb"
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -193,6 +193,8 @@ const App = () => {
   }
 
   const openPlaceDeviceMarkerDialog = () => {
+    let device = devices.find(device => device.Latitud == null && device.Longitud == null)
+    if (device !== undefined) setSelectedDevice(device.id)
     setIsOpenPlaceDeviceMarkerDialog(true)
   }
 
@@ -388,6 +390,7 @@ const App = () => {
   //------------------------------------ Dialog adicion de figuras -------------------------------------------------
   const [IsOpenPlacePolygonDialog, setIsOpenPlacePolygonDialog] = useState(false)
   const [selectedArea, setSelectedArea] = useState(areas !== undefined ? areas[0]?.id : 0)
+  const [polygonn, setPolygon] = useState(null)
 
   const polygonRef = useRef(null)
 
@@ -555,8 +558,29 @@ const App = () => {
                 polygonRef
               }
               onDragEnd={() => {
-                const polygon = polygonRef.current
-                handleDragPolygon(1, polygon)
+                const polygonNew = polygonRef.current
+                console.log(polygonNew.getPath().getArray())
+                setPolygon(polygonNew)
+                handleDragPolygon(1, polygonNew)
+              }}
+              onMouseOut={() => {
+                let coords = filterCoords(1)
+                const polygonNew = polygonRef.current
+                let newCoords = []
+                for (let coord of polygonNew.getPath().getArray()) {
+                  newCoords.push({lat: coord.lat(), lng: coord.lng()})
+                }
+                let different = false
+                if (newCoords.length == coords.length) {
+                  for (let i = 0; i < newCoords.length && !different; i++) {
+                    if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
+                      different = true
+                      handleDragPolygon(1, polygonNew)
+                    }
+                  }
+                } else {
+                  handleDragPolygon(1, polygonNew)
+                }
               }}
               paths={[
                 filterCoords(1)
