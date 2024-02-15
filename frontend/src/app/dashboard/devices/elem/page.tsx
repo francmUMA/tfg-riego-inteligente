@@ -450,7 +450,7 @@ export default function Page() {
                     <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
                         <select className="w-full h-10" onChange={handleSelectNewActuadorArea}>
                             {
-                                areas !== undefined && areas[0].name == "" && areas.map((area, index) => {
+                                areas !== undefined && areas[0].name != "" && areas.map((area, index) => {
                                     return (
                                         <option key={index} value={area.id}>{area.name}</option>
                                     )
@@ -509,7 +509,7 @@ export default function Page() {
                         <select className="w-full h-10" onChange={handleSelectNewSensorArea}>
                             {
 
-                                areas !== undefined && areas[0].name == "" && areas.map((area, index) => {
+                                areas !== undefined && areas[0].name != "" && areas.map((area, index) => {
                                     return (
                                         <option key={index} value={area.id}>{area.name}</option>
                                     )
