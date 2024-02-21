@@ -1,7 +1,7 @@
-import {APIProvider, Map, Marker, MapControl, ControlPosition, useMapsLibrary, GoogleMapsContext} from '@vis.gl/react-google-maps';
+import {APIProvider, Map, Marker, MapControl, ControlPosition} from '@vis.gl/react-google-maps';
 import { Circle } from "./Circle.tsx"
 import { Polygon } from "./Polygon.tsx"
-import { use, useEffect, useRef, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTitle } from "@mui/material"
 import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
@@ -11,6 +11,7 @@ import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUti
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { getAreas } from '@/src/app/lib/areasUtils.ts';
 import { TbPolygon } from "react-icons/tb"
+import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn } from "react-icons/md";
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -389,10 +390,35 @@ const App = () => {
   //----------------------------------------------------------------------------------------------------------------
   //------------------------------------ Dialog adicion de figuras -------------------------------------------------
   const [IsOpenPlacePolygonDialog, setIsOpenPlacePolygonDialog] = useState(false)
-  const [selectedArea, setSelectedArea] = useState(areas !== undefined ? areas[0]?.id : 0)
-  const [polygonn, setPolygon] = useState(null)
+  const [editMode, setEditMode] = useState(false)
 
-  const polygonRef = useRef(null)
+  const polygonRef = useRef([])
+
+
+  useEffect(() => {
+    if (polygonRef.current.length != areas.length) {
+      polygonRef.current = Array(areas.length).fill().map((_, i) => polygonRef.current[i] || createRef())
+    }
+  }, [areas])
+
+  const handlePressEditButton = async () => {
+    // Guardar los datos en la base de datos en caso de que se haya finalizado de editar
+    if (editMode) {
+      const token = getCookie('token')
+      for (let area of areas){
+        let res = await deleteCoords(area.id, token)
+        // TODO: Manejar error en caso de que sea necesario
+        if (res) {
+          let coords = filterCoords(area.id)
+          for (let i = 0; i < coords.length; i++) {
+            let res = await addCoords(coords[i].lat, coords[i].lng, area.id, i, token)
+            if (!res) console.log('Error adding coords')
+          }
+        }
+      } 
+    }
+    setEditMode(!editMode)
+  }
 
   const openPlacePolygonDialog = () => {
     setIsOpenPlacePolygonDialog(true)
@@ -402,14 +428,10 @@ const App = () => {
     setIsOpenPlacePolygonDialog(false)
   }
 
-  useEffect(() => {
-    setSelectedArea(areas !== undefined && areas.length > 0 ? areas[0]?.id : 0)
-  }, [areas])
-
-  const handlePlacePolygonButton = async () => {
+  const handlePlacePolygonButton = async (area) => {
     const token = getCookie('token')
-    let coord1 = await addCoords(centerLat, centerLng, selectedArea, 0, token)
-    let coord2 = await addCoords(centerLat + 0.0001, centerLng, selectedArea, 1, token)
+    let coord1 = await addCoords(centerLat, centerLng, area, 0, token)
+    let coord2 = await addCoords(centerLat + 0.0001, centerLng, area, 1, token)
     if (!coord1 || !coord2) {
       alert('Error placing polygon')
     }
@@ -419,25 +441,21 @@ const App = () => {
   const PlacePolygonDialog = () => {
     return (
       <Dialog open={IsOpenPlacePolygonDialog} onClose={closePlacePolygonDialog}>
-        <DialogTitle className="w-full h-full border">Coloca un polígono</DialogTitle>
-        <div className="flex flex-col justify-center items-center p-4 gap-4">
-            <div className="w-full h-full">
-                <label className="font-medium">Elige un área</label>
-            </div>
-            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
-                {
-                    areas.length > 0
-                        ? <select className="w-full h-10" value={selectedArea} onChange={(event) => setSelectedArea(event.target.value)}>
-                            {areas.map((area) => (
-                                <option key={area.id} value={area.id}>{area.name}</option>
-                            ))}
-                        </select>
-                        : <p>No hay áreas</p>
-                }
-                <button onClick={handlePlacePolygonButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                    <p>Colocar polígono</p>
+        <DialogTitle className="w-full h-full border">Selecciona una zona</DialogTitle>
+        <div className="flex max-h-50 flex-col justify-center items-center p-4 gap-4 overflow-y-auto">
+            {
+              areas.length > 0
+              ? areas.map((area) => (
+                coords.find(coord => coord.area == area.id) === undefined &&
+                <button
+                  onClick={() => handlePlacePolygonButton(area.id)}
+                 className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
+                  <MdLocationOn size={30} className='w-9 ml-2 mr-5'></MdLocationOn>
+                  {area.name}
                 </button>
-            </div>
+              ))
+              : <p>No hay zonas</p>
+            }
         </div>
       </Dialog>
     )
@@ -490,111 +508,92 @@ const App = () => {
           ))}
           <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
             <div id='add-sensor-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlaceMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
+              <button onClick={openPlaceMarkerDialog} 
+              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+              rounded-md shadow-md'>
                 <img src="/humidity-percentage.svg" className="w-8"/>
               </button>
             </div>
             <div id='add-actuador-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlaceActuadorMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
+              <button onClick={openPlaceActuadorMarkerDialog} 
+              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+              rounded-md shadow-md'>
                 <img src="/faucet.svg" className="w-8"/>
               </button>
             </div>
             <div id='add-device-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlaceDeviceMarkerDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
+              <button onClick={openPlaceDeviceMarkerDialog} 
+              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+              rounded-md shadow-md'>
                 <img src="/chip.svg" className="w-8"/>
               </button>
             </div>
+            <div id='edit-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+              <button onClick={handlePressEditButton} 
+              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+              rounded-md shadow-md'>
+                {
+                  editMode  
+                  ? <MdOutlineDownloadDone size={30} className='w-9'></MdOutlineDownloadDone>
+                  : <MdEditLocationAlt size={30} className='w-9'></MdEditLocationAlt>
+                }
+              </button>
+            </div>
             <div id='add-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlacePolygonDialog} className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 rounded-sm shadow-md'>
-                <TbPolygon size={30} className='w-9'></TbPolygon>
+              <button onClick={openPlacePolygonDialog} 
+              className={
+                `${!editMode && 'hidden'} w-full h-full flex justify-center items-center bg-gray-50 
+                hover:bg-gray-200 rounded-md shadow-md`
+              }>
+                <MdOutlineAddLocation size={30} className='w-9'></MdOutlineAddLocation>
               </button>
             </div>
           </MapControl>
-          {/* <Circle
-            center={{lat: 53.54992, lng: 10.00678}}
-            radius={1000}
-            options={{
-              fillColor: 'red',
-              fillOpacity: 0.2,
-              strokeColor: 'red',
-              strokeOpacity: 0.4,
-              strokeWeight: 2,
-            }}
-            editable
-            draggable
-          /> */}
           {
-            // areas.map((area, index) => (
-            //   coords.find(coord => coord.area == area.id) &&
-            //   <Polygon
-            //   ref={
-            //     polygonRef
-            //   }
-            //   onMouseOver={() => {
-            //     const polygon = polygonRef.current
-            //     handleDragPolygon(area.id, polygon)
-            //   }}
-            //   onDragEnd={() => {
-            //     const polygon = polygonRef.current
-            //     handleDragPolygon(area.id, polygon)
-            //   }}
-            //   paths={
-            //     filterCoords(area.id)
-            //   }
-            //   options={{
-            //     fillColor: 'red',
-            //     fillOpacity: 0.2,
-            //     strokeColor: 'red',
-            //     strokeOpacity: 0.4,
-            //     strokeWeight: 2,
-            //   }}
-            //   editable
-            //   draggable
-            //   />
-            // ))
-          }
-          <Polygon
-              ref={
-                polygonRef
-              }
-              onDragEnd={() => {
-                const polygonNew = polygonRef.current
-                console.log(polygonNew.getPath().getArray())
-                setPolygon(polygonNew)
-                handleDragPolygon(1, polygonNew)
-              }}
-              onMouseOut={() => {
-                let coords = filterCoords(1)
-                const polygonNew = polygonRef.current
-                let newCoords = []
-                for (let coord of polygonNew.getPath().getArray()) {
-                  newCoords.push({lat: coord.lat(), lng: coord.lng()})
+            areas.map((area, index) => (
+              <Polygon
+                ref={
+                  polygonRef.current[index]
                 }
-                let different = false
-                if (newCoords.length == coords.length) {
-                  for (let i = 0; i < newCoords.length && !different; i++) {
-                    if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
-                      different = true
-                      handleDragPolygon(1, polygonNew)
+                onMouseOut={() => {
+                  if (editMode){
+                    let coords = filterCoords(1)
+                    const polygonNew = polygonRef.current[index].current
+                    console.log(polygonNew)
+                    let newCoords = []
+                    if (polygonNew !== undefined && polygonNew != null){
+                      for (let coord of polygonNew.getPath().getArray()) {
+                        newCoords.push({lat: coord.lat(), lng: coord.lng()})
+                      }
+                      let different = false
+                      if (newCoords.length == coords.length) {
+                        for (let i = 0; i < newCoords.length && !different; i++) {
+                          if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
+                            different = true
+                            handleDragPolygon(area.id, polygonNew)
+                          }
+                        }
+                      } else {
+                        handleDragPolygon(area.id, polygonNew)
+                      }
                     }
                   }
-                } else {
-                  handleDragPolygon(1, polygonNew)
-                }
-              }}
-              paths={[
-                filterCoords(1)
-              ]}
-              options={{
-                fillColor: 'red',
-                fillOpacity: 0.2,
-                strokeColor: 'red',
-                strokeOpacity: 0.4,
-                strokeWeight: 2,
-              }}
-              editable
-              draggable
+                }}
+                paths={[
+                  filterCoords(area.id)
+                ]}
+                options={{
+                  fillColor: 'red',
+                  fillOpacity: 0.2,
+                  strokeColor: 'red',
+                  strokeOpacity: 0.4,
+                  strokeWeight: 2,
+                }}
+                editable={editMode}
+                draggable={editMode}
               />
+            ))
+          }
         </Map>
       </APIProvider>
     </div>
