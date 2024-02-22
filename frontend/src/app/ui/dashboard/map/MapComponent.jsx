@@ -392,15 +392,6 @@ const App = () => {
   const [IsOpenPlacePolygonDialog, setIsOpenPlacePolygonDialog] = useState(false)
   const [editMode, setEditMode] = useState(false)
 
-  const polygonRef = useRef([])
-
-
-  useEffect(() => {
-    if (polygonRef.current.length != areas.length) {
-      polygonRef.current = Array(areas.length).fill().map((_, i) => polygonRef.current[i] || createRef())
-    }
-  }, [areas])
-
   const handlePressEditButton = async () => {
     // Guardar los datos en la base de datos en caso de que se haya finalizado de editar
     if (editMode) {
@@ -434,6 +425,15 @@ const App = () => {
     let coord2 = await addCoords(centerLat + 0.0001, centerLng, area, 1, token)
     if (!coord1 || !coord2) {
       alert('Error placing polygon')
+    } else {
+      let polygonsArea = []
+      for (let area of areas) {
+        let polys = await getCoordsArea(area.id, token)
+        if (polys.length > 0) {
+          polygonsArea.push(...polys)
+        }
+      }
+      setCoords(polygonsArea)
     }
     closePlacePolygonDialog()
   }
@@ -460,6 +460,57 @@ const App = () => {
       </Dialog>
     )
   }
+  //----------------------------------------------------------------------------------------------------------------
+  // ----------------------------------- PolygonComponent ------------------------------------------
+  const PolygonComponent = ({ area, editMode, coords }) => {
+    const [polygonRef, setPolygonRef] = useState(null)
+
+    useEffect(() => {
+        if (!polygonRef) {
+            setPolygonRef(createRef())
+        }
+    }, [polygonRef])
+
+    return (
+        <Polygon
+            ref={polygonRef}
+            onMouseOut={() => {
+                if (editMode){
+                  const polygonNew = polygonRef.current
+                  let newCoords = []
+                  if (polygonNew !== undefined && polygonNew != null){
+                      for (let coord of polygonNew.getPath().getArray()) {
+                        newCoords.push({lat: coord.lat(), lng: coord.lng()})
+                      }
+                      let different = false
+                      if (newCoords.length == coords.length) {
+                      for (let i = 0; i < newCoords.length && !different; i++) {
+                          if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
+                            different = true
+                            handleDragPolygon(area, polygonNew)
+                          }
+                      }
+                      } else {
+                        handleDragPolygon(area, polygonNew)
+                      }
+                  }
+                }
+            }}
+            paths={[
+                coords
+            ]}
+            options={{
+                fillColor: 'red',
+                fillOpacity: 0.2,
+                strokeColor: 'red',
+                strokeOpacity: 0.4,
+                strokeWeight: 2,
+            }}
+            editable={editMode}
+            draggable={editMode}
+        />
+    )
+  } 
   //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
@@ -550,48 +601,8 @@ const App = () => {
             </div>
           </MapControl>
           {
-            areas.map((area, index) => (
-              <Polygon
-                ref={
-                  polygonRef.current[index]
-                }
-                onMouseOut={() => {
-                  if (editMode){
-                    let coords = filterCoords(1)
-                    const polygonNew = polygonRef.current[index].current
-                    console.log(polygonNew)
-                    let newCoords = []
-                    if (polygonNew !== undefined && polygonNew != null){
-                      for (let coord of polygonNew.getPath().getArray()) {
-                        newCoords.push({lat: coord.lat(), lng: coord.lng()})
-                      }
-                      let different = false
-                      if (newCoords.length == coords.length) {
-                        for (let i = 0; i < newCoords.length && !different; i++) {
-                          if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
-                            different = true
-                            handleDragPolygon(area.id, polygonNew)
-                          }
-                        }
-                      } else {
-                        handleDragPolygon(area.id, polygonNew)
-                      }
-                    }
-                  }
-                }}
-                paths={[
-                  filterCoords(area.id)
-                ]}
-                options={{
-                  fillColor: 'red',
-                  fillOpacity: 0.2,
-                  strokeColor: 'red',
-                  strokeOpacity: 0.4,
-                  strokeWeight: 2,
-                }}
-                editable={editMode}
-                draggable={editMode}
-              />
+            areas.map((area) => (
+              <PolygonComponent area={area.id} editMode={editMode} coords={filterCoords(area.id)} />
             ))
           }
         </Map>
