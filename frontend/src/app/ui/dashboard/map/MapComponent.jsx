@@ -11,7 +11,7 @@ import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUti
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { getAreas } from '@/src/app/lib/areasUtils.ts';
 import { TbPolygon } from "react-icons/tb"
-import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn } from "react-icons/md";
+import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt } from "react-icons/md";
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -145,38 +145,19 @@ const App = () => {
   const PlaceMarkerDialog = () => {
     return (
       <Dialog open={IsOpenPlaceMarkerDialog} onClose={closePlaceMarkerDialog}>
-        <DialogTitle className="w-full h-full border">Coloca un sensor</DialogTitle>
-        <div className="flex flex-col justify-center items-center p-4 gap-4">
-            <div className="w-full h-full">
-                <label className="font-medium">Elige un dispositivo</label>
-            </div>
-            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
-                {
-                    devices.length > 0
-                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectedDevice}>
-                            {devices.map((device) => (
-                                <option key={device.id} value={device.id}>{device.id}</option>
-                            ))}
-                        </select>
-                        : <p>No hay dispositivos</p>
-                }
-                <div className="w-full h-full flex items-center">
-                  <label className="font-medium">Elige un sensor</label>
-                </div>
-                {
-                    sensors.filter(sensor => sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null).length > 0
-                        ? <select className="w-full h-10" value={selectedSensor} onChange={handleSelectedSensor}>
-                            {sensors.map((sensor) => (
-                                sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null &&
-                                  <option key={sensor.id} value={sensor.id}>{sensor.id}</option>
-                            ))}
-                        </select>
-                        : <p>No hay sensores</p>
-                }
-                <button onClick={handlePlaceMarkerButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                    <p>Colocar marcador</p>
+        <DialogTitle className="w-full h-full border">Coloca un elemento</DialogTitle>
+        <div className="flex max-h-50 flex-col justify-center items-center p-4 gap-4 overflow-y-auto">
+            {
+              devices.length > 0 && 
+              devices.map((device) => (
+                <button
+                  onClick={() => handlePlacePolygonButton(area.id)}
+                 className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
+                  <MdLocationOn size={30} className='w-9 ml-2 mr-5'></MdLocationOn>
+                  {device.id}
                 </button>
-            </div>
+              ))
+            }
         </div>
       </Dialog>
     )
@@ -211,33 +192,6 @@ const App = () => {
     }
   }
 
-  const PlaceDeviceMarkerDialog = () => {
-    return (
-      <Dialog open={IsOpenPlaceDeviceMarkerDialog} onClose={closePlaceDeviceMarkerDialog}>
-        <DialogTitle className="w-full h-full border">Coloca un dispositivo</DialogTitle>
-        <div className="flex flex-col justify-center items-center p-4 gap-4">
-            <div className="w-full h-full">
-                <label className="font-medium">Elige un dispositivo</label>
-            </div>
-            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
-                {
-                    devices.filter(device => device.Latitud == null && device.Longitud == null).length > 0
-                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleOnlySelectDevice}>
-                            {devices.map((device) => (
-                                device.Latitud == null && device.Longitud == null &&
-                                <option key={device.id} value={device.id}>{device.id}</option>
-                            ))}
-                        </select>
-                        : <p>No hay dispositivos</p>
-                }
-                <button onClick={handlePlaceDeviceMarkerButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                    <p>Colocar dispositivo</p>
-                </button>
-            </div>
-        </div>
-      </Dialog>
-    )
-  }
   // ----------------------------------- Update Actuador Position Dialog ---------------------------------------------
 
   const [IsOpenPlaceActuadorMarkerDialog, setIsOpenPlaceActuadorMarkerDialog] = useState(false)
@@ -299,45 +253,6 @@ const App = () => {
     }
   }
 
-  const PlaceActuadorMarkerDialog = () => {
-    return (
-      <Dialog open={IsOpenPlaceActuadorMarkerDialog} onClose={closePlaceActuadorMarkerDialog}>
-        <DialogTitle className="w-full h-full border">Coloca un actuador</DialogTitle>
-        <div className="flex flex-col justify-center items-center p-4 gap-4">
-            <div className="w-full h-full">
-                <label className="font-medium">Elige un dispositivo</label>
-            </div>
-            <div className="w-full h-full flex flex-col justify-center gap-3 items-center">
-                {
-                    devices.length > 0
-                        ? <select className="w-full h-10" value={selectedDevice} onChange={handleSelectActuadorDevice}>
-                            {devices.map((device) => (
-                                <option key={device.id} value={device.id}>{device.id}</option>
-                            ))}
-                        </select>
-                        : <p>No hay dispositivos</p>
-                }
-                <div className="w-full h-full flex items-center">
-                  <label className="font-medium">Elige un actuador</label>
-                </div>
-                {
-                    actuadores.filter(actuador => actuador.device == selectedDevice && actuador.Latitud == null && actuador.Longitud == null).length > 0
-                        ? <select className="w-full h-10" value={selectedActuador} onChange={handleSelectedActuador}>
-                            {actuadores.map((actuador) => (
-                                actuador.device == selectedDevice && actuador.Latitud == null && actuador.Longitud == null &&
-                                  <option key={actuador.id} value={actuador.id}>{actuador.id}</option>
-                            ))}
-                        </select>
-                        : <p>No hay actuadores</p>
-                }
-                <button onClick={handlePlaceActuadorMarkerButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                    <p>Colocar marcador</p>
-                </button>
-            </div>
-        </div>
-      </Dialog>
-    )
-  }
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- Manejo de coordenadas de figuras ------------------------------------------
 
@@ -515,18 +430,21 @@ const App = () => {
   return (
     <div className='w-full h-full'>
       {PlaceMarkerDialog()}
-      {PlaceDeviceMarkerDialog()}
-      {PlaceActuadorMarkerDialog()}
       {PlacePolygonDialog()}
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
-        <Map id='map' mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
+        <Map id='map'
+          onClick={(e) => {
+            if (editMode) openPlaceMarkerDialog()
+            console.log(e.detail.latLng.lat, e.detail.latLng.lng)
+          }}
+         mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
           {devices.map((device) => (
             device.Latitud && device.Longitud &&
             <Marker
               key={device.id}
               icon={"/chip.svg"}
               position={{lat: device.Latitud, lng: device.Longitud}}
-              draggable
+              draggable={editMode}
               onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
             >
             </Marker>
@@ -539,7 +457,7 @@ const App = () => {
               key={sensor.id}
               icon={"/humidity-percentage.svg"}
               position={{lat: sensor.Latitud, lng: sensor.Longitud}}
-              draggable
+              draggable={editMode}
               onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
             >
             </Marker>
@@ -552,31 +470,16 @@ const App = () => {
               key={actuador.id}
               icon={"/faucet.svg"}
               position={{lat: actuador.Latitud, lng: actuador.Longitud}}
-              draggable
+              draggable={editMode}
               onDragEnd={(e) => handleDragActuadorMarker(e, actuador.id)}
             >
             </Marker>
           ))}
           <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
-            <div id='add-sensor-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlaceMarkerDialog} 
-              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+            <div id='add-marker-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+              <button className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
               rounded-md shadow-md'>
-                <img src="/humidity-percentage.svg" className="w-8"/>
-              </button>
-            </div>
-            <div id='add-actuador-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlaceActuadorMarkerDialog} 
-              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
-              rounded-md shadow-md'>
-                <img src="/faucet.svg" className="w-8"/>
-              </button>
-            </div>
-            <div id='add-device-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlaceDeviceMarkerDialog} 
-              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
-              rounded-md shadow-md'>
-                <img src="/chip.svg" className="w-8"/>
+                <MdAddLocationAlt size={30} className='w-9'></MdAddLocationAlt>
               </button>
             </div>
             <div id='edit-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
