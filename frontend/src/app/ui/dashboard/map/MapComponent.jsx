@@ -1,4 +1,5 @@
-import {APIProvider, Map, Marker, MapControl, ControlPosition} from '@vis.gl/react-google-maps';
+import {APIProvider, Map, Marker, MapControl, ControlPosition, InfoWindow} from '@vis.gl/react-google-maps';
+import { Image } from 'next/image.js'
 import { Circle } from "./Circle.tsx"
 import { Polygon } from "./Polygon.tsx"
 import { createRef, useEffect, useRef, useState } from 'react';
@@ -10,8 +11,11 @@ import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts'
 import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { getAreas } from '@/src/app/lib/areasUtils.ts';
-import { TbPolygon } from "react-icons/tb"
 import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt } from "react-icons/md";
+import { HiMiniCpuChip } from "react-icons/hi2";
+import { IoWaterOutline } from "react-icons/io5";
+import { WiHumidity } from "react-icons/wi";
+import { FaTemperatureQuarter, FaFaucetDrip } from "react-icons/fa6";
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -59,6 +63,11 @@ const App = () => {
     setCoords(polygonsArea)
   }
 
+  //------------------------------------ MARKERS -----------------------------------------------------------------
+  const [addMarkerMode, setAddMarkerMode] = useState(false)
+  const [elemType, setElemType] = useState(undefined)       //0 -> device, 1 -> sensor, 2 -> actuador       
+  const [elemId, setElemId] = useState(undefined)
+
   const handleDragDeviceMarker = async (event, id) => {
     const token = getCookie('token')
     let response = await updateDevicePosition(id, event.latLng.lat(), event.latLng.lng(), token)
@@ -77,10 +86,7 @@ const App = () => {
   }
 
   // ----------------------------------- Update Sensor Position Dialog ---------------------------------------------
-
   const [IsOpenPlaceMarkerDialog, setIsOpenPlaceMarkerDialog] = useState(false)
-  const [selectedDevice, setSelectedDevice] = useState(0)
-  const [selectedSensor, setSelectedSensor] = useState(undefined)
 
   const handleDragSensorMarker = async (event, id) => {
     const token = getCookie('token')
@@ -97,38 +103,17 @@ const App = () => {
     }
   }
 
-  const handleSelectedDevice = (event) => {
-    setSelectedDevice(event.target.value)
-    setSelectedSensor(sensors.find(sensor => sensor.device == event.target.value)?.id)
+  const openPlaceMarkerDialog = () => {
+    setIsOpenPlaceMarkerDialog(true)
   }
-
-  const handleSelectedSensor = (event) => {
-    setSelectedSensor(event.target.value)
-  }
-
+ 
   const closePlaceMarkerDialog = () => {
     setIsOpenPlaceMarkerDialog(false)
   }
 
-  const openPlaceMarkerDialog = () => {
-    setIsOpenPlaceMarkerDialog(true)
-  }
-
-  useEffect(() => {
-    setSelectedDevice(devices[0]?.id)
-  }, [devices])
-
-  useEffect(() => {
-    // Primer sensor sin posición del device seleccionado
-    let sensor = sensors.find(sensor => sensor.device == selectedDevice && sensor.Latitud == null && sensor.Longitud == null)
-    setSelectedSensor(sensor?.id)
-  }, 
-  [selectedDevice, sensors])
-
-  const handlePlaceMarkerButton = async () => {
+  const handlePlaceSensorMarkerButton = async (lat, lon) => {
     const token = getCookie('token')
-    console.log(selectedSensor)
-    let response = await updateSensorPosition(selectedSensor, centerLat, centerLng, token)
+    let response = await updateSensorPosition(elemId, lat, lon, token)
     if (response) {
       let newSensors = []
       for (let device of devices) {
@@ -149,14 +134,55 @@ const App = () => {
         <div className="flex max-h-50 flex-col justify-center items-center p-4 gap-4 overflow-y-auto">
             {
               devices.length > 0 && 
-              devices.map((device) => (
+              devices.map((device) => device.Latitud == null && device.Longitud == null && 
                 <button
-                  onClick={() => handlePlacePolygonButton(area.id)}
+                  onClick={() => {
+                    setElemType(0)
+                    setElemId(device.id)
+                    setAddMarkerMode(true)
+                    closePlaceMarkerDialog()
+                  }}
                  className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
-                  <MdLocationOn size={30} className='w-9 ml-2 mr-5'></MdLocationOn>
+                  <HiMiniCpuChip  size={30} className='w-9 ml-2 mr-5' />
                   {device.id}
                 </button>
-              ))
+              )
+            }
+            {
+              sensors.length > 0 && 
+              sensors.map((sensor) => sensor.Latitud == null && sensor.Longitud == null && 
+                <button
+                  onClick={() => {
+                    setElemType(1)
+                    setElemId(sensor.id)
+                    setAddMarkerMode(true)
+                    closePlaceMarkerDialog()
+                  }}
+                 className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
+                  {
+                    sensor.type == 'DHT' ? <WiHumidity size={30} className='w-9 ml-2 mr-5'/>
+                    : sensor.type == 'TMP' ? <FaTemperatureQuarter  size={30} className='w-9 ml-2 mr-5'/>
+                    : sensor.type == 'CAU' && <IoWaterOutline size={30} className='w-9 ml-2 mr-5' />
+                  }
+                  {sensor.id}
+                </button>
+              )
+            }
+            {
+              actuadores.length > 0 && 
+              actuadores.map((actuador) => actuador.Latitud == null && actuador.Longitud == null && 
+                <button
+                  onClick={() => {
+                    setElemType(2)
+                    setElemId(actuador.id)
+                    setAddMarkerMode(true)
+                    closePlaceMarkerDialog()
+                  }}
+                 className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
+                  <FaFaucetDrip size={30} className='w-9 ml-2 mr-5'/>
+                  {actuador.id}
+                </button>
+              )
             }
         </div>
       </Dialog>
@@ -164,38 +190,20 @@ const App = () => {
   }
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- Update Device Position Dialog ---------------------------------------------
-  const [IsOpenPlaceDeviceMarkerDialog, setIsOpenPlaceDeviceMarkerDialog] = useState(false)
 
-  const handleOnlySelectDevice = (event) => {
-    setSelectedDevice(event.target.value)
-  }
-
-  const closePlaceDeviceMarkerDialog = () => {
-    setIsOpenPlaceDeviceMarkerDialog(false)
-  }
-
-  const openPlaceDeviceMarkerDialog = () => {
-    let device = devices.find(device => device.Latitud == null && device.Longitud == null)
-    if (device !== undefined) setSelectedDevice(device.id)
-    setIsOpenPlaceDeviceMarkerDialog(true)
-  }
-
-  const handlePlaceDeviceMarkerButton = async () => {
+  const handlePlaceDeviceMarkerButton = async (lat, lon) => {
     const token = getCookie('token')
-    let response = await updateDevicePosition(selectedDevice, centerLat, centerLng, token)
+    let response = await updateDevicePosition(elemId, lat, lon, token)
     if (response) {
       let newDevices = await getDevices(token)
       setDevices(newDevices)
-      closePlaceDeviceMarkerDialog()
+      closePlaceMarkerDialog()
     } else {
       console.log('Error updating device position')
     }
   }
 
   // ----------------------------------- Update Actuador Position Dialog ---------------------------------------------
-
-  const [IsOpenPlaceActuadorMarkerDialog, setIsOpenPlaceActuadorMarkerDialog] = useState(false)
-  const [selectedActuador, setSelectedActuador] = useState(undefined)
 
   const handleDragActuadorMarker = async (event, id) => {
     const token = getCookie('token')
@@ -212,34 +220,9 @@ const App = () => {
     }
   }
 
-  const handleSelectActuadorDevice = (event) => {
-    setSelectedDevice(event.target.value)
-    setSelectedActuador(actuadores.find(actuador => actuador.device == event.target.value)?.id)
-  }
-
-  const handleSelectedActuador = (event) => {
-    setSelectedActuador(event.target.value)
-  }
-
-  const closePlaceActuadorMarkerDialog = () => {
-    setIsOpenPlaceActuadorMarkerDialog(false)
-  }
-
-  const openPlaceActuadorMarkerDialog = () => {
-    setIsOpenPlaceActuadorMarkerDialog(true)
-  }
-
-  useEffect(() => {
-    // Primer sensor sin posición del device seleccionado
-    let actuador = actuadores.find(actuador => actuador.device == selectedDevice && actuador.Latitud == null && actuador.Longitud == null)
-    setSelectedActuador(actuador?.id)
-  }, 
-  [selectedDevice, actuadores])
-
-  const handlePlaceActuadorMarkerButton = async () => {
+  const handlePlaceActuadorMarkerButton = async (lat, lon) => {
     const token = getCookie('token')
-    console.log(selectedActuador)
-    let response = await updatePositionActuador(selectedActuador, centerLat, centerLng, token)
+    let response = await updatePositionActuador(elemId, lat, lon, token)
     if (response) {
       let newActuadores = []
       for (let device of devices) {
@@ -247,7 +230,7 @@ const App = () => {
         newActuadores.push(...actuadores)
       }
       setActuadores(newActuadores)
-      closePlaceActuadorMarkerDialog()
+      closePlaceMarkerDialog()
     } else {
       console.log('Error updating device position')
     }
@@ -426,6 +409,9 @@ const App = () => {
         />
     )
   } 
+  //-----------------------------------------------------------------------------------------------------------------
+  //------------------------------------ InfoMarker -----------------------------------------------------
+  const [selectedMarker, setSelectedMarker] = useState(undefined)
   //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
@@ -434,20 +420,38 @@ const App = () => {
       <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
         <Map id='map'
           onClick={(e) => {
-            if (editMode) openPlaceMarkerDialog()
-            console.log(e.detail.latLng.lat, e.detail.latLng.lng)
+            if (editMode && addMarkerMode && elemType !== undefined && elemId !== undefined && elemType >= 0 && elemType < 3) {
+              if (elemType == 0){
+                handlePlaceDeviceMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
+              } else if (elemType == 1){
+                handlePlaceSensorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
+              } else {
+                handlePlaceActuadorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
+              }
+            } 
+            setAddMarkerMode(false)
           }}
          mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
-          {devices.map((device) => (
+          {devices.map((device, index) => (
             device.Latitud && device.Longitud &&
-            <Marker
-              key={device.id}
-              icon={"/chip.svg"}
-              position={{lat: device.Latitud, lng: device.Longitud}}
-              draggable={editMode}
-              onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
-            >
-            </Marker>
+            <div>
+              <Marker
+                key={device.id}
+                onClick={() => setSelectedMarker(index)}
+                icon={"/chip.svg"}
+                position={{lat: device.Latitud, lng: device.Longitud}}
+                draggable={editMode}
+                onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
+              >
+              </Marker>
+              { selectedMarker !== undefined && selectedMarker == index &&
+                <InfoWindow
+                  onCloseClick={() => setSelectedMarker(undefined)}
+                  position={{lat: device.Latitud, lng: device.Longitud}}>
+                    <h1>Test</h1>
+                </InfoWindow>
+              }
+            </div>
           ))}
           {sensors.map((sensor) => (
             sensor.Latitud && sensor.Longitud &&
@@ -459,6 +463,7 @@ const App = () => {
               position={{lat: sensor.Latitud, lng: sensor.Longitud}}
               draggable={editMode}
               onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
+              title={sensor.id}
             >
             </Marker>
           ))}
@@ -477,9 +482,23 @@ const App = () => {
           ))}
           <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
             <div id='add-marker-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
-              rounded-md shadow-md'>
+              <button className={`${
+                !editMode && 'hidden' 
+              }
+              w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+              rounded-md shadow-md`}
+              onClick={() => openPlaceMarkerDialog()}
+              >
                 <MdAddLocationAlt size={30} className='w-9'></MdAddLocationAlt>
+              </button>
+            </div>
+            <div id='add-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+              <button onClick={openPlacePolygonDialog} 
+              className={
+                `${!editMode && 'hidden'} w-full h-full flex justify-center items-center bg-gray-50 
+                hover:bg-gray-200 rounded-md shadow-md`
+              }>
+                <MdOutlineAddLocation size={30} className='w-9'></MdOutlineAddLocation>
               </button>
             </div>
             <div id='edit-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
@@ -491,15 +510,6 @@ const App = () => {
                   ? <MdOutlineDownloadDone size={30} className='w-9'></MdOutlineDownloadDone>
                   : <MdEditLocationAlt size={30} className='w-9'></MdEditLocationAlt>
                 }
-              </button>
-            </div>
-            <div id='add-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlacePolygonDialog} 
-              className={
-                `${!editMode && 'hidden'} w-full h-full flex justify-center items-center bg-gray-50 
-                hover:bg-gray-200 rounded-md shadow-md`
-              }>
-                <MdOutlineAddLocation size={30} className='w-9'></MdOutlineAddLocation>
               </button>
             </div>
           </MapControl>

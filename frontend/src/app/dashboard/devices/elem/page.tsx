@@ -738,8 +738,8 @@ export default function Page() {
                     </div>
                 </div>
                 <div id="datos" className="w-full h-full flex flex-col gap-3">
-                    <div id="info-general" className="w-full h-full min-h-16 flex flex-row gap-3 items-center md:justify-center overflow-x-scroll">
-                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                    <div id="info-general" className="w-full h-96 flex flex-row gap-3 items-center md:justify-center overflow-x-auto">
+                        <div className="w-50 h-20 flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <WifiIcon className="w-8 text-indigo-600"></WifiIcon>
                             <div className="flex flex-col justify-center">
                                 <p className="px-2 text-sm text-slate-400">Estado</p>
@@ -752,14 +752,14 @@ export default function Page() {
                                 </p>
                             </div>
                         </div>
-                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                        <div className="w-50 h-20 flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <EnvelopeIcon className="w-8 text-indigo-600"></EnvelopeIcon>
                             <div className="flex flex-col justify-center">
                                 <p className="text-sm text-slate-400">Dirección IP</p>
                                 <p>{device.ip}</p>
                             </div>
                         </div>
-                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                        <div className="w-50 h-20 flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <GlobeAltIcon className="w-8 text-indigo-600"></GlobeAltIcon>
                             <div className="flex flex-col justify-center">
                                 <p className="text-sm text-slate-400">Localizacion</p>
@@ -775,7 +775,7 @@ export default function Page() {
                                 </p>
                             </div>
                         </div>
-                        <div className="w-50 h-full flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
+                        <div className="w-50 h-20 flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <IoIosCellular size={26} className="w-9 text-indigo-600"></IoIosCellular>
                             <div className="flex flex-col justify-center">
                                 <p className="text-sm text-slate-400">Elementos</p>

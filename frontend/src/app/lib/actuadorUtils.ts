@@ -17,7 +17,6 @@ export async function getActuadores(device: string, token: string) {
             'Authorization': 'Bearer ' + token
         }
     }
-    console.log(options)
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/" + device, options)
     if (response.status === 200) {
         return await response.json()
