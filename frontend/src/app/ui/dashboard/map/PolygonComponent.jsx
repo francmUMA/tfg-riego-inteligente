@@ -2,7 +2,7 @@ import { getCoordsArea } from "@/src/app/lib/coordsUtils"
 import { getCookie } from "cookies-next"
 import { useState, useEffect, createRef } from "react"
 
-const PolygonComponent = ({ area, editMode}) => {
+const PolygonComponent = ({ area, editable, draggable}) => {
     const [polygonRef, setPolygonRef] = useState(null)
     const [coords, setCoords] = useState([])
 
@@ -89,8 +89,8 @@ const PolygonComponent = ({ area, editMode}) => {
                 strokeOpacity: 0.4,
                 strokeWeight: 2,
             }}
-            editable={editMode}
-            draggable={editMode}
+            editable={editable}
+            draggable={draggable}
         />
     )
   } 

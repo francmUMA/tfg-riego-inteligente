@@ -1,12 +1,12 @@
 import { IoPlayCircleSharp, IoWifi } from "react-icons/io5";
 import { MdLocationOn, MdEditLocationAlt, MdSignalWifiStatusbarNotConnected, MdOutlineDownloadDone } from "react-icons/md";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt, FaRobot } from "react-icons/fa";
 import { PiPolygon } from "react-icons/pi";
 import { getCookie } from "cookies-next";
 import { deleteDevice, getDevices } from "@/src/app/lib/devicesUtils";
 import { deleteSensor } from "@/src/app/lib/sensorsUtils";
 import { HiMiniCpuChip } from "react-icons/hi2";
-import { deleteActuador } from "@/src/app/lib/actuadorUtils";
+import { deleteActuador, updateActuadorMode } from "@/src/app/lib/actuadorUtils";
 
 
 const InfoContent = ({elem, type, sensors, area, setElems, setEdit, edit, actuadores}) => {
@@ -30,11 +30,34 @@ const InfoContent = ({elem, type, sensors, area, setElems, setEdit, edit, actuad
         else alert("No se ha podido eliminar el dispositivo")
     }
 
+    const handleUpdateActuador = async () => {
+        const token  = getCookie('token')
+        let res = await updateActuadorMode(elem.id, !elem.mode, token)
+        if (res) {
+            setElems(actuadores.map((actuador) => {
+                if (actuador.id == elem.id && actuador.device == elem.device) actuador.mode = !actuador.mode
+                return actuador
+            }))
+        }
+    }
+
     return (
-        <div id="main" className="flex flex-col w-44">
+        <div id="main" className="flex flex-col w-full">
             <header id="buttons" className="pt-1 flex flex-row gap-x-2 items-center">
                 <p className="flex text-2xl font-bold justify-center items-center">{elem.id}</p>
-                <div className="w-full flex flex-row justify-end items-center gap-x-2">
+                <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
+                    {
+                        type == 2 && 
+                            <button 
+                            onClick={handleUpdateActuador}
+                            className="">
+                                {
+                                    elem.mode == 1
+                                        ? <FaRobot size={18} className="w-full h-full text-indigo-600"></FaRobot>
+                                        : <FaRobot size={18} className="w-full h-full text-indigo-300"></FaRobot>
+                                }
+                            </button>
+                    }
                     {
                         type == 2 && 
                             <button 

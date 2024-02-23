@@ -557,7 +557,7 @@ const App = () => {
           </MapControl>
           {
             areas.map((area) => (
-              <PolygonComponent area={area.id} editMode={editMode} coords={filterCoords(area.id)} />
+              <PolygonComponent area={area.id} editable={editMode} draggable={editMode} coords={filterCoords(area.id)} />
             ))
           }
         </Map>
