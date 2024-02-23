@@ -1,6 +1,4 @@
 import {APIProvider, Map, Marker, MapControl, ControlPosition, InfoWindow} from '@vis.gl/react-google-maps';
-import { Image } from 'next/image.js'
-import { Circle } from "./Circle.tsx"
 import { Polygon } from "./Polygon.tsx"
 import { createRef, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTitle } from "@mui/material"
@@ -16,6 +14,7 @@ import { HiMiniCpuChip } from "react-icons/hi2";
 import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
 import { FaTemperatureQuarter, FaFaucetDrip } from "react-icons/fa6";
+import InfoContent from './InfoContent.jsx';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -412,6 +411,7 @@ const App = () => {
   //-----------------------------------------------------------------------------------------------------------------
   //------------------------------------ InfoMarker -----------------------------------------------------
   const [selectedMarker, setSelectedMarker] = useState(undefined)
+  const [editOneMarker, setEditOneMarker] = useState(false)
   //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
@@ -440,45 +440,87 @@ const App = () => {
                 onClick={() => setSelectedMarker(index)}
                 icon={"/chip.svg"}
                 position={{lat: device.Latitud, lng: device.Longitud}}
-                draggable={editMode}
+                draggable={editMode || (selectedMarker == index && editOneMarker == true)}
                 onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
               >
               </Marker>
               { selectedMarker !== undefined && selectedMarker == index &&
                 <InfoWindow
                   onCloseClick={() => setSelectedMarker(undefined)}
-                  position={{lat: device.Latitud, lng: device.Longitud}}>
-                    <h1>Test</h1>
+                  position={{lat: device.Latitud + 0.00045, lng: device.Longitud}}>
+                    <InfoContent 
+                      elem={device} 
+                      area={areas.find((area) => area.id == device.area)}
+                      type={0}
+                      setEdit={setEditOneMarker}
+                      edit={editOneMarker}  
+                      setElems={setDevices}
+                    />
                 </InfoWindow>
               }
             </div>
           ))}
-          {sensors.map((sensor) => (
+          {sensors.map((sensor, index) => (
             sensor.Latitud && sensor.Longitud &&
-            <Marker
-              clickable
-              onClick={() => console.log('sensor clicked')}
-              key={sensor.id}
-              icon={"/humidity-percentage.svg"}
-              position={{lat: sensor.Latitud, lng: sensor.Longitud}}
-              draggable={editMode}
-              onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
-              title={sensor.id}
-            >
-            </Marker>
+            <div>
+              <Marker
+                clickable
+                onClick={() => setSelectedMarker(devices.length + index)}
+                key={sensor.id}
+                icon={"/humidity-percentage.svg"}
+                position={{lat: sensor.Latitud, lng: sensor.Longitud}}
+                draggable={editMode || (selectedMarker == (devices.length + index) && editOneMarker == true)}
+                onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
+                title={sensor.id}
+              >
+              </Marker>
+              { selectedMarker !== undefined && selectedMarker == (devices.length + index) &&
+                <InfoWindow
+                  onCloseClick={() => setSelectedMarker(undefined)}
+                  position={{lat: sensor.Latitud + 0.00045, lng: sensor.Longitud}}>
+                    <InfoContent 
+                      elem={sensor} 
+                      area={areas.find((area) => area.id == sensor.area)}
+                      type={1}
+                      sensors={sensors}
+                      setEdit={setEditOneMarker}
+                      edit={editOneMarker}  
+                      setElems={setSensors}
+                    />
+                </InfoWindow>
+              }
+            </div>
           ))}
-          {actuadores.map((actuador) => (
+          {actuadores.map((actuador, index) => (
             actuador.Latitud && actuador.Longitud &&
-            <Marker
+            <div>
+              <Marker
               clickable
-              onClick={() => console.log('actuador clicked')}
+              onClick={() => setSelectedMarker(devices.length + sensors.length + index)}
               key={actuador.id}
               icon={"/faucet.svg"}
               position={{lat: actuador.Latitud, lng: actuador.Longitud}}
-              draggable={editMode}
+              draggable={editMode || (selectedMarker == (devices.length + sensors.length + index) && editOneMarker == true)}
               onDragEnd={(e) => handleDragActuadorMarker(e, actuador.id)}
-            >
-            </Marker>
+              >
+              </Marker>
+              { selectedMarker !== undefined && selectedMarker == (devices.length + sensors.length + index) &&
+                <InfoWindow
+                  onCloseClick={() => setSelectedMarker(undefined)}
+                  position={{lat: actuador.Latitud + 0.00045, lng: actuador.Longitud}}>
+                    <InfoContent 
+                      elem={actuador} 
+                      actuadores={actuadores}
+                      area={areas.find((area) => area.id == actuador.area)}
+                      type={2}
+                      setEdit={setEditOneMarker}
+                      edit={editOneMarker}  
+                      setElems={setActuadores}
+                    />
+                </InfoWindow>
+              }
+            </div>
+            
           ))}
           <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
             <div id='add-marker-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
