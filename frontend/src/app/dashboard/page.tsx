@@ -17,7 +17,7 @@ export default function Page() {
             } 
         }
         verify(token as string)
-    }, [])
+    }, [router])
 
     return (
         <main className="bg-white grid grid-rows-3 grid-cols-3 gap-3 h-full w-full p-4">

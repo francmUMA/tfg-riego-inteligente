@@ -32,7 +32,7 @@ export default function Page() {
         }
         fetchAreas(token as string)
         fetchDevices(token as string)
-    }, [])
+    }, [router])
 
     const handleDeviceInfoButton = (device_index: any) => {
         setShowDevicesInfo(showDevicesInfo.map((show, index) => {
@@ -493,7 +493,7 @@ export default function Page() {
             {
                 devices.map((devices, index) => {
                     return (
-                            <div className="w-full h-full border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
+                            <div key={index} className="w-full h-full border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
                                 <div className="w-full h-full row-span-3">
                                     <Link
                                         key={devices}

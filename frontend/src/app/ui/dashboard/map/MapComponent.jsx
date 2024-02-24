@@ -134,7 +134,7 @@ const App = () => {
             {
               devices.length > 0 && 
               devices.map((device) => device.Latitud == null && device.Longitud == null && 
-                <button
+                <button key={device.id}
                   onClick={() => {
                     setElemType(0)
                     setElemId(device.id)
@@ -150,7 +150,7 @@ const App = () => {
             {
               sensors.length > 0 && 
               sensors.map((sensor) => sensor.Latitud == null && sensor.Longitud == null && 
-                <button
+                <button key={sensor.id}
                   onClick={() => {
                     setElemType(1)
                     setElemId(sensor.id)
@@ -171,6 +171,7 @@ const App = () => {
               actuadores.length > 0 && 
               actuadores.map((actuador) => actuador.Latitud == null && actuador.Longitud == null && 
                 <button
+                  key={actuador.id}
                   onClick={() => {
                     setElemType(2)
                     setElemId(actuador.id)
@@ -344,7 +345,7 @@ const App = () => {
               areas.length > 0
               ? areas.map((area) => (
                 coords.find(coord => coord.area == area.id) === undefined &&
-                <button
+                <button key={area.id}
                   onClick={() => handlePlacePolygonButton(area.id)}
                  className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
                   <MdLocationOn size={30} className='w-9 ml-2 mr-5'></MdLocationOn>
@@ -359,18 +360,28 @@ const App = () => {
   }
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- PolygonComponent ------------------------------------------
-  const PolygonComponent = ({ area, editMode, coords }) => {
-    const [polygonRef, setPolygonRef] = useState(null)
-
-    useEffect(() => {
-        if (!polygonRef) {
-            setPolygonRef(createRef())
-        }
-    }, [polygonRef])
+  const PolygonComponent = ({ area, editable, draggable, coords, setClick }) => {
+    const polygonRef = useRef(null)
 
     return (
         <Polygon
             ref={polygonRef}
+            clickable
+            onClick={(e) => {
+              if (editable && addMarkerMode && elemType !== undefined && elemId !== undefined && elemType >= 0 && elemType < 3) {
+                if (elemType == 0){
+                  handlePlaceDeviceMarkerButton(e.latLng.lat(), e.latLng.lng())
+                } else if (elemType == 1){
+                  handlePlaceSensorMarkerButton(e.latLng.lat(), e.latLng.lng())
+                } else {
+                  handlePlaceActuadorMarkerButton(e.latLng.lat(), e.latLng.lng())
+                }
+                setAddMarkerMode(false)
+              } else {
+                console.log("Clicked: ", area)
+                setClick(area)
+              }
+            }}
             onMouseOut={() => {
                 if (editMode){
                   const polygonNew = polygonRef.current
@@ -393,6 +404,28 @@ const App = () => {
                   }
                 }
             }}
+            // onDragEnd={() => {
+            //   if (editMode){
+            //     const polygonNew = polygonRef.current
+            //     let newCoords = []
+            //     if (polygonNew !== undefined && polygonNew != null){
+            //         for (let coord of polygonNew.getPath().getArray()) {
+            //           newCoords.push({lat: coord.lat(), lng: coord.lng()})
+            //         }
+            //         let different = false
+            //         if (newCoords.length == coords.length) {
+            //         for (let i = 0; i < newCoords.length && !different; i++) {
+            //             if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
+            //               different = true
+            //               handleDragPolygon(area, polygonNew)
+            //             }
+            //         }
+            //         } else {
+            //           handleDragPolygon(area, polygonNew)
+            //         }
+            //     }
+            //   }
+            // }}
             paths={[
                 coords
             ]}
@@ -403,8 +436,8 @@ const App = () => {
                 strokeOpacity: 0.4,
                 strokeWeight: 2,
             }}
-            editable={editMode}
-            draggable={editMode}
+            editable={editable}
+            draggable={draggable}
         />
     )
   } 
@@ -412,6 +445,7 @@ const App = () => {
   //------------------------------------ InfoMarker -----------------------------------------------------
   const [selectedMarker, setSelectedMarker] = useState(undefined)
   const [editOneMarker, setEditOneMarker] = useState(false)
+  const [clickedArea, setClickedArea] = useState(undefined)
   //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
@@ -434,7 +468,7 @@ const App = () => {
          mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
           {devices.map((device, index) => (
             device.Latitud && device.Longitud &&
-            <div>
+            <div key={index}>
               <Marker
                 key={device.id}
                 onClick={() => setSelectedMarker(index)}
@@ -462,7 +496,7 @@ const App = () => {
           ))}
           {sensors.map((sensor, index) => (
             sensor.Latitud && sensor.Longitud &&
-            <div>
+            <div key={devices.length + index}>
               <Marker
                 clickable
                 onClick={() => setSelectedMarker(devices.length + index)}
@@ -493,7 +527,7 @@ const App = () => {
           ))}
           {actuadores.map((actuador, index) => (
             actuador.Latitud && actuador.Longitud &&
-            <div>
+            <div key={devices.length + sensors.length + index}>
               <Marker
               clickable
               onClick={() => setSelectedMarker(devices.length + sensors.length + index)}
@@ -557,7 +591,18 @@ const App = () => {
           </MapControl>
           {
             areas.map((area) => (
-              <PolygonComponent area={area.id} editable={editMode} draggable={editMode} coords={filterCoords(area.id)} />
+              <div key={area.id}>
+                <PolygonComponent key={area.id} area={area.id} editable={editMode} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} />
+                {
+                  clickedArea !== undefined && clickedArea == area.id && 
+                    <InfoWindow 
+                      position={{lat: filterCoords(area.id)[0].lat,  lng: filterCoords(area.id)[0].lng}}
+                      onCloseClick={setClickedArea(undefined)}
+                    >
+                      <h1>Hola</h1>
+                    </InfoWindow>
+                }
+              </div>
             ))
           }
         </Map>

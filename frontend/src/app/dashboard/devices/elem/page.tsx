@@ -70,7 +70,7 @@ export default function Page() {
         fetchDeviceSensors(id as string, token as string)
         fetchDeviceActuadores(id as string, token as string)
         fetchAreas()
-    }, [deviceId]) 
+    }, [deviceId, router]) 
 
     // ------------------------------ ROTATION ------------------------------
     const [rotation, setRotation] = useState(0);
