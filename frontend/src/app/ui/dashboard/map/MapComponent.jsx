@@ -185,6 +185,12 @@ const App = () => {
                 </button>
               )
             }
+            {
+              devices.find(device => device.Latitud == null && device.Longitud == null) === undefined &&
+              sensors.find(sensor => sensor.Latitud == null && sensor.Longitud == null) === undefined &&
+              actuadores.find(actuador => actuador.Latitud == null && actuador.Longitud == null) === undefined &&
+              <p>No hay elementos para colocar</p>
+            }
         </div>
       </Dialog>
     )
@@ -451,6 +457,7 @@ const App = () => {
               handlePlacePolygonButton(selectedArea, e.detail.latLng.lat, e.detail.latLng.lng)
             }
             setAddMarkerMode(false)
+            setSelectedMarker(undefined)
             setPlacePolygon(false)
           }}
          mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
@@ -489,7 +496,7 @@ const App = () => {
                 clickable
                 onClick={() => setSelectedMarker(devices.length + index)}
                 key={sensor.id}
-                icon={"/humidity-percentage.svg"}
+                icon={sensor.type == 'DHT' ? "/humidity-percentage.svg" : sensor.type == 'TMP' ? "/temperature.svg" : "/water-level.svg"}
                 position={{lat: sensor.Latitud, lng: sensor.Longitud}}
                 draggable={editMode || (selectedMarker == (devices.length + index) && editOneMarker == true)}
                 onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
