@@ -1,6 +1,6 @@
 import {APIProvider, Map, Marker, MapControl, ControlPosition, InfoWindow} from '@vis.gl/react-google-maps';
 import { Polygon } from "./Polygon.tsx"
-import { createRef, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTitle } from "@mui/material"
 import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
@@ -15,6 +15,7 @@ import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
 import { FaTemperatureQuarter, FaFaucetDrip } from "react-icons/fa6";
 import InfoContent from './InfoContent.jsx';
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -360,7 +361,7 @@ const App = () => {
   }
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- PolygonComponent ------------------------------------------
-  const PolygonComponent = ({ area, editable, draggable, coords, setClick }) => {
+  const PolygonComponent = ({ area, editable, coords, setClick, setClickedCoords }) => {
     const polygonRef = useRef(null)
 
     return (
@@ -377,9 +378,9 @@ const App = () => {
                   handlePlaceActuadorMarkerButton(e.latLng.lat(), e.latLng.lng())
                 }
                 setAddMarkerMode(false)
-              } else {
-                console.log("Clicked: ", area)
+              } else if (!editable) {
                 setClick(area)
+                setClickedCoords({lat: e.latLng.lat(), lng: e.latLng.lng()})
               }
             }}
             onMouseOut={() => {
@@ -404,28 +405,6 @@ const App = () => {
                   }
                 }
             }}
-            // onDragEnd={() => {
-            //   if (editMode){
-            //     const polygonNew = polygonRef.current
-            //     let newCoords = []
-            //     if (polygonNew !== undefined && polygonNew != null){
-            //         for (let coord of polygonNew.getPath().getArray()) {
-            //           newCoords.push({lat: coord.lat(), lng: coord.lng()})
-            //         }
-            //         let different = false
-            //         if (newCoords.length == coords.length) {
-            //         for (let i = 0; i < newCoords.length && !different; i++) {
-            //             if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
-            //               different = true
-            //               handleDragPolygon(area, polygonNew)
-            //             }
-            //         }
-            //         } else {
-            //           handleDragPolygon(area, polygonNew)
-            //         }
-            //     }
-            //   }
-            // }}
             paths={[
                 coords
             ]}
@@ -437,7 +416,6 @@ const App = () => {
                 strokeWeight: 2,
             }}
             editable={editable}
-            draggable={draggable}
         />
     )
   } 
@@ -445,7 +423,10 @@ const App = () => {
   //------------------------------------ InfoMarker -----------------------------------------------------
   const [selectedMarker, setSelectedMarker] = useState(undefined)
   const [editOneMarker, setEditOneMarker] = useState(false)
+  const [editOneArea, setEditOneArea] = useState(false)
+  const [selectedArea, setSelectedArea] = useState(undefined)
   const [clickedArea, setClickedArea] = useState(undefined)
+  const [clickedCoords, setClickedCoords] = useState(undefined)
   //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
@@ -592,14 +573,41 @@ const App = () => {
           {
             areas.map((area) => (
               <div key={area.id}>
-                <PolygonComponent key={area.id} area={area.id} editable={editMode} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} />
+                <PolygonComponent key={area.id} area={area.id} editable={editMode} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
                 {
                   clickedArea !== undefined && clickedArea == area.id && 
                     <InfoWindow 
-                      position={{lat: filterCoords(area.id)[0].lat,  lng: filterCoords(area.id)[0].lng}}
-                      onCloseClick={setClickedArea(undefined)}
+                      position={{lat: clickedCoords.lat,  lng: clickedCoords.lng}}
+                      onCloseClick={() => { 
+                        setClickedArea(undefined)
+                        setClickedCoords(undefined)
+                        setSelectedArea(undefined)
+                        setEditOneArea(false)
+                      }}
                     >
-                      <h1>Hola</h1>
+                      <div>
+                        <header className='w-full h-full flex flex-row items-center gap-x-2'>
+                          <p className='text-2xl font-bold'>{area.name}</p>
+                          <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
+                            <button 
+                              onClick={() => {
+                                setEditOneArea(!editOneArea)
+                                setSelectedArea(area.id)
+                              }}
+                              className="w-7 h-7 flex gap-2 text-indigo-600 justify-center items-center bg-gray-50 
+                                  hover:bg-gray-200 rounded-md shadow-md">
+                              {
+                                editOneArea && selectedArea !== undefined && selectedArea == area.id 
+                                  ?  <MdOutlineDownloadDone size={15}/> : <MdEditLocationAlt size={15}/>
+                              }
+                            </button>
+                            <button className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
+                                  hover:bg-gray-200 rounded-md shadow-md">
+                                  <FaRegTrashAlt size={15} />
+                            </button>
+                          </div>
+                        </header>
+                      </div>
                     </InfoWindow>
                 }
               </div>
