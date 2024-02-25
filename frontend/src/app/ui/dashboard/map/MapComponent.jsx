@@ -384,26 +384,26 @@ const App = () => {
               }
             }}
             onMouseOut={() => {
-                if (editMode){
-                  const polygonNew = polygonRef.current
-                  let newCoords = []
-                  if (polygonNew !== undefined && polygonNew != null){
-                      for (let coord of polygonNew.getPath().getArray()) {
-                        newCoords.push({lat: coord.lat(), lng: coord.lng()})
-                      }
-                      let different = false
-                      if (newCoords.length == coords.length) {
-                      for (let i = 0; i < newCoords.length && !different; i++) {
-                          if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
-                            different = true
-                            handleDragPolygon(area, polygonNew)
-                          }
-                      }
-                      } else {
-                        handleDragPolygon(area, polygonNew)
-                      }
-                  }
+              if (editable){
+                const polygonNew = polygonRef.current
+                let newCoords = []
+                if (polygonNew !== undefined && polygonNew != null){
+                    for (let coord of polygonNew.getPath().getArray()) {
+                      newCoords.push({lat: coord.lat(), lng: coord.lng()})
+                    }
+                    let different = false
+                    if (newCoords.length == coords.length) {
+                    for (let i = 0; i < newCoords.length && !different; i++) {
+                        if (newCoords[i].lat != coords[i].lat || newCoords[i].lng != coords[i].lng) {
+                          different = true
+                          handleDragPolygon(area, polygonNew)
+                        }
+                    }
+                    } else {
+                      handleDragPolygon(area, polygonNew)
+                    }
                 }
+              }
             }}
             paths={[
                 coords
@@ -573,7 +573,7 @@ const App = () => {
           {
             areas.map((area) => (
               <div key={area.id}>
-                <PolygonComponent key={area.id} area={area.id} editable={editMode} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
+                <PolygonComponent key={area.id} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
                 {
                   clickedArea !== undefined && clickedArea == area.id && 
                     <InfoWindow 
@@ -601,7 +601,11 @@ const App = () => {
                                   ?  <MdOutlineDownloadDone size={15}/> : <MdEditLocationAlt size={15}/>
                               }
                             </button>
-                            <button className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
+                            <button 
+                              onClick={() => {
+                                handleRemoveArea(area.id)
+                              }}
+                              className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
                                   hover:bg-gray-200 rounded-md shadow-md">
                                   <FaRegTrashAlt size={15} />
                             </button>
