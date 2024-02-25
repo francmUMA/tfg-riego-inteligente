@@ -8,7 +8,7 @@ import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
 import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
-import { getAreas } from '@/src/app/lib/areasUtils.ts';
+import { deleteArea, getAreas } from '@/src/app/lib/areasUtils.ts';
 import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt } from "react-icons/md";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { IoWaterOutline } from "react-icons/io5";
@@ -290,7 +290,7 @@ const App = () => {
   //------------------------------------ Dialog adicion de figuras -------------------------------------------------
   const [IsOpenPlacePolygonDialog, setIsOpenPlacePolygonDialog] = useState(false)
   const [editMode, setEditMode] = useState(false)
-
+  const [placePolygon, setPlacePolygon] = useState(false)
   const handlePressEditButton = async () => {
     // Guardar los datos en la base de datos en caso de que se haya finalizado de editar
     if (editMode) {
@@ -318,10 +318,10 @@ const App = () => {
     setIsOpenPlacePolygonDialog(false)
   }
 
-  const handlePlacePolygonButton = async (area) => {
+  const handlePlacePolygonButton = async (area, lat, lng) => {
     const token = getCookie('token')
-    let coord1 = await addCoords(centerLat, centerLng, area, 0, token)
-    let coord2 = await addCoords(centerLat + 0.0001, centerLng, area, 1, token)
+    let coord1 = await addCoords(lat, lng, area, 0, token)
+    let coord2 = await addCoords(lat + 0.0001, lng, area, 1, token)
     if (!coord1 || !coord2) {
       alert('Error placing polygon')
     } else {
@@ -347,7 +347,11 @@ const App = () => {
               ? areas.map((area) => (
                 coords.find(coord => coord.area == area.id) === undefined &&
                 <button key={area.id}
-                  onClick={() => handlePlacePolygonButton(area.id)}
+                  onClick={() => {
+                    setPlacePolygon(true)
+                    setSelectedArea(area.id)
+                    closePlacePolygonDialog()
+                  }}
                  className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
                   <MdLocationOn size={30} className='w-9 ml-2 mr-5'></MdLocationOn>
                   {area.name}
@@ -443,8 +447,11 @@ const App = () => {
               } else {
                 handlePlaceActuadorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
               }
-            } 
+            } else if (editMode && placePolygon && selectedArea !== undefined) {
+              handlePlacePolygonButton(selectedArea, e.detail.latLng.lat, e.detail.latLng.lng)
+            }
             setAddMarkerMode(false)
+            setPlacePolygon(false)
           }}
          mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
           {devices.map((device, index) => (
@@ -603,7 +610,19 @@ const App = () => {
                             </button>
                             <button 
                               onClick={() => {
-                                handleRemoveArea(area.id)
+                                const token = getCookie('token')
+                                let res = deleteArea(area.id, token)
+                                if (res) {
+                                  let newAreas = []
+                                  for (let area of areas) {
+                                    if (area.id != area.id) {
+                                      newAreas.push(area)
+                                    }
+                                  }
+                                  setAreas(newAreas)
+                                  let newCoords = coords.filter(coord => coord.area != area.id)
+                                  setCoords(newCoords)
+                                }
                               }}
                               className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
                                   hover:bg-gray-200 rounded-md shadow-md">

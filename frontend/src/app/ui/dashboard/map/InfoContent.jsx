@@ -20,14 +20,20 @@ const InfoContent = ({elem, type, sensors, area, setElems, setEdit, edit, actuad
             elems = await getDevices(token)
         } else if (type == 1) {
             res = await deleteSensor(elem.id, elem.device, token)
-            elems = sensors.filter((sensor) => sensor.id != elem.id && sensor.device != elem.device)
+            if (res) {
+                for (let sensor of sensors) {
+                    if (sensor.id != elem.id) elems.push(sensor)
+                }
+            }
         } else if (type == 2) {
             res = await deleteActuador(elem.id, elem.device, token)
-            elems = actuadores.filter((actuador) => actuador.id != elem.id && actuador.device != elem.device)
+            if (res) {
+                for (let actuador of actuadores) {
+                    if (actuador.id != elem.id) elems.push(actuador)
+                }
+            }
         }
         setElems(elems)
-        if (res) alert("Elemento eliminado correctamente")
-        else alert("No se ha podido eliminar el dispositivo")
     }
 
     const handleUpdateActuador = async () => {

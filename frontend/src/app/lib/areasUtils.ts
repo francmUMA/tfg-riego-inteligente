@@ -35,3 +35,18 @@ export async function addArea(id:string, name: string, token: string) {
         return false
     }
 }
+
+export async function deleteArea(id: number, token: string) {
+    let options = {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas/" + id, options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+}
