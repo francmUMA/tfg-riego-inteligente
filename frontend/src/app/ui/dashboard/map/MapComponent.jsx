@@ -25,10 +25,15 @@ const App = () => {
   const [centerLng, setCenterLng] = useState(0.0)
   const [coords, setCoords] = useState([])
   const [areas, setAreas] = useState([])
+  const [displayMap, setDisplayMap] = useState(false)
 
   useEffect( () => {
     fetchAllInfo()
   },  []);
+
+  useEffect(() => {
+    if (!displayMap && (centerLat != 0 || centerLng != 0) ) setDisplayMap(true)
+  }, [centerLat, centerLng])
 
   const fetchAllInfo = async () => {
     const token = getCookie('token')
@@ -378,7 +383,7 @@ const App = () => {
   }
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- PolygonComponent ------------------------------------------
-  const PolygonComponent = ({ area, editable, coords, setClick, setClickedCoords }) => {
+  const PolygonComponent = ({color, area, editable, coords, setClick, setClickedCoords }) => {
     const polygonRef = useRef(null)
     let geometry = useMapsLibrary('geometry')
 
@@ -525,9 +530,9 @@ const App = () => {
                 coords
             ]}
             options={{
-                fillColor: 'red',
+                fillColor: color,
                 fillOpacity: 0.2,
-                strokeColor: 'red',
+                strokeColor: color,
                 strokeOpacity: 0.4,
                 strokeWeight: 2,
             }}
@@ -548,8 +553,8 @@ const App = () => {
     <div className='w-full h-full'>
       {PlaceMarkerDialog()}
       {PlacePolygonDialog()}
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
-        <Map id='map'
+      {displayMap && <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
+        <Map id='map' 
           onClick={(e) => {
             if (editMode && addMarkerMode && elemType !== undefined && elemId !== undefined && elemType >= 0 && elemType < 3) {
               if (elemType == 0){
@@ -566,7 +571,7 @@ const App = () => {
             setSelectedMarker(undefined)
             setPlacePolygon(false)
           }}
-         mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: 53.54992, lng: 10.00678}}>
+         mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: centerLat, lng: centerLng}}>
           {devices.map((device, index) => (
             device.Latitud && device.Longitud &&
             <div key={index}>
@@ -693,7 +698,7 @@ const App = () => {
           {
             areas.map((area) => (
               <div key={area.id}>
-                <PolygonComponent area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
+                <PolygonComponent color={'#e0edd4'} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
                 {
                   clickedArea !== undefined && clickedArea == area.id && 
                     <InfoWindow 
@@ -721,6 +726,7 @@ const App = () => {
                                   ?  <MdOutlineDownloadDone size={15}/> : <MdEditLocationAlt size={15}/>
                               }
                             </button>
+                            <input onChange={(color) => console.log(color.target.value)} type="color"/>
                             <button 
                               onClick={() => {
                                 const token = getCookie('token')
@@ -750,7 +756,7 @@ const App = () => {
             ))
           }
         </Map>
-      </APIProvider>
+      </APIProvider>}
     </div>
   )
 }

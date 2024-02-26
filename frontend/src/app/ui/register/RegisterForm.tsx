@@ -2,11 +2,13 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { MdDone,MdOutlineCancel } from "react-icons/md";
 import {checkRegisterEmail} from "../../lib/checkEmail"
-import registerUser from "../../lib/registerUser"
+import registerUser, { updateUserLocation } from "../../lib/registerUser"
 import { getToken } from "../../lib/token"
-import { setCookie } from "cookies-next"
+import { getCookie, setCookie } from "cookies-next"
 import"./bg-form.css"
+import { Map, APIProvider, Marker } from "@vis.gl/react-google-maps"
 
 export default function RegisterForm() {
 
@@ -145,7 +147,7 @@ export default function RegisterForm() {
             console.log('Usuario creado correctamente')
             let token = await getToken(email as string, password as string)
             setCookie('token', token)
-            router.push('/dashboard')
+            setShowLocationMap(true)
         } else {
             console.log('Error al crear el usuario')
         }
@@ -172,6 +174,44 @@ export default function RegisterForm() {
 
     const handleCode4 = (e: { target: { value: string } }) => {
         setCode4(e.target.value)
+    }
+
+    const [showLocationMap, setShowLocationMap] = useState(false)
+    const [userLocation, setUserLocation] = useState({lat: 0, lng: 0})
+
+    const handleDragMarker = (e: any) => {
+        setUserLocation({lat: e.latLng.lat(), lng: e.latLng.lng()})
+    }
+
+    const handleUpdateUserLocation = async () => {
+        const token = getCookie('token')
+        let res = await updateUserLocation(token as string, userLocation.lat, userLocation.lng)
+        if (!res) console.log('Error al actualizar la ubicacion')
+        router.push('/dashboard')
+    }
+
+    const locationMapComponent = () => {
+        return (
+            <div className="flex flex-col gap-y-4 items-center justify-center w-full h-full">
+                <header>
+                    <h1 className="text-xl font-medium">Selecciona tu ubicación en el mapa</h1>
+                </header>
+                <div>
+                    <div className="w-full h-full flex flex-row gap-x-2">
+                        <button className="flex border rounded-md shadow-md w-10 items-center justify-center h-10 hover:bg-gray-100" onClick={handleUpdateUserLocation}>
+                            <MdDone size={24} color="green" />
+                        </button>
+                    </div>
+                </div>
+                <div className="w-2/3 h-2/3 rounded-md shadow-md overflow-hidden">
+                    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY as string}>
+                        <Map mapId={"750877eaffcf7c34"} disableDefaultUI defaultCenter={{lat: 0, lng: 0}} defaultZoom={5} >
+                            <Marker position={{lat: userLocation.lat, lng:userLocation.lng}} draggable onDragEnd={handleDragMarker}/>
+                        </Map>
+                    </APIProvider>
+                </div>
+            </div>
+        )
     }
 
     const renderContent = () => {
@@ -293,7 +333,7 @@ export default function RegisterForm() {
             </div>
                 
             )
-        } else if (!showDataForm && !showForm) {
+        } else if (!showDataForm && !showForm && !showLocationMap) {
             return (
                 <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
                     <div className="space-y-5 mx-5">
@@ -334,7 +374,7 @@ export default function RegisterForm() {
                     </div>
                 </div>
             ) 
-        } else if (showDataForm) {
+        } else if (showDataForm && !showLocationMap) {
             return (
                 <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
                     <div className="space-y-5 mx-5">
@@ -424,6 +464,12 @@ export default function RegisterForm() {
                             </div>
                         </form>
                     </div>
+                </div>
+            )
+        } else if (showLocationMap) {
+            return (
+                <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
+                    {locationMapComponent()}
                 </div>
             )
         }
