@@ -69,16 +69,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/devices/layout.js"
-    ],
-    "/dashboard/devices/elem/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/devices/elem/page.js"
-    ],
-    "/dashboard/devices/elem/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/devices/elem/layout.js"
     ]
   }
 }

@@ -1,12 +1,12 @@
-import {APIProvider, Map, Marker, MapControl, ControlPosition, InfoWindow} from '@vis.gl/react-google-maps';
+import {APIProvider, Map, Marker, MapControl, ControlPosition, InfoWindow, useMapsLibrary, toLatLngLiteral} from '@vis.gl/react-google-maps';
 import { Polygon } from "./Polygon.tsx"
 import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogTitle } from "@mui/material"
-import { getDevices, updateDevicePosition } from '@/src/app/lib/devicesUtils.ts';
+import { getDevices, updateDevicePosition, updateDeviceArea } from '@/src/app/lib/devicesUtils.ts';
 import { getCookie } from 'cookies-next';
 import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
-import { getSensors, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
-import { getActuadores, updatePositionActuador } from '@/src/app/lib/actuadorUtils.ts';
+import { getSensors, updateSensorArea, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
+import { getActuadores, updatePositionActuador, updateActuadorArea } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { deleteArea, getAreas } from '@/src/app/lib/areasUtils.ts';
 import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt } from "react-icons/md";
@@ -68,11 +68,15 @@ const App = () => {
   const [elemType, setElemType] = useState(undefined)       //0 -> device, 1 -> sensor, 2 -> actuador       
   const [elemId, setElemId] = useState(undefined)
 
+   const computeArea =  (position) => {
+    console.log()
+    return undefined
+}
+
   const handleDragDeviceMarker = async (event, id) => {
     const token = getCookie('token')
     let response = await updateDevicePosition(id, event.latLng.lat(), event.latLng.lng(), token)
     if (response) {
-      console.log('Device position updated')
       let newDevices = await getDevices(token)
       setDevices(newDevices)
     } else {
@@ -111,10 +115,11 @@ const App = () => {
     setIsOpenPlaceMarkerDialog(false)
   }
 
-  const handlePlaceSensorMarkerButton = async (lat, lon) => {
+  const handlePlaceSensorMarkerButton = async (lat, lon, area) => {
     const token = getCookie('token')
-    let response = await updateSensorPosition(elemId, lat, lon, token)
-    if (response) {
+    let response_pos = await updateSensorPosition(elemId, lat, lon, token)
+    let response_area = await updateSensorArea(elemId, area, token)
+    if (response_pos && response_area) {
       let newSensors = []
       for (let device of devices) {
         let sensors = await getSensors(device.id, token)
@@ -198,10 +203,11 @@ const App = () => {
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- Update Device Position Dialog ---------------------------------------------
 
-  const handlePlaceDeviceMarkerButton = async (lat, lon) => {
+  const handlePlaceDeviceMarkerButton = async (lat, lon, area) => {
     const token = getCookie('token')
-    let response = await updateDevicePosition(elemId, lat, lon, token)
-    if (response) {
+    let response_pos = await updateDevicePosition(elemId, lat, lon, token)
+    let response_area = await updateDeviceArea(elemId, area, token)
+    if (response_pos && response_area) {
       let newDevices = await getDevices(token)
       setDevices(newDevices)
       closePlaceMarkerDialog()
@@ -227,10 +233,11 @@ const App = () => {
     }
   }
 
-  const handlePlaceActuadorMarkerButton = async (lat, lon) => {
+  const handlePlaceActuadorMarkerButton = async (lat, lon, area) => {
     const token = getCookie('token')
-    let response = await updatePositionActuador(elemId, lat, lon, token)
-    if (response) {
+    let response_pos = await updatePositionActuador(elemId, lat, lon, token)
+    let response_area = await updateActuadorArea(elemId, area, token)
+    if (response_pos && response_area) {
       let newActuadores = []
       for (let device of devices) {
         let actuadores = await getActuadores(device.id, token)
@@ -373,19 +380,118 @@ const App = () => {
   // ----------------------------------- PolygonComponent ------------------------------------------
   const PolygonComponent = ({ area, editable, coords, setClick, setClickedCoords }) => {
     const polygonRef = useRef(null)
+    let geometry = useMapsLibrary('geometry')
+
+    const computeDeviceMarkersArea = (polygon) => {
+      for (let device of devices) {
+        let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: device.Latitud, lng: device.Longitud}), polygon)
+        if (res && device.area != area) {
+          let response = updateDeviceArea(device.id, area, getCookie('token'))
+          if (response) {
+            let newDevices = devices.map(dev => {
+              if (dev.id == device.id) {
+                dev.area = area
+              }
+              return dev
+            })
+            setDevices(newDevices)
+          } 
+        } else if (!res && device.area == area) {
+          let response = updateDeviceArea(device.id, null, getCookie('token'))
+          if (response) {
+            let newDevices = devices.map(dev => {
+              if (dev.id == device.id) {
+                dev.area = undefined
+              }
+              return dev
+            })
+            setDevices(newDevices)
+          }
+        }
+      }
+    }
+    const computeActuadoresMarkersArea = (polygon) => {
+      for (let actuador of actuadores) {
+        let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: actuador.Latitud, lng: actuador.Longitud}), polygon)
+        if (res && actuador.area != area) {
+          let response = updateActuadorArea(actuador.id, area, getCookie('token'))
+          if (response) {
+            let newActuadores = actuadores.map(act => {
+              if (act.id == actuador.id) {
+                act.area = area
+              }
+              return act
+            })
+            setActuadores(newActuadores)
+          } 
+        } else if (!res && actuador.area == area) {
+          let response = updateDeviceArea(actuador.id, null, getCookie('token'))
+          if (response) {
+            let newActuadores = actuadores.map(act => {
+              if (act.id == actuador.id) {
+                act.area = undefined
+              }
+              return act
+            })
+            setActuadores(newActuadores)
+          }
+        }
+      }
+    }
+    const computeSensorsMarkersArea = (polygon) => {
+      for (let sensor of sensors) {
+        let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: sensor.Latitud, lng: sensor.Longitud}), polygon)
+        if (res && sensor.area != area) {
+          let response = updateSensorArea(sensor.id, area, getCookie('token'))
+          if (response) {
+            let newSensors = sensors.map(sens => {
+              if (sens.id == sensor.id) {
+                sens.area = area
+              }
+              return sens
+            })
+            setSensors(newSensors)
+          } 
+        } else if (!res && sensor.area == area) {
+          let response = updateSensorArea(sensor.id, null, getCookie('token'))
+          if (response) {
+            let newSensors = sensors.map(sens => {
+              if (sens.id == sensor.id) {
+                sens.area = undefined
+              }
+              return sens
+            })
+            setSensors(newSensors)
+          }
+        }
+      }
+    }
+
+    useEffect(() => {
+      computeDeviceMarkersArea(polygonRef.current)
+    }, [devices])
+
+    useEffect(() => {
+      computeActuadoresMarkersArea(polygonRef.current)
+    }, [actuadores])
+
+    useEffect(() => {
+      computeSensorsMarkersArea(polygonRef.current)
+    }, [sensors])
 
     return (
         <Polygon
             ref={polygonRef}
             clickable
+            id={area}
             onClick={(e) => {
               if (editable && addMarkerMode && elemType !== undefined && elemId !== undefined && elemType >= 0 && elemType < 3) {
                 if (elemType == 0){
-                  handlePlaceDeviceMarkerButton(e.latLng.lat(), e.latLng.lng())
+                  handlePlaceDeviceMarkerButton(e.latLng.lat(), e.latLng.lng(), area)
                 } else if (elemType == 1){
-                  handlePlaceSensorMarkerButton(e.latLng.lat(), e.latLng.lng())
+                  handlePlaceSensorMarkerButton(e.latLng.lat(), e.latLng.lng(), area)
                 } else {
-                  handlePlaceActuadorMarkerButton(e.latLng.lat(), e.latLng.lng())
+                  handlePlaceActuadorMarkerButton(e.latLng.lat(), e.latLng.lng(), area)
                 }
                 setAddMarkerMode(false)
               } else if (!editable) {
@@ -587,7 +693,7 @@ const App = () => {
           {
             areas.map((area) => (
               <div key={area.id}>
-                <PolygonComponent key={area.id} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
+                <PolygonComponent area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
                 {
                   clickedArea !== undefined && clickedArea == area.id && 
                     <InfoWindow 
