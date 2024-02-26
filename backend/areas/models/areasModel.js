@@ -13,5 +13,9 @@ export default db.define("Areas", {
     user: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    color: {
+        type: DataTypes.STRING,
+        allowNull: false,
     }
 })

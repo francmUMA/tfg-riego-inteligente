@@ -53,13 +53,18 @@ export const add_area = async (req, res) => {
         res.status(400).send("Name too long")
         return
     }
+    if (req.body.color === undefined || req.body.color === null || req.body.color == "") {
+        res.status(400).send("Missing color")
+        return
+    }
     // ------------------- Crear area ---------------------------
     console.log(nif)
     try {
         let area = {
             id: req.body.id,
             name: req.body.name,
-            user: nif
+            user: nif,
+            color: req.body.color
         }
         await areasModel.create(area)
         res.status(200).send("Area created")
@@ -142,6 +147,45 @@ export const updatePolygonType = async (req, res) => {
     try {
         await areasModel.update({ polygon_type: req.body.polygon_type }, { where: { user: nif, id: req.params.id } })
         res.status(200).send("Polygon type updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+export const updateColor = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (req.body.color === undefined || req.body.color === null || req.body.color == "") {
+        res.status(400).send("Missing color")
+        return
+    }
+    let area = await areasModel.findOne({ where: { user: nif, id: req.params.id } })
+    if (area === null) {
+        res.status(404).send("Area not found")
+        return
+    }
+    // ------------------- Actualizar color ---------------------------
+    try {
+        await areasModel.update({ color: req.body.color }, { where: { user: nif, id: req.params.id } })
+        res.status(200).send("Color updated")
     } catch (error) {
         res.status(500).send(error.message)
     }
