@@ -732,6 +732,12 @@ video {
 .h-screen {
   height: 100vh;
 }
+.h-3 {
+  height: 0.75rem;
+}
+.h-16 {
+  height: 4rem;
+}
 .min-h-12 {
   min-height: 3rem;
 }
@@ -966,6 +972,9 @@ video {
 .border {
   border-width: 1px;
 }
+.border-0 {
+  border-width: 0px;
+}
 .border-b {
   border-bottom-width: 1px;
 }
@@ -974,6 +983,9 @@ video {
 }
 .border-t {
   border-top-width: 1px;
+}
+.border-none {
+  border-style: none;
 }
 .border-\[\#d6d3d1\] {
   --tw-border-opacity: 1;
@@ -1286,6 +1298,9 @@ video {
 .outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+.outline {
+  outline-style: solid;
 }
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);

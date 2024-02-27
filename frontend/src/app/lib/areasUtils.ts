@@ -26,7 +26,7 @@ export async function addArea(id:string, name: string, token: string) {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, name: name, color: '#5833FF'})
+        body: JSON.stringify({id: id, name: name, color: '5833FF'})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas", options)
     if (request.status === 200) {
@@ -44,6 +44,23 @@ export async function deleteArea(id: number, token: string) {
         }
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas/" + id, options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+}
+
+export async function updateColorArea(color: string, id: number, token: string) {
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({color: color})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas/color/" + id, options)
     if (request.status === 200) {
         return true
     } else {

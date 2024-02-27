@@ -9,13 +9,14 @@ import { getSensors, updateSensorArea, updateSensorPosition } from '@/src/app/li
 import { getActuadores, updatePositionActuador, updateActuadorArea } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
 import { deleteArea, getAreas } from '@/src/app/lib/areasUtils.ts';
-import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt } from "react-icons/md";
+import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt, MdDone } from "react-icons/md";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
 import { FaTemperatureQuarter, FaFaucetDrip } from "react-icons/fa6";
 import InfoContent from './InfoContent.jsx';
 import { FaRegTrashAlt } from "react-icons/fa";
+import { ColorPicker } from './ColorPicker.jsx';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -389,84 +390,90 @@ const App = () => {
 
     const computeDeviceMarkersArea = (polygon) => {
       for (let device of devices) {
-        let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: device.Latitud, lng: device.Longitud}), polygon)
-        if (res && device.area != area) {
-          let response = updateDeviceArea(device.id, area, getCookie('token'))
-          if (response) {
-            let newDevices = devices.map(dev => {
-              if (dev.id == device.id) {
-                dev.area = area
-              }
-              return dev
-            })
-            setDevices(newDevices)
-          } 
-        } else if (!res && device.area == area) {
-          let response = updateDeviceArea(device.id, null, getCookie('token'))
-          if (response) {
-            let newDevices = devices.map(dev => {
-              if (dev.id == device.id) {
-                dev.area = undefined
-              }
-              return dev
-            })
-            setDevices(newDevices)
+        if (device.Latitud != null && device.Longitud != null) {
+          let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: device.Latitud, lng: device.Longitud}), polygon)
+          if (res && device.area != area) {
+            let response = updateDeviceArea(device.id, area, getCookie('token'))
+            if (response) {
+              let newDevices = devices.map(dev => {
+                if (dev.id == device.id) {
+                  dev.area = area
+                }
+                return dev
+              })
+              setDevices(newDevices)
+            } 
+          } else if (!res && device.area == area) {
+            let response = updateDeviceArea(device.id, null, getCookie('token'))
+            if (response) {
+              let newDevices = devices.map(dev => {
+                if (dev.id == device.id) {
+                  dev.area = undefined
+                }
+                return dev
+              })
+              setDevices(newDevices)
+            }
           }
         }
       }
     }
     const computeActuadoresMarkersArea = (polygon) => {
       for (let actuador of actuadores) {
-        let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: actuador.Latitud, lng: actuador.Longitud}), polygon)
-        if (res && actuador.area != area) {
-          let response = updateActuadorArea(actuador.id, area, getCookie('token'))
-          if (response) {
-            let newActuadores = actuadores.map(act => {
-              if (act.id == actuador.id) {
-                act.area = area
-              }
-              return act
-            })
-            setActuadores(newActuadores)
-          } 
-        } else if (!res && actuador.area == area) {
-          let response = updateDeviceArea(actuador.id, null, getCookie('token'))
-          if (response) {
-            let newActuadores = actuadores.map(act => {
-              if (act.id == actuador.id) {
-                act.area = undefined
-              }
-              return act
-            })
-            setActuadores(newActuadores)
+        if (actuador.Latitud != null && actuador.Longitud != null) {
+          let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: actuador.Latitud, lng: actuador.Longitud}), polygon)
+          if (res && actuador.area != area) {
+            let response = updateActuadorArea(actuador.id, area, getCookie('token'))
+            if (response) {
+              let newActuadores = actuadores.map(act => {
+                if (act.id == actuador.id) {
+                  act.area = area
+                }
+                return act
+              })
+              setActuadores(newActuadores)
+            } 
+          } else if (!res && actuador.area == area) {
+            let response = updateDeviceArea(actuador.id, null, getCookie('token'))
+            if (response) {
+              let newActuadores = actuadores.map(act => {
+                if (act.id == actuador.id) {
+                  act.area = undefined
+                }
+                return act
+              })
+              setActuadores(newActuadores)
+            }
           }
         }
       }
     }
     const computeSensorsMarkersArea = (polygon) => {
       for (let sensor of sensors) {
-        let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: sensor.Latitud, lng: sensor.Longitud}), polygon)
-        if (res && sensor.area != area) {
-          let response = updateSensorArea(sensor.id, area, getCookie('token'))
-          if (response) {
-            let newSensors = sensors.map(sens => {
-              if (sens.id == sensor.id) {
-                sens.area = area
-              }
-              return sens
-            })
-            setSensors(newSensors)
-          } 
-        } else if (!res && sensor.area == area) {
-          let response = updateSensorArea(sensor.id, null, getCookie('token'))
-          if (response) {
-            let newSensors = sensors.map(sens => {
-              if (sens.id == sensor.id) {
-                sens.area = undefined
-              }
-              return sens
-            })
-            setSensors(newSensors)
+        if (sensor.Latitud != null && sensor.Longitud != null) {
+          let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: sensor.Latitud, lng: sensor.Longitud}), polygon)
+          if (res && sensor.area != area) {
+            let response = updateSensorArea(sensor.id, area, getCookie('token'))
+            if (response) {
+              let newSensors = sensors.map(sens => {
+                if (sens.id == sensor.id) {
+                  sens.area = area
+                }
+                return sens
+              })
+              setSensors(newSensors)
+            } 
+          } else if (!res && sensor.area == area) {
+            let response = updateSensorArea(sensor.id, null, getCookie('token'))
+            if (response) {
+              let newSensors = sensors.map(sens => {
+                if (sens.id == sensor.id) {
+                  sens.area = undefined
+                }
+                return sens
+              })
+              setSensors(newSensors)
+            }
           }
         }
       }
@@ -548,6 +555,8 @@ const App = () => {
   const [selectedArea, setSelectedArea] = useState(undefined)
   const [clickedArea, setClickedArea] = useState(undefined)
   const [clickedCoords, setClickedCoords] = useState(undefined)
+
+
   //----------------------------------------------------------------------------------------------------------------
   return (
     <div className='w-full h-full'>
@@ -617,8 +626,17 @@ const App = () => {
               { selectedMarker !== undefined && selectedMarker == (devices.length + index) &&
                 <InfoWindow
                   onCloseClick={() => setSelectedMarker(undefined)}
-                  position={{lat: sensor.Latitud + 0.00045, lng: sensor.Longitud}}>
-                    <InfoContent 
+                  position={{lat: sensor.Latitud + 0.0001, lng: sensor.Longitud}}>
+                    {InfoContent({
+                      elem: sensor, 
+                      type: 1, 
+                      sensors: sensors,
+                      area: areas.find((area) => area.id == sensor.area), 
+                      setElems: setSensors, 
+                      setEdit: setEditOneMarker, 
+                      edit: editOneMarker, 
+                      actuadores: actuadores}) }
+                    {/* <InfoContent 
                       elem={sensor} 
                       area={areas.find((area) => area.id == sensor.area)}
                       type={1}
@@ -626,7 +644,7 @@ const App = () => {
                       setEdit={setEditOneMarker}
                       edit={editOneMarker}  
                       setElems={setSensors}
-                    />
+                    /> */}
                 </InfoWindow>
               }
             </div>
@@ -698,7 +716,7 @@ const App = () => {
           {
             areas.map((area) => (
               <div key={area.id}>
-                <PolygonComponent color={'#e0edd4'} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
+                <PolygonComponent color={'#' + area.color} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
                 {
                   clickedArea !== undefined && clickedArea == area.id && 
                     <InfoWindow 
@@ -723,10 +741,10 @@ const App = () => {
                                   hover:bg-gray-200 rounded-md shadow-md">
                               {
                                 editOneArea && selectedArea !== undefined && selectedArea == area.id 
-                                  ?  <MdOutlineDownloadDone size={15}/> : <MdEditLocationAlt size={15}/>
+                                  ?  <MdOutlineDownloadDone size={18}/> : <MdEditLocationAlt size={17}/>
                               }
                             </button>
-                            <input onChange={(color) => console.log(color.target.value)} type="color"/>
+                            <ColorPicker area={area} areas={areas} setAreas={setAreas} />
                             <button 
                               onClick={() => {
                                 const token = getCookie('token')
@@ -745,7 +763,7 @@ const App = () => {
                               }}
                               className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
                                   hover:bg-gray-200 rounded-md shadow-md">
-                                  <FaRegTrashAlt size={15} />
+                                  <FaRegTrashAlt size={17} />
                             </button>
                           </div>
                         </header>
