@@ -16,11 +16,11 @@ export const ColorPicker = ({area, setAreas, areas}) => {
       let res = await updateColorArea(value, area.id, token)
       if (res) {
         let newAreas = []
-        for (let area of areas) {
-          if (area.id == area.id) {
-            area.color = value
+        for (let ar of areas) {
+          if (ar.id == area.id) {
+            ar.color = value
           }
-          newAreas.push(area)
+          newAreas.push(ar)
         }
         setAreas(newAreas)
       }

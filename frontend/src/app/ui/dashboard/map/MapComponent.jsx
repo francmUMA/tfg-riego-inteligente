@@ -312,7 +312,7 @@ const App = () => {
   const [placePolygon, setPlacePolygon] = useState(false)
   const handlePressEditButton = async () => {
     // Guardar los datos en la base de datos en caso de que se haya finalizado de editar
-    if (editMode) {
+    if (editMode || editOneArea) {
       const token = getCookie('token')
       for (let area of areas){
         let res = await deleteCoords(area.id, token)
@@ -736,6 +736,7 @@ const App = () => {
                               onClick={() => {
                                 setEditOneArea(!editOneArea)
                                 setSelectedArea(area.id)
+                                handlePressEditButton()
                               }}
                               className="w-7 h-7 flex gap-2 text-indigo-600 justify-center items-center bg-gray-50 
                                   hover:bg-gray-200 rounded-md shadow-md">

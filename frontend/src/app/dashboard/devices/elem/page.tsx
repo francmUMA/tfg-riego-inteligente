@@ -3,6 +3,7 @@ import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo, updateDeviceArea 
 import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorArea, updateSensorPin } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
+import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
 
 import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
 import { Dialog, DialogTitle } from "@mui/material";
@@ -443,25 +444,7 @@ export default function Page() {
         return (
             <Dialog open={IsOpenUpdateActuadorAreaDialog} onClose={closeUpdateActuadorAreaDialog}>
                 <DialogTitle className="w-full h-full border">Modifica la zona del actuador</DialogTitle>
-                <div className="flex flex-col justify-center items-center p-4 gap-4">
-                    <div className="w-full h-full">
-                        <label className="font-medium">Elige una zona</label>
-                    </div>
-                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                        <select className="w-full h-10" onChange={handleSelectNewActuadorArea}>
-                            {
-                                areas !== undefined && areas[0].name != "" && areas.map((area, index) => {
-                                    return (
-                                        <option key={index} value={area.id}>{area.name}</option>
-                                    )
-                                })
-                            }
-                        </select>
-                        <button onClick={handleActuadorArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                            <p>Actualizar Zona</p>
-                        </button>
-                    </div>
-                </div>
+                {/* <ElemPlacer /> */}
             </Dialog>
         )
     }
@@ -501,26 +484,7 @@ export default function Page() {
         return (
             <Dialog open={IsOpenUpdateSensorAreaDialog} onClose={closeUpdateSensorAreaDialog}>
                 <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
-                <div className="flex flex-col justify-center items-center p-4 gap-4">
-                    <div className="w-full h-full">
-                        <label className="font-medium">Elige una zona</label>
-                    </div>
-                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                        <select className="w-full h-10" onChange={handleSelectNewSensorArea}>
-                            {
-
-                                areas !== undefined && areas[0].name != "" && areas.map((area, index) => {
-                                    return (
-                                        <option key={index} value={area.id}>{area.name}</option>
-                                    )
-                                })
-                            }
-                        </select>
-                        <button onClick={handleSensorArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                            <p>Actualizar Zona</p>
-                        </button>
-                    </div>
-                </div>
+                {/* <ElemPlacer /> */}
             </Dialog>
         )
     }
@@ -674,26 +638,15 @@ export default function Page() {
     const UpdateDeviceAreaDialog = () => {
         return (
             <Dialog open={IsOpenUpdateAreaDialog} onClose={closeUpdateAreaDialog}>
-                <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
-                <div className="flex flex-col justify-center items-center p-4 gap-4">
-                    <div className="w-full h-full">
-                        <label className="font-medium">Elige una zona</label>
-                    </div>
-                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                        <select className="w-full h-10" onChange={handleSelectNewArea}>
-                            {
-                                areas.map((area, index) => {
-                                    return (
-                                        <option key={index} value={area.id}>{area.name}</option>
-                                    )
-                                })
-                            }
-                        </select>
-                        <button onClick={handleUpdateArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                            <p>Actualizar Zona</p>
-                        </button>
-                    </div>
+                <DialogTitle 
+                    className="w-96 h-full font-bold text-xl flex justify-center items-center"
+                >
+                    Coloca el dispositivo
+                </DialogTitle>
+                <div className="flex items-center justify-center h-96">
+                    <ElemPlacer elem={device}/>
                 </div>
+                
             </Dialog>
         )
     }
