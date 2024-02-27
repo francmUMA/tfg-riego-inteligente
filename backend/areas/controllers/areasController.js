@@ -58,7 +58,6 @@ export const add_area = async (req, res) => {
         return
     }
     // ------------------- Crear area ---------------------------
-    console.log(nif)
     try {
         let area = {
             id: req.body.id,
