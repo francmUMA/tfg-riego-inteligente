@@ -26,7 +26,7 @@ export async function addArea(id:string, name: string, token: string) {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, name: name})
+        body: JSON.stringify({id: id, name: name, color: '#5833FF'})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas", options)
     if (request.status === 200) {
