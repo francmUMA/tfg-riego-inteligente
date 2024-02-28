@@ -644,7 +644,14 @@ export default function Page() {
                     Coloca el dispositivo
                 </DialogTitle>
                 <div className="flex items-center justify-center h-96">
-                    <ElemPlacer elem={device}/>
+                    {ElemPlacer({
+                        closeDialog: closeUpdateAreaDialog,
+                        elems: device,
+                        type: 0,
+                        elem: device,
+                        setElems: setDevice
+                    
+                    })}
                 </div>
                 
             </Dialog>

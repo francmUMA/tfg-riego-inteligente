@@ -2,7 +2,7 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { MdDone,MdOutlineCancel } from "react-icons/md";
+import { MdDone } from "react-icons/md";
 import {checkRegisterEmail} from "../../lib/checkEmail"
 import registerUser, { updateUserLocation } from "../../lib/registerUser"
 import { getToken } from "../../lib/token"

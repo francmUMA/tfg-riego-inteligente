@@ -74,11 +74,6 @@ const App = () => {
   const [elemType, setElemType] = useState(undefined)       //0 -> device, 1 -> sensor, 2 -> actuador       
   const [elemId, setElemId] = useState(undefined)
 
-   const computeArea =  (position) => {
-    console.log()
-    return undefined
-}
-
   const handleDragDeviceMarker = async (event, id) => {
     const token = getCookie('token')
     let response = await updateDevicePosition(id, event.latLng.lat(), event.latLng.lng(), token)
