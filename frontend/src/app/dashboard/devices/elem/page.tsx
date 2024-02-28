@@ -54,7 +54,6 @@ export default function Page() {
             router.push("/dashboard/devices")
         }
         setDeviceId(id)
-
         // Obtener los datos del dispositivo
         const fetchDeviceInfo = async (id: string, token: string) => {
             let deviceInfo = await getDeviceInfo(id, token)

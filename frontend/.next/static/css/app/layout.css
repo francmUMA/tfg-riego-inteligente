@@ -744,6 +744,9 @@ video {
 .w-10 {
   width: 2.5rem;
 }
+.w-11\/12 {
+  width: 91.666667%;
+}
 .w-12 {
   width: 3rem;
 }
@@ -804,9 +807,6 @@ video {
 }
 .w-full {
   width: 100%;
-}
-.w-11\/12 {
-  width: 91.666667%;
 }
 .min-w-24 {
   min-width: 6rem;
