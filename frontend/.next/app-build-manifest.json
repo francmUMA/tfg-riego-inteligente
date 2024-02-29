@@ -60,15 +60,25 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/devices/layout.js"
     ],
-    "/dashboard/devices/elem/page": [
+    "/dashboard/map/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/devices/elem/page.js"
+      "static/chunks/app/dashboard/map/page.js"
+    ],
+    "/dashboard/map/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/map/layout.js"
     ],
     "/dashboard/devices/elem/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/devices/elem/layout.js"
+    ],
+    "/dashboard/devices/elem/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/devices/elem/page.js"
     ]
   }
 }

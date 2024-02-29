@@ -1,9 +1,9 @@
 export interface Sensor {
     id: string,
     type: string,
-    device: number,
+    device: string,
     device_pin: number,
-    area: number,
+    area: string,
     Latitud: number,
     Longitud: number,
     name: string,

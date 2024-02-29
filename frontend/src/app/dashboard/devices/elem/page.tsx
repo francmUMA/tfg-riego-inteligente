@@ -145,7 +145,18 @@ export default function Page() {
     }
     //---------------------------------------------------------------------------
     // ------------------------------ Sensores -----------------------------------
-    const [deviceSensors, setDeviceSensors] = useState<[Sensor]>([{id: "", type: "", area: 0, device_pin: 0, device: 0}])
+    const [deviceSensors, setDeviceSensors] = useState<[Sensor]>([{
+        id: "", 
+        type: "", 
+        area: "", 
+        device_pin: 0, 
+        device: "", 
+        Latitud: 0, 
+        Longitud: 0, 
+        name: "", 
+        value: 0, 
+        available: 0
+    }])
 
     const fetchDeviceSensors = async (id: string, token: string) => {
         let res = await getSensors(id, token)
@@ -153,7 +164,17 @@ export default function Page() {
     }
     //--------------------------------------------------------------------------------------------------
     // ------------------------------ Actuadores -------------------------------------------
-    const [deviceActuadores, setDeviceActuadores] = useState<[Actuador]>([{id: "", area: 0, device_pin: 0, device: 0, mode: 0}])
+    const [deviceActuadores, setDeviceActuadores] = useState<[Actuador]>([{
+        id: "", 
+        area: "", 
+        device_pin: 0, 
+        device: "", 
+        mode: 0,
+        name: "",
+        Latitud: 0,
+        Longitud: 0,
+        status: 0
+    }])
 
     const fetchDeviceActuadores = async (id: string, token: string) => {
         let res = await getActuadores(id, token)
@@ -165,14 +186,14 @@ export default function Page() {
     const [sensorActuador, setSensorActuador] = useState(true)
     const [IsOpenSensorActuadorDialog, setIsOpenSensorActuadorDialog] = useState(false)
 
-    const [sensorId, setSensorId] = useState("")
-    const [validSensorId, setValidSensorId] = useState(false)
-    const [emptySensorId, setEmptySensorId] = useState(true)
+    const [sensorName, setSensorName] = useState("")
+    const [validSensorName, setValidSensorName] = useState(false)
+    const [emptySensorName, setEmptySensorName] = useState(true)
 
 
-    const [actuadorId, setActuadorId] = useState("")
-    const [validActuadorId, setValidActuadorId] = useState(false)
-    const [emptyActuadorId, setEmptyActuadorId] = useState(true)
+    const [actuadorName, setActuadorName] = useState("")
+    const [validActuadorName, setValidActuadorName] = useState(false)
+    const [emptyActuadorName, setEmptyActuadorName] = useState(true)
 
     const [sensorType, setSensorType] = useState("DHT")
 
@@ -202,29 +223,29 @@ export default function Page() {
         }
     }
 
-    const handleSensorId = async (e: any) => {
+    const handleSensorName = async (e: any) => {
         if (e.target.value == "") {
-            setEmptySensorId(true)
-            setValidSensorId(false)
+            setEmptySensorName(true)
+            setValidSensorName(false)
         } else {
             let check = await checkSensorId(deviceSensors, e.target.value)
             if (check) {
-                setEmptySensorId(false)
-                setValidSensorId(true)
-                setSensorId(e.target.value)
+                setEmptySensorName(false)
+                setValidSensorName(true)
+                setSensorName(e.target.value)
             } else {
-                setEmptySensorId(false)
-                setValidSensorId(false)
+                setEmptySensorName(false)
+                setValidSensorName(false)
             }
         }
     }
 
     const handleAddSensor = async () => {
-        if (validSensorId) {
+        if (validSensorName) {
             const token = getCookie("token");
-            let res = await addSensor(sensorId, deviceId as string, token as string, sensorType)
+            let res = await addSensor(sensorName, deviceId as string, token as string, sensorType)
             if (res) {
-                alert("Sensor añadido correctamente")
+                fetchDeviceSensors(deviceId as string, token as string)
             } else {
                 alert("Error al añadir el sensor")
             }
@@ -232,28 +253,28 @@ export default function Page() {
         }
     }
 
-    const handleActuadorId = (e: any) => {
+    const handleActuadorName = (e: any) => {
         if (e.target.value == "") {
-            setEmptyActuadorId(true)
-            setValidActuadorId(false)
+            setEmptyActuadorName(true)
+            setValidActuadorName(false)
         } else {
-            setEmptyActuadorId(false)
+            setEmptyActuadorName(false)
             let check = checkActuador(deviceActuadores, e.target.value)
             if (check) {
-                setValidActuadorId(true)
-                setActuadorId(e.target.value)
+                setValidActuadorName(true)
+                setActuadorName(e.target.value)
             } else {
-                setValidActuadorId(false)
+                setValidActuadorName(false)
             }
         }
     }
 
     const handleAddActuador = async () => {
-        if (validActuadorId) {
+        if (validActuadorName) {
             const token = getCookie("token");
-            let res = await addActuador(actuadorId, deviceId as string, token as string)
+            let res = await addActuador(actuadorName, deviceId as string, token as string)
             if (res) {
-                alert("Actuador añadido correctamente")
+                fetchDeviceActuadores(deviceId as string, token as string)
             } else {
                 alert("Error al añadir el actuador")
             }
@@ -277,14 +298,14 @@ export default function Page() {
                         {
                             sensorActuador
                                 ?   <div className="w-full h-full flex flex-col">
-                                        <label className="font-medium">Identificador</label>
-                                        <input onChange={handleSensorId} onBlur={handleSensorId} name="id" type="text" placeholder="Identificador" required
+                                        <label className="font-medium">Nombre</label>
+                                        <input onChange={handleSensorName} onBlur={handleSensorName} name="name" type="text" placeholder="Nombre" required
                                                     className={`transition easy-in-out duration-200
                                                     w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
                                                     shadow-sm rounded-lg ${
-                                                        emptySensorId
+                                                        emptySensorName
                                                             ? "border-[#d6d3d1]"
-                                                            : validSensorId
+                                                            : validSensorName
                                                                 ? "border-green-500 text-[#22c55e] bg-gray-500/5"
                                                                 : "border-red-500 text-red-500 bg-gray-500/5"
                                                     }`}/>
@@ -303,14 +324,14 @@ export default function Page() {
                                         </div>
                                     </div>
                                 :   <div className="w-full h-full flex flex-col">
-                                        <label className="font-medium">Identificador</label>
-                                        <input onChange={handleActuadorId} onBlur={handleActuadorId} name="id" type="text" placeholder="Identificador" required
+                                        <label className="font-medium">Nombre</label>
+                                        <input onChange={handleActuadorName} onBlur={handleActuadorName} name="name" type="text" placeholder="Nombre" required
                                                     className={`transition easy-in-out duration-200
                                                     w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
                                                     shadow-sm rounded-lg ${
-                                                        emptyActuadorId
+                                                        emptyActuadorName
                                                             ? "border-[#d6d3d1]"
-                                                            : validActuadorId
+                                                            : validActuadorName
                                                                 ? "border-green-500 text-[#22c55e] bg-gray-500/5"
                                                                 : "border-red-500 text-red-500 bg-gray-500/5"
                                                     }`}/>
@@ -397,7 +418,12 @@ export default function Page() {
     }
     // ---------------------------------------------------------------------------------
     // ------------------------------ Area ---------------------------------------------
-    const [areas, setAreas] = useState<[Area]>([{id: 0, name: ""}])
+    const [areas, setAreas] = useState<[Area]>([{
+        id: "",
+        name: "",
+        user: "",
+        color: ""
+    }])
 
     const fetchAreas = async () => {
         const token = getCookie("token")
@@ -406,12 +432,17 @@ export default function Page() {
         setAreas(res)
         setNewActuadorArea(res[0].id)
         } else {
-            setAreas([{id: 0, name: ""}])
+            setAreas([{
+                id: "",
+                name: "",
+                user: "",
+                color: ""
+            }])
         }
     }
 
     // ------------------------------ Modificar Area -----------------------------------
-    const [newActuadorArea, setNewActuadorArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
+    const [newActuadorArea, setNewActuadorArea] = useState(areas[0] === undefined ? "" : areas[0].id)
     const [IsOpenUpdateActuadorAreaDialog, setIsOpenUpdateActuadorAreaDialog] = useState(false)
 
     const handleActuadorArea = async () => {
@@ -449,7 +480,7 @@ export default function Page() {
     }
     // ----------------------------------------------------------------------------------------------------
     // ------------------------------ Modificar area del sensor -------------------------------------------
-    const [newSensorArea, setNewSensorArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
+    const [newSensorArea, setNewSensorArea] = useState(areas[0] === undefined ? "" : areas[0].id)
     const [IsOpenUpdateSensorAreaDialog, setIsOpenUpdateSensorAreaDialog] = useState(false)
     const [sensorIndex, setSensorIndex] = useState(0)
 
@@ -465,7 +496,6 @@ export default function Page() {
     }
 
     const handleSelectNewSensorArea = (e: any) => {
-        console.log(e.target.value)
         setNewSensorArea(e.target.value)
     }
 
@@ -588,8 +618,8 @@ export default function Page() {
         return (
             <Dialog open={IsOpenDeleteElemDialog} onClose={closeDeleteElemDialog}>
                 <DialogTitle className="w-full h-full">¿Seguro que deseas eliminar el {sensorActuador 
-                    ? "sensor " + deviceSensors[sensorIndex]?.id
-                    : "actuador " + deviceActuadores[actuadorIndex]?.id
+                    ? "sensor " + deviceSensors[sensorIndex]?.name
+                    : "actuador " + deviceActuadores[actuadorIndex]?.name
                     }?</DialogTitle>
                 <div className="flex flex-row p-4 gap-4">
                     <button onClick={closeDeleteElemDialog} className="w-1/2 h-12 text-white bg-indigo-600 rounded-md hover:bg-indigo-500 duration-150">
@@ -605,7 +635,7 @@ export default function Page() {
     }
     // ----------------------------------------------------------------------------------------------------
     // ------------------- Update Device Position -------------------
-    const [newArea, setNewArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
+    const [newArea, setNewArea] = useState(areas[0] === undefined ? "" : areas[0].id)
     const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
 
     const handleUpdateArea = async () => {
@@ -671,29 +701,30 @@ export default function Page() {
                 {DeleteElemDialog()}
                 {UpdateDeviceAreaDialog()}
                 <div id="botones" className="w-full h-12 flex flex-row gap-3">
-                    <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
+                    <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
                             router.push("/dashboard/devices")
                         }} className={`w-6 text-indigo-600`}/>
                     </button>
                     <div className="flex gap-3 justify-end flex-grow">
-                        <button onClick={openUpdateAreaDialog} className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
+                        <button onClick={openUpdateAreaDialog} className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                             <MapPinIcon className={`w-6 text-indigo-600`}/>
                         </button>
-                        <button onClick={addSensorActuador}  className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
+                        <button onClick={addSensorActuador}  className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                             <PlusCircleIcon className={`w-6 text-indigo-600`}/>
+                        </button>
+                        <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                            <ArrowPathIcon
+                            className={`w-6 text-indigo-600`}
+                            onClick={() => {updateInfo()}}
+                            style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
                         </button>
                         <button
                             onClick={() => {deleteDeviceButton()}} 
                             className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-50 border-red-500 duration-150`}>
                             <XMarkIcon className={`w-6 text-red-500`}/>
                         </button>
-                        <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border border-indigo-600 hover:bg-gray-100 duration-150`}>
-                            <ArrowPathIcon
-                            className={`w-6 text-indigo-600`}
-                            onClick={() => {updateInfo()}}
-                            style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
-                        </button>
+                        
                     </div>
                 </div>
                 <div id="datos" className="w-full h-full flex flex-col gap-3">
@@ -752,7 +783,7 @@ export default function Page() {
                             </div>
                             {
                                 deviceActuadores.length > 0
-                                    ?   <div className="w-full h-full rounded-md overflow-x-scroll">
+                                    ?   <div className="w-full h-full rounded-md overflow-x-auto">
                                             {
                                                 deviceActuadores.map((actuador, index) => {
                                                     return (
@@ -763,7 +794,7 @@ export default function Page() {
                                                         }`}>
                                                             <div className="px-3 w-28 h-full flex flex-row justify-between items-center">
                                                                 <FaFaucetDrip size={20} className="w-9 text-indigo-600"></FaFaucetDrip>
-                                                                {actuador.id}
+                                                                {actuador.name}
                                                             </div>
                                                             <div className="px-3 w-48 h-full flex gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorAreaDialogButton(index)} className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
@@ -835,7 +866,7 @@ export default function Page() {
                                                                                 ? <IoWaterOutline size={22} className="w-9 text-indigo-600"></IoWaterOutline>
                                                                                 : <p>?</p>
                                                                 }
-                                                                {sensor.id}
+                                                                {sensor.name}
                                                             </p>
                                                             <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateSensorAreaDialogButton(index)} className="h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
@@ -844,7 +875,7 @@ export default function Page() {
                                                                 {
                                                                     sensor.area == null
                                                                         ? "Descolocado"
-                                                                        : areas.map((area, index) => {
+                                                                        : areas.map((area) => {
                                                                             if (area.id == sensor.area) {
                                                                                 return area.name
                                                                             }

@@ -116,11 +116,10 @@ const App = () => {
     setIsOpenPlaceMarkerDialog(false)
   }
 
-  const handlePlaceSensorMarkerButton = async (lat, lon, area) => {
+  const handlePlaceSensorMarkerButton = async (lat, lon) => {
     const token = getCookie('token')
     let response_pos = await updateSensorPosition(elemId, lat, lon, token)
-    let response_area = await updateSensorArea(elemId, area, token)
-    if (response_pos && response_area) {
+    if (response_pos) {
       let newSensors = []
       for (let device of devices) {
         let sensors = await getSensors(device.id, token)
@@ -150,7 +149,7 @@ const App = () => {
                   }}
                  className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
                   <HiMiniCpuChip  size={30} className='w-9 ml-2 mr-5' />
-                  {device.id}
+                  {device.name}
                 </button>
               )
             }
@@ -170,7 +169,7 @@ const App = () => {
                     : sensor.type == 'TMP' ? <FaTemperatureQuarter  size={30} className='w-9 ml-2 mr-5'/>
                     : sensor.type == 'CAU' && <IoWaterOutline size={30} className='w-9 ml-2 mr-5' />
                   }
-                  {sensor.id}
+                  {sensor.name}
                 </button>
               )
             }
@@ -187,7 +186,7 @@ const App = () => {
                   }}
                  className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
                   <FaFaucetDrip size={30} className='w-9 ml-2 mr-5'/>
-                  {actuador.id}
+                  {actuador.name}
                 </button>
               )
             }
@@ -204,11 +203,10 @@ const App = () => {
   //----------------------------------------------------------------------------------------------------------------
   // ----------------------------------- Update Device Position Dialog ---------------------------------------------
 
-  const handlePlaceDeviceMarkerButton = async (lat, lon, area) => {
+  const handlePlaceDeviceMarkerButton = async (lat, lon) => {
     const token = getCookie('token')
     let response_pos = await updateDevicePosition(elemId, lat, lon, token)
-    let response_area = await updateDeviceArea(elemId, area, token)
-    if (response_pos && response_area) {
+    if (response_pos) {
       let newDevices = await getDevices(token)
       setDevices(newDevices)
       closePlaceMarkerDialog()
@@ -234,11 +232,10 @@ const App = () => {
     }
   }
 
-  const handlePlaceActuadorMarkerButton = async (lat, lon, area) => {
+  const handlePlaceActuadorMarkerButton = async (lat, lon) => {
     const token = getCookie('token')
     let response_pos = await updatePositionActuador(elemId, lat, lon, token)
-    let response_area = await updateActuadorArea(elemId, area, token)
-    if (response_pos && response_area) {
+    if (response_pos ) {
       let newActuadores = []
       for (let device of devices) {
         let actuadores = await getActuadores(device.id, token)

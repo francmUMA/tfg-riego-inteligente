@@ -17,19 +17,20 @@ export default function Page() {
 
     const router = useRouter()
 
+    const fetchDevices = async (token: string) => {
+        const devices = await getDevices(token)
+        if (devices === undefined) {
+             console.log("No se han obtenido los dispositivos")
+             setDevices([])
+        } else {
+            setDevices(devices)
+            setShowDevicesInfo(devices.map(() => true))
+        }
+    }
+
     useEffect(() => {
         const token = getCookie("token")
         if (token === undefined) router.push("/login")
-        const fetchDevices = async (token: string) => {
-            const devices = await getDevices(token)
-            if (devices === undefined) {
-                 console.log("No se han obtenido los dispositivos")
-                 setDevices([])
-            } else {
-                setDevices(devices)
-                setShowDevicesInfo(devices.map(() => true))
-            }
-        }
         fetchAreas(token as string)
         fetchDevices(token as string)
     }, [router])
@@ -43,7 +44,6 @@ export default function Page() {
             else return show
         })
         )
-        console.log(showDevicesInfo)
     }
 
     const DeviceInfo = (device: any) => {
@@ -90,9 +90,9 @@ export default function Page() {
     const [ip, setIp] = useState("")
     const [validIp, setValidIp] = useState(false)
     const [emptyIp, setEmptyIp] = useState(true)
-    const [id, setId] = useState("")
-    const [validId, setValidId] = useState(false)
-    const [emptyId, setEmptyId] = useState(true)
+    const [name, setName] = useState("")
+    const [validName, setValidName] = useState(false)
+    const [emptyName, setEmptyName] = useState(true)
 
     const handleIP = (e: { target: { value: string } }) => {
         if (e.target.value === '') {
@@ -110,15 +110,15 @@ export default function Page() {
         }
     }
 
-    const handleId = (e: {target: { value: string }}) => {
+    const handleName = (e: {target: { value: string }}) => {
         if (e.target.value.length < 0){
-            setEmptyId(true)
-            setValidId(false)
+            setEmptyName(true)
+            setValidName(false)
             return
         }
-        setValidId(true)
-        setEmptyId(false)
-        setId(e.target.value)
+        setValidName(true)
+        setEmptyName(false)
+        setName(e.target.value)
     }
 
     const AddDeviceDialog = () => {
@@ -129,14 +129,14 @@ export default function Page() {
                     IsOpenAddDeviceDialog ? "flex flex-col gap-5 justify-center items-center" : "hidden"
                     }`}>
                     <div className="w-full h-full flex flex-col">
-                        <label className="font-medium">Identificador</label>
-                        <input name="id" type="text" onChange={handleId} onBlur={handleId} placeholder="Identificador" required
+                        <label className="font-medium">Nombre</label>
+                        <input name="name" type="text" onChange={handleName} onBlur={handleName} placeholder="Nombre" required
                                     className={`transition easy-in-out duration-200
                                     w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
                                     shadow-sm rounded-lg ${
-                                        emptyId
+                                        emptyName
                                         ? "border-[#d6d3d1]"
-                                        : validId
+                                        : validName
                                             ? "border-green-500 text-[#22c55e] bg-gray-500/5"
                                             : "border-red-500 text-red-500 bg-gray-500/5"
                         }`}/>
@@ -173,13 +173,14 @@ export default function Page() {
     }
 
     const createDeviceButton = async () => {
-        setEmptyId(true)
+        setEmptyName(true)
         setEmptyIp(true)
-        if (validId && validIp) {
+        if (validName && validIp) {
             const token = getCookie("token")
-            let addDevice = await createDevice(id, ip, token as string)
+            let addDevice = await createDevice(name, ip, token as string)
             if (addDevice) {
                 alert("Dispositivo añadido correctamente")
+                fetchDevices(token as string)
                 setIsOpenAddDeviceDialog(false)
             } else {
                 alert("No se ha podido añadir el dispositivo")
@@ -192,6 +193,7 @@ export default function Page() {
         let res = await deleteDevice(id, token as string)
         if (res) {
             alert("Dispositivo eliminado correctamente")
+            fetchDevices(token as string)
         } else {
             alert("No se ha podido eliminar el dispositivo")
         }
@@ -289,6 +291,7 @@ export default function Page() {
         let res = await testDeviceConnection(id, token as string)
         if (res) {
             alert("El dispositivo está conectado")
+            fetchDevices(token as string)
         } else {
             alert("El dispositivo no está conectado")
         }
@@ -296,10 +299,7 @@ export default function Page() {
     //----------------------------------------------------------------------------------------------
     // ----------------------------------- Boton para añadir un area -------------------------------
     const [IsOpenAddAreaDialog, setIsOpenAddAreaDialog] = useState(false)
-    const [areas, setAreas] = useState<[Area]>([{id: 0, name: ""}])
-    const [areaId, setAreaId] = useState("")
-    const [validAreaId, setValidAreaId] = useState(false)
-    const [emptyAreaId, setEmptyAreaId] = useState(true)
+    const [areas, setAreas] = useState<[Area]>([{id: "", name: "", user: "", color: ""}])
     const [areaName, setAreaName] = useState("")
     const [validAreaName, setValidAreaName] = useState(false)
     const [emptyAreaName, setEmptyAreaName] = useState(true)
@@ -314,23 +314,6 @@ export default function Page() {
     }
     const closeAddAreaDialog = () => {
         setIsOpenAddAreaDialog(false)
-    }
-
-    const handleAreaId = (e: { target: { value: string } }) => {
-        if (e.target.value == ""){
-            setEmptyAreaId(true)
-            setValidAreaId(false)
-        } else {
-            setEmptyAreaId(false)
-            // Comprobar que el id no existe en las areas
-            let exists = areas.find((area: any) => area.id == e.target.value)
-            if (exists) {
-                setValidAreaId(false)
-            } else {
-                setValidAreaId(true)
-                setAreaId(e.target.value)
-            }
-        }
     }
 
     const handleAreaName = (e: { target: { value: string } }) => {
@@ -350,10 +333,10 @@ export default function Page() {
     }
 
     const handleAddAreaButton = async () => {
-        if (validAreaId && validAreaName) {
+        if (validAreaName) {
             // Añadir el area
             const token = getCookie("token")
-            let res = await addArea(areaId, areaName, token as string)
+            let res = await addArea(areaName, token as string)
             if (res) {
                 alert("Area añadida correctamente")
             } else {
@@ -368,19 +351,6 @@ export default function Page() {
             <Dialog open={IsOpenAddAreaDialog} onClose={closeAddAreaDialog}>
                 <DialogTitle className="w-full h-full border-b">Añade la información de la nueva zona</DialogTitle>
                 <div className={`p-5 w-full h-full col-span-2 flex flex-col gap-5 justify-center`}>
-                    <div className="w-full h-full flex flex-col">
-                        <label className="font-medium">Identificador</label>
-                        <input name="id" type="text" onChange={handleAreaId} onBlur={handleAreaId} placeholder="Identificador" required
-                                    className={`transition easy-in-out duration-200
-                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                    shadow-sm rounded-lg ${
-                                        emptyAreaId
-                                        ? "border-[#d6d3d1]"
-                                        : validAreaId
-                                            ? "border-green-500 text-[#22c55e] bg-gray-500/5"
-                                            : "border-red-500 text-red-500 bg-gray-500/5"
-                        }`}/>
-                    </div>
                     <div className="w-full h-full flex flex-col">
                         <label>Nombre</label>
                         <input name="id" type="text" onChange={handleAreaName} onBlur={handleAreaName} placeholder="Nombre" required
@@ -403,7 +373,7 @@ export default function Page() {
     }
     // ---------------------------------------------------------------------------------------------
     // ------------------- Update Device Position -------------------
-    const [newArea, setNewArea] = useState(areas[0] === undefined ? 0 : areas[0].id)
+    const [newArea, setNewArea] = useState(areas[0] === undefined ? "" : areas[0].id)
     const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
     const [currentId, setCurrentId] = useState("")
 
@@ -504,7 +474,7 @@ export default function Page() {
                                     </Link>
                                 </div>
                                 <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
-                                    <h1 className="col-span-4 p-5 text-2xl">#{devices.id}</h1>
+                                    <h1 className="col-span-4 p-5 text-2xl">{devices.name}</h1>
                                     <button
                                         onClick={() => handleDeviceInfoButton(index)}
                                         className="border-l flex justify-center items-center rounded-md hover:bg-gray-50">
