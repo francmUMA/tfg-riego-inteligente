@@ -1,4 +1,4 @@
-export async function addCoords(Latitud: number, Longitud: number, area: number, index: number, token: string) {
+export async function addCoords(Latitud: number, Longitud: number, area: string, index: number, token: string) {
     let options = {
         method: 'POST',
         headers: {
@@ -19,7 +19,7 @@ export async function addCoords(Latitud: number, Longitud: number, area: number,
     }
 }
 
-export async function deleteCoords(area: number, token: string) {
+export async function deleteCoords(area: string, token: string) {
     let options = {
         method: 'DELETE',
         headers: {
@@ -34,7 +34,7 @@ export async function deleteCoords(area: number, token: string) {
     }
 }
 
-export async function getCoordsArea(area: number, token: string) {
+export async function getCoordsArea(area: string, token: string) {
     let options = {
         method: 'GET',
         headers: {

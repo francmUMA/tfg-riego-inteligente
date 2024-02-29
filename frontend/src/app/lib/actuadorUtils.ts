@@ -1,10 +1,13 @@
 export interface Actuador {
     id: string,
     mode: number,
-    device: number,
+    device: string,
     device_pin: number,
-    area: number
-
+    area: string,
+    Latitud: number,
+    Longitud: number,
+    status: number,
+    name: string
 }
 export function checkActuador(actuadores: any, id: string) {
     return !(actuadores.find((actuador: any) => actuador.id == id))
@@ -25,14 +28,14 @@ export async function getActuadores(device: string, token: string) {
     }
 }
 
-export async function addActuador(id: string, device: string, token: string) {
+export async function addActuador(name: string, device: string, token: string) {
     let options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id})
+        body: JSON.stringify({name: name})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/" + device, options)
     if (request.status === 200) {
@@ -59,7 +62,7 @@ export async function updateActuadorMode(id: string, mode: number, token: string
     }
 }
 
-export async function updateActuadorArea(id: string, area: number, token: string) {
+export async function updateActuadorArea(id: string, area: string, token: string) {
     let options = {
         method: 'PUT',
         headers: {

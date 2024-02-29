@@ -3,8 +3,12 @@ export interface Sensor {
     type: string,
     device: number,
     device_pin: number,
-    area: number
-
+    area: number,
+    Latitud: number,
+    Longitud: number,
+    name: string,
+    value: number,
+    available: number
 }
 
 export async function getSensors(device: string, token: string) {
@@ -26,14 +30,14 @@ export async function checkSensorId(sensors: any, id: string){
     return !(sensors.find((sensor: any) => sensor.id == id))
 }
 
-export async function addSensor(id: string, device: string, token: string, type: string) {
+export async function addSensor(name: string, device: string, token: string, type: string) {
     let options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, type: type})
+        body: JSON.stringify({name: name, type: type})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
     if (request.status === 200) {
@@ -43,7 +47,7 @@ export async function addSensor(id: string, device: string, token: string, type:
     }
 }
 
-export async function updateSensorArea(id: string, area: number, token: string) {
+export async function updateSensorArea(id: string, area: string, token: string) {
     let options = {
         method: 'PUT',
         headers: {

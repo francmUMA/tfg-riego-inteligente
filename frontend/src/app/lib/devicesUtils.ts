@@ -29,14 +29,14 @@ export function checkIP(ip: string) {
     return false;
 }
 
-export async function createDevice (id: string, ip: string, token: string) {
+export async function createDevice (name: string, ip: string, token: string) {
     let options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, ip: ip})
+        body: JSON.stringify({name: name, ip: ip})
     }
     console.log(options)
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/", options)
@@ -145,7 +145,7 @@ export async function getDeviceCpuTemperature (id: string, token: string) {
     }
 }
 
-export async function updateDeviceArea (id: string, area: number, token: string) {
+export async function updateDeviceArea (id: string, area: string, token: string) {
     let options = {
         method: 'PUT',
         headers: {
