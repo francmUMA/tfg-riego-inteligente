@@ -1,5 +1,5 @@
 import express from "express";
-import { getSensors, addSensor, deleteSensor, updateSensorArea, updateSensorDevicePin, updateSensorDevice, updateSensorPosition } from "../controllers/sensorsController.js"
+import { getSensors, addSensor, deleteSensor, updateSensorArea, updateSensorDevicePin, updateSensorDevice, updateSensorPosition, updateSensorName, updateSensorAvailability, updateSensorValue } from "../controllers/sensorsController.js"
 
 const router = express.Router();
 
@@ -10,5 +10,8 @@ router.put("/area", updateSensorArea)
 router.put("/pin", updateSensorDevicePin)
 router.put("/device", updateSensorDevice)
 router.put("/position", updateSensorPosition)
+router.put("/name", updateSensorName)
+router.put("/availability", updateSensorAvailability)
+router.put("/value", updateSensorValue)
 
 export default router;

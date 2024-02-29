@@ -1,7 +1,18 @@
 import Cpu_temp_Model from '../models/Cpu_temp_model.js';
 import { get_nif_by_token } from '../../users/controllers/UserController.js';
+import { validate } from 'uuid';
 
 export const add_value = async (req, res) => {
+    if (req.body.device === undefined || req.body.device == "") {
+        res.status(400).send("Missing device")
+        return
+    }
+
+    if (!validate(req.body.device)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
     try {
         await Cpu_temp_Model.create(req.body)
         res.status(200).send("Value added")
@@ -30,6 +41,12 @@ export const get_values_by_device = async (req, res) => {
         res.status(400).send("Missing id")
         return
     }
+
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid id")
+        return
+    }
+
     // ----------------------------------------------------------
     try {
         let values = await Cpu_temp_Model.findAll({ where: { device: req.params.id } })

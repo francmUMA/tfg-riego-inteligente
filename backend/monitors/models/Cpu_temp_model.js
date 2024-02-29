@@ -3,11 +3,11 @@ import { DataTypes } from "sequelize"
 
 const Cpu_temp_Model = db.define("Cpu_temps", {
     device: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     value: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
+        type: DataTypes.INTEGER
     },
     time: {
         type: DataTypes.TIME,

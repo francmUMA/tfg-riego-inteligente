@@ -1,6 +1,7 @@
 import coordsModel from "../models/coordsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import areasModel from "../../areas/models/areasModel.js"
+import { validate } from "uuid"
 
 /*
     @description: Función que crea una coordenada asociada a un area
@@ -46,8 +47,13 @@ export const addCoords = async (req, res) => {
     if (req.params.area === undefined || req.params.area === null) {
         res.status(400).send("Invalid area")
         return
-    
     }
+
+    if (!validate(req.params.area)) {
+        res.status(400).send("Invalid area")
+        return
+    }
+
     try {
         let area = areasModel.findOne({ where: { id: req.params.area, user: nif } })
         if (area === null) {
@@ -99,6 +105,12 @@ export const getCoordsByArea = async (req, res) => {
         res.status(400).send("Invalid area")
         return
     }
+
+    if (!validate(req.params.area)) {
+        res.status(400).send("Invalid area")
+        return
+    }
+
     try {
         let area = areasModel.findOne({ where: { id: req.params.area, user: nif } })
         if (area === null) {
@@ -145,6 +157,12 @@ export const deleteCoordsByArea = async (req, res) => {
         res.status(400).send("Invalid area")
         return
     }
+
+    if (!validate(req.params.area)) {
+        res.status(400).send("Invalid area")
+        return
+    }
+
     try {
         let area = areasModel.findOne({ where: { id: req.params.area, user: nif } })
         if (area === null) {

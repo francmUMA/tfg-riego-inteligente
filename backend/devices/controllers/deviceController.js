@@ -2,7 +2,10 @@ import deviceModel from "../models/deviceModel.js";
 import areaModel from "../../areas/models/areasModel.js";
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
-
+import { v4, validate } from 'uuid';
+/*
+    @description: Obtiene todos los dispositivos de un usuario
+*/
 export const getDevices = async (req, res) => {
     // Validar token
     let nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
@@ -20,7 +23,13 @@ export const getDevices = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
-
+/*
+    @description: Añade un dispositivo a un usuario
+    @body: {
+        name: string,     // Nombre del dispositivo
+        ip: string      // Direccion ip del dispositivo
+    }
+*/
 export const addDevice = async (req, res) => {
     // Validar token
     let nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
@@ -30,8 +39,8 @@ export const addDevice = async (req, res) => {
     }
 
     // ------------------- POSIBLES ERRORES --------------------
-    if (req.body.id === undefined) {
-        res.status(400).send("Missing id")
+    if (req.body.name === undefined || req.body.name == "" || req.body.name.length > 50 || req.body.name == null) {
+        res.status(400).send("Missing name")
         return
     }
 
@@ -61,10 +70,11 @@ export const addDevice = async (req, res) => {
             return
         }
     }
-
+    let uuid = v4()
     try {
         let device = {
-            id: req.body.id,
+            id: uuid,
+            name: req.body.name,
             Usuario: nif,
             ip: req.body.ip,
             available: 0
@@ -92,11 +102,40 @@ export const checkDevices = async () => {
     }
 }
 
+/*
+    @description: Elimina un dispositivo de un usuario
+    @params: {
+        id: string   // Identificador del dispositivo
+    }
+*/
 export const deleteDevice = async (req, res) => {
     // Validar token
     let nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
     if (nif === undefined) {
         res.status(401).send("Invalid token")
+        return
+    }
+
+    // ------------------- POSIBLES ERRORES --------------------
+    if (req.params.id === undefined || req.params.id == "" ) {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
+    // Comprobar que el dispositivo existe y pertenece al usuario
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.params.id, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
         return
     }
 
@@ -114,6 +153,14 @@ export const deleteDevice = async (req, res) => {
     }
 }
 
+/*
+    @description: Actualiza la posicion de un dispositivo
+    @body: {
+        id: string,         // Identificador del dispositivo
+        Latitud: float,
+        Longitud: float
+    }
+*/
 export const updatePosition = async (req, res) => {
     // Validar token
     let nif
@@ -135,6 +182,11 @@ export const updatePosition = async (req, res) => {
         return
     }
 
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
     if (req.body.Latitud === undefined || req.body.Latitud == "") {
         res.status(400).send("Missing latitude")
         return
@@ -147,7 +199,7 @@ export const updatePosition = async (req, res) => {
 
     // ----------------------------------------------------------
     try {
-        let device = await deviceModel.findOne({ where: { id: req.body.id } })
+        let device = await deviceModel.findOne({ where: { id: req.body.id, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -161,6 +213,13 @@ export const updatePosition = async (req, res) => {
     }
 }
 
+/*
+    @description: Actualiza la ip de un dispositivo
+    @body: {
+        id: string,         // Identificador del dispositivo
+        ip: string
+    }
+*/
 export const updateIp = async (req, res) => {
     // Validar token
     let nif
@@ -179,6 +238,11 @@ export const updateIp = async (req, res) => {
     // ------------------- POSIBLES ERRORES --------------------
     if (req.body.id === undefined) {
         res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid device")
         return
     }
 
@@ -211,7 +275,7 @@ export const updateIp = async (req, res) => {
 
     // ----------------------------------------------------------
     try {
-        let device = await deviceModel.findOne({ where: { id: req.body.id } })
+        let device = await deviceModel.findOne({ where: { id: req.body.id, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -224,6 +288,12 @@ export const updateIp = async (req, res) => {
     }
 }
 
+/*
+    @description: Comprueba si un dispositivo esta disponible
+    @params: {
+        id: string,         // Identificador del dispositivo
+    }
+*/
 export const testConnection = async (req, res) => {
     // Validar token
     let nif
@@ -245,9 +315,14 @@ export const testConnection = async (req, res) => {
         return
     }
 
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
     // ----------------------------------------------------------
     try {
-        let device = await deviceModel.findOne({ where: { id: req.params.id } })
+        let device = await deviceModel.findOne({ where: { id: req.params.id, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -268,6 +343,12 @@ export const testConnection = async (req, res) => {
     }
 }
 
+/*
+    @description: Obtiene un dispositivo de un usuario
+    @params: {
+        id: string,         // Identificador del dispositivo
+    }
+*/
 export const getDevice = async (req, res) => {
     // Validar token
     let nif
@@ -289,9 +370,14 @@ export const getDevice = async (req, res) => {
         return
     }
 
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
     // ----------------------------------------------------------
     try {
-        let device = await deviceModel.findOne({ where: { id: req.params.id } })
+        let device = await deviceModel.findOne({ where: { id: req.params.id, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -304,9 +390,9 @@ export const getDevice = async (req, res) => {
 
 /*
     @description: Actualiza el area de un dispositivo
-    @params: {
-        id: integer,
-        area: integer
+    @body: {
+        id: string,         // Identificador del dispositivo
+        area: string        // Identificador del area
     }
 */
 
@@ -331,12 +417,17 @@ export const updateArea = async (req, res) => {
         return
     }
 
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
     if (req.body.area === undefined) {
         res.status(400).send("Missing area")
         return
     }
 
-    if (req.body.area < 0) {
+    if (req.body.area != null && !validate(req.body.area)) {
         res.status(400).send("Invalid area")
         return
     }
@@ -354,15 +445,17 @@ export const updateArea = async (req, res) => {
     }
 
     // Comprobar que el area existe
-    try {
-        let area = await areaModel.findOne({ where: { id: req.body.area, user: nif } })
-        if (area === null) {
-            res.status(404).send("Area not found")
+    if (req.body.area != null){
+        try {
+            let area = await areaModel.findOne({ where: { id: req.body.area, user: nif } })
+            if (area === null) {
+                res.status(404).send("Area not found")
+                return
+            }
+        } catch (error) {
+            res.status(500).send(error.message)
             return
         }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
     }
     //---------------------------------------------------------------------------------------------------------------
     //------------------------------------------ Actualizar area -----------------------------------------------------
@@ -374,5 +467,66 @@ export const updateArea = async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
+}
 
+/*
+    @description: Actualiza el nombre de un dispositivo
+    @body: {
+        id: string,         // Identificador del dispositivo
+        name: string        // Nombre del dispositivo
+    }
+*/
+
+export const updateDeviceName = async (req, res) => {
+    //------------------------------------------ Validar token --------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------------------------ Comprobar errores ----------------------------------------------------
+    if (req.body.id === undefined) {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
+    if (req.body.name === undefined || req.body.name == "" || req.body.name.length > 50 || req.body.name == null) {
+        res.status(400).send("Missing name")
+        return
+    }
+
+    // Comprobar que el dispositivo existe y pertenece al usuario
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.body.id, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+    //---------------------------------------------------------------------------------------------------------------
+    //------------------------------------------ Actualizar area -----------------------------------------------------
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.body.id } })
+        device.name = req.body.name
+        device.save()
+        res.status(200).send("Name updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
 }

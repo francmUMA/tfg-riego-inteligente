@@ -5,15 +5,17 @@ export default db.define("Actuadores", {
     id : {
         type: DataTypes.STRING,
         primaryKey: true,
+        allowNull: false,
     },
     device: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     device_pin: {
         type: DataTypes.INTEGER
     },
     area: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING
     },
     mode: {
         type: DataTypes.TINYINT
@@ -24,4 +26,13 @@ export default db.define("Actuadores", {
     Longitud: {
         type: DataTypes.FLOAT
     },
+    status: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
 })

@@ -5,20 +5,22 @@ export default db.define("Coordenadas", {
     id : {
         type: DataTypes.INTEGER,
         primaryKey: true,
+        allowNull: false,
     },
     Latitud: {
-        type: DataTypes.FLOAT
+        type: DataTypes.FLOAT,
+        allowNull: false,
     },
     Longitud: {
-        type: DataTypes.FLOAT
+        type: DataTypes.FLOAT,
+        allowNull: false,
     },
     area: {
-        type: DataTypes.INTEGER
-    },
-    radius: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING,
+        allowNull: false
     },
     index: {
-        type: DataTypes.INTEGER
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 })

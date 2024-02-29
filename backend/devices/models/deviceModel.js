@@ -3,8 +3,9 @@ import { DataTypes } from "sequelize"
 
 export default db.define("Devices", {
     id : {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         primaryKey: true,
+        allowNull: false
     },
     Latitud: {
         type: DataTypes.FLOAT
@@ -13,15 +14,23 @@ export default db.define("Devices", {
         type: DataTypes.FLOAT
     },
     Usuario: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     ip: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     available: {
-        type: DataTypes.TINYINT
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0
     },
     area: {
         type: DataTypes.STRING
+    },
+    name:  {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 })

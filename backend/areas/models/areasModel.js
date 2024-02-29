@@ -4,11 +4,12 @@ import { DataTypes } from "sequelize"
 export default db.define("Areas", {
     id: {
         type: DataTypes.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        allowNull: false,
     },
     name: {
         type: DataTypes.STRING,
-        defaultValue: "New area"
+        allowNull: false,
     },
     user: {
         type: DataTypes.STRING,

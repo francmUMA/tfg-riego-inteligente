@@ -1,5 +1,5 @@
 import express from "express";
-import { getDevices,addDevice,deleteDevice,updatePosition, updateIp, testConnection, getDevice, updateArea } from "../controllers/deviceController.js";
+import { getDevices,addDevice,deleteDevice,updatePosition, updateIp, testConnection, getDevice, updateArea, updateDeviceName } from "../controllers/deviceController.js";
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.put("/position", updatePosition)
 router.put("/ip", updateIp)
 router.put("/test/:id", testConnection)
 router.put("/area", updateArea)
+router.put("/name", updateDeviceName)
 
 export default router;

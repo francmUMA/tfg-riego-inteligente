@@ -5,18 +5,21 @@ export default db.define("Sensores", {
     id : {
         type: DataTypes.STRING,
         primaryKey: true,
+        allowNull: false,
     },
     device: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING,
+        allowNull: false,
     },
     device_pin: {
         type: DataTypes.INTEGER
     },
     area: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING
     },
     type: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     Latitud: {
         type: DataTypes.FLOAT
@@ -24,4 +27,16 @@ export default db.define("Sensores", {
     Longitud: {
         type: DataTypes.FLOAT
     },
+    name : {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    value: {
+        type: DataTypes.INTEGER,
+    },
+    available: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0
+    }
 })

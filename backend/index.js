@@ -29,7 +29,6 @@ app.use("/api/sensores", sensorsRoutes)
 app.use("/api/areas", areasRoutes)
 app.use("/api/coords", coordsRoutes)
 
-
 // Conexion a la base de datos
 try {
     await db.authenticate();
@@ -42,6 +41,7 @@ try {
 app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);
 });
+
 
 // Ping a los dispositivos cada 5 minutos
 schedule.scheduleJob('* * * * *', checkDevices)
