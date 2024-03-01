@@ -270,14 +270,16 @@ export const updateSensorArea = async (req, res) => {
         return
     }
     // ------------------- Comprobar si el area existe ---------------------------
-    try {
-        let area = await areasModel.findOne({ where: { id: req.body.area, user: nif } })
-        if (area === null) {
-            res.status(404).send("Area not found")
-            return
+    if (req.body.area != null) {
+        try {
+            let area = await areasModel.findOne({ where: { id: req.body.area, user: nif } })
+            if (area === null) {
+                res.status(404).send("Area not found")
+                return
+            }
+        } catch (error) {
+            res.status(500).send(error.message)
         }
-    } catch (error) {
-        res.status(500).send(error.message)
     }
     //-------------------  Comprobar que el sensor pertenezca al usuario ---------------------------
     try {
