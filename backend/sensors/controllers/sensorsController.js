@@ -258,7 +258,7 @@ export const updateSensorArea = async (req, res) => {
         return
     }
 
-    if (area != null && !validate(req.body.area)) {
+    if (req.body.area != null && !validate(req.body.area)) {
         res.status(400).send("Invalid area")
         return
     }

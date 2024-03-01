@@ -270,7 +270,7 @@ export const updateActuadorArea = async (req, res) => {
         return
     }
     // ------------------- Comprobar si el area existe en caso de que no sea nula ---------------------------
-    if (area != null) {
+    if (req.body.area != null) {
         try {
             let area = await areasModel.findOne({ where: { id: req.body.area, user: nif } })
             if (area === null) {
