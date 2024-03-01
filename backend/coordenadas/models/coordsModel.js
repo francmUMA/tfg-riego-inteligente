@@ -5,7 +5,7 @@ export default db.define("Coordenadas", {
     id : {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        allowNull: false,
+        autoIncrement: true
     },
     Latitud: {
         type: DataTypes.FLOAT,
