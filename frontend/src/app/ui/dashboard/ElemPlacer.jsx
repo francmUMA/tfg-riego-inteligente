@@ -6,13 +6,15 @@ import { getAreas } from "../../lib/areasUtils"
 import { getCoordsArea } from "../../lib/coordsUtils"
 import { Polygon } from "./map/Polygon"
 import { updateDeviceArea, updateDevicePosition } from "../../lib/devicesUtils"
+import { getSensors, updateSensorArea, updateSensorPosition } from "../../lib/sensorsUtils"
+import { updateActuadorArea, updatePositionActuador } from "../../lib/actuadorUtils"
 import { MdDone, MdLocationPin } from "react-icons/md";
 
 const PolygonComponent = ({area, coords, markerArea, markerLocation, setMarkerArea}) => {
     const polygonRef = useRef(null)
     let geometry = useMapsLibrary('geometry')
 
-    const computeDeviceMarkerArea = () => {
+    const computeMarkerArea = () => {
         if (polygonRef.current != null && markerArea != area.id){
             let res = geometry?.poly?.containsLocation({lat: markerLocation.lat, lng: markerLocation.lng}, polygonRef.current)
             if (res){
@@ -22,7 +24,7 @@ const PolygonComponent = ({area, coords, markerArea, markerLocation, setMarkerAr
     }
 
     useEffect(() => {
-        computeDeviceMarkerArea()
+        computeMarkerArea()
     }, [markerLocation])    
 
     return (
@@ -47,7 +49,7 @@ export const ElemPlacer = ({elem, closeDialog, type, elems, setElems}) => {
     const [areas, setAreas] = useState([])
     const [coords, setCoords] = useState([])
     const [markerLocation, setMarkerLocation] = useState({lat: 0, lng: 0})
-    const [markerArea, setMarkerArea] = useState(elem.area)
+    const [markerArea, setMarkerArea] = useState(null)
     const [displayMap, setDisplayMap] = useState(false)
 
     const fetchAllInfo = async (token) => {
@@ -78,6 +80,9 @@ export const ElemPlacer = ({elem, closeDialog, type, elems, setElems}) => {
             })
         }
         setCoords(newCoords)
+        if (elem !== undefined){
+            setMarkerArea(elem.area)
+        }
         setDisplayMap(true)
     }
 
@@ -89,11 +94,39 @@ export const ElemPlacer = ({elem, closeDialog, type, elems, setElems}) => {
         if (type == 0) {
             res_area = await updateDeviceArea(elem.id, markerArea, token)
             res_pos = await updateDevicePosition(elem.id, markerLocation.lat, markerLocation.lng, token)
-            if (res_area && res_pos) {
+        } else if (type == 1) {
+            res_area = await updateSensorArea(elem.id, markerArea, token)
+            res_pos = await updateSensorPosition(elem.id, markerLocation.lat, markerLocation.lng, token)
+        } else if (type == 2) {
+            res_area = await updateActuadorArea(elem.id, markerArea, token)
+            res_pos = await updatePositionActuador(elem.id, markerLocation.lat, markerLocation.lng, token)
+        }
+        if (res_area && res_pos) {
+            if (type == 0) {
                 newElems = elem
                 newElems.area = markerArea
                 newElems.Latitud = markerLocation.lat
                 newElems.Longitud = markerLocation.lng
+            }
+            else if (type == 1) {
+                newElems = elems
+                newElems.map(sensor => {
+                    if (sensor.id == elem.id){
+                        sensor.area = markerArea
+                        sensor.Latitud = markerLocation.lat
+                        sensor.Longitud = markerLocation.lng
+                    }
+                })
+            }
+            else if (type == 2) {
+                newElems = elems
+                newElems.map(actuador => {
+                    if (actuador.id == elem.id){
+                        actuador.area = markerArea
+                        actuador.Latitud = markerLocation.lat
+                        actuador.Longitud = markerLocation.lng
+                    }
+                })
             }
         }
         setElems(newElems)
@@ -144,7 +177,7 @@ export const ElemPlacer = ({elem, closeDialog, type, elems, setElems}) => {
                                     mapId={"750877eaffcf7c34"}
                                     disableDefaultUI
                                     defaultCenter={{lat: centerLat, lng: centerLon}}
-                                    defaultZoom={18}
+                                    defaultZoom={15}
                                 >
                                     <Marker 
                                         position={{lat: markerLocation.lat, lng: markerLocation.lng}} 

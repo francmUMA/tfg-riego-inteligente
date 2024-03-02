@@ -354,7 +354,7 @@ const App = () => {
         <DialogTitle className="w-full h-full border">Selecciona una zona</DialogTitle>
         <div className="flex max-h-50 flex-col justify-center items-center p-4 gap-4 overflow-y-auto">
             {
-              areas.length > 0
+              areas.length > 0 && areas.find(area => coords.find(coord => coord.area == area.id) === undefined) !== undefined
               ? areas.map((area) => (
                 coords.find(coord => coord.area == area.id) === undefined &&
                 <button key={area.id}
@@ -570,6 +570,7 @@ const App = () => {
             }
             setAddMarkerMode(false)
             setSelectedMarker(undefined)
+            setClickedArea(undefined)
             setPlacePolygon(false)
           }}
          mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: centerLat, lng: centerLng}}>
@@ -626,17 +627,9 @@ const App = () => {
                       area: areas.find((area) => area.id == sensor.area), 
                       setElems: setSensors, 
                       setEdit: setEditOneMarker, 
-                      edit: editOneMarker, 
+                      edit: editOneMarker,
+                      deviceName: devices.find((device) => device.id == sensor.device)?.name, 
                       actuadores: actuadores}) }
-                    {/* <InfoContent 
-                      elem={sensor} 
-                      area={areas.find((area) => area.id == sensor.area)}
-                      type={1}
-                      sensors={sensors}
-                      setEdit={setEditOneMarker}
-                      edit={editOneMarker}  
-                      setElems={setSensors}
-                    /> */}
                 </InfoWindow>
               }
             </div>
@@ -663,6 +656,7 @@ const App = () => {
                       actuadores={actuadores}
                       area={areas.find((area) => area.id == actuador.area)}
                       type={2}
+                      deviceName={devices.find((device) => device.id == actuador.device)?.name}
                       setEdit={setEditOneMarker}
                       edit={editOneMarker}  
                       setElems={setActuadores}

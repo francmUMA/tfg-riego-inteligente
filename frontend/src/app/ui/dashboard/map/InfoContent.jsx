@@ -9,7 +9,7 @@ import { HiMiniCpuChip } from "react-icons/hi2";
 import { deleteActuador, updateActuadorMode } from "@/src/app/lib/actuadorUtils";
 
 
-const InfoContent = ({elem, type, sensors, area, setElems, setEdit, edit, actuadores}) => {
+const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setEdit, edit, actuadores}) => {
 
     const handleRemoveElem = async () => {
         const token = getCookie('token')
@@ -126,7 +126,7 @@ const InfoContent = ({elem, type, sensors, area, setElems, setEdit, edit, actuad
                     type != 0 && 
                         <div className="flex flex-row gap-x-2 items-center">
                             <HiMiniCpuChip size={18} className="text-indigo-600"/>
-                            {elem.device}
+                            {deviceName}
                         </div>
                 }
             </div>

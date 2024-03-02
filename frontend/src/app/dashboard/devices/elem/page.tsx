@@ -473,8 +473,16 @@ export default function Page() {
     const updateActuadorAreaDialog = () => {
         return (
             <Dialog open={IsOpenUpdateActuadorAreaDialog} onClose={closeUpdateActuadorAreaDialog}>
-                <DialogTitle className="w-full h-full border">Modifica la zona del actuador</DialogTitle>
-                {/* <ElemPlacer /> */}
+                <DialogTitle className="w-96 h-full font-bold text-xl flex justify-center items-center">Modifica la zona del actuador</DialogTitle>
+                <div className="flex items-center justify-center h-96">
+                    <ElemPlacer 
+                        closeDialog={closeUpdateActuadorAreaDialog} 
+                        elem={deviceActuadores[actuadorIndex]} 
+                        elems={deviceActuadores}
+                        setElems={setDeviceActuadores}
+                        type={2} 
+                    />
+                </div>
             </Dialog>
         )
     }
@@ -512,8 +520,16 @@ export default function Page() {
     const updateSensorAreaDialog = () => {
         return (
             <Dialog open={IsOpenUpdateSensorAreaDialog} onClose={closeUpdateSensorAreaDialog}>
-                <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
-                {/* <ElemPlacer /> */}
+                <DialogTitle className="w-96 h-full font-bold text-xl flex justify-center items-center">Modifica la zona del sensor</DialogTitle>
+                <div className="flex items-center justify-center h-96">
+                    <ElemPlacer 
+                        closeDialog={closeUpdateSensorAreaDialog} 
+                        elem={deviceSensors[sensorIndex]} 
+                        elems={deviceSensors}
+                        setElems={setDeviceSensors}
+                        type={1} 
+                    />
+                </div>
             </Dialog>
         )
     }
@@ -673,14 +689,15 @@ export default function Page() {
                     Coloca el dispositivo
                 </DialogTitle>
                 <div className="flex items-center justify-center h-96">
-                    {ElemPlacer({
+                    {/* {ElemPlacer({
                         closeDialog: closeUpdateAreaDialog,
                         elems: device,
                         type: 0,
                         elem: device,
                         setElems: setDevice
                     
-                    })}
+                    })} */}
+                    <ElemPlacer closeDialog={closeUpdateAreaDialog} elems={device} type={0} elem={device} setElems={setDevice}/>
                 </div>
                 
             </Dialog>
