@@ -1,1 +1,0 @@
-# tfg-riego-inteligente
