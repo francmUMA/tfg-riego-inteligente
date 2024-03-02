@@ -1,0 +1,12 @@
+# dotenv
+/backend/.env
+/frontend/.env
+
+# node modules
+/backend/node_modules
+
+# rust target
+/raspberry/target
+
+# frontend node modules
+/frontend/node_modules
