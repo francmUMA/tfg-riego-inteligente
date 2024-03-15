@@ -44,6 +44,7 @@ export const createCrop = async (req, res) => {
             name: req.body.name,
             user: nif
         }
+        console.log(crop)
         await cropModel.create(crop)
         res.status(200).send("Crop created")
     } catch (error) {
