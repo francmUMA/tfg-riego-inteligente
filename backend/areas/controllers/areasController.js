@@ -2,9 +2,9 @@ import areasModel from "../models/areasModel.js";
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import { v4, validate } from "uuid"
 
-/*
+/** 
     @description: Obtiene las areas de un usuario
-    @params: token de autenticacion
+    @param { token: token de autenticacion }
 */
 export const get_areas = async (req, res) => {
     // --------------- Validacion de token -----------------------
@@ -30,11 +30,12 @@ export const get_areas = async (req, res) => {
     }
 }
 
-/*
+/** 
     @description: Añade un area a un usuario
-    @params: {
+    @param {
         name: nombre del area,
-        color: color del area
+        color: color del area,
+        crop: cultivo del area
     }
 */
 export const add_area = async (req, res) => {
@@ -65,6 +66,14 @@ export const add_area = async (req, res) => {
         res.status(400).send("Missing color")
         return
     }
+    if (req.body.crop === undefined || req.body.crop === null || req.body.crop == "") {
+        res.status(400).send("Missing crop")
+        return
+    }
+    if (!validate(req.body.crop)) {
+        res.status(400).send("Invalid crop")
+        return
+    }
     // ------------------- Crear area ---------------------------
     let uuid = v4()
     try {
@@ -72,7 +81,8 @@ export const add_area = async (req, res) => {
             id: uuid,
             name: req.body.name,
             user: nif,
-            color: req.body.color
+            color: req.body.color,
+            crop: req.body.crop
         }
         await areasModel.create(area)
         res.status(200).send("Area created")
