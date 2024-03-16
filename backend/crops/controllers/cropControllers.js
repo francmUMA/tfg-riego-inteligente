@@ -244,3 +244,57 @@ export const getCrop = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * @description Obtiene las areas de un cultivo
+ * @param {
+ *  id: string
+ * }
+ */
+export const getCropAreas = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid id")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Obtener areas -------------------------
+    try {
+        let crop = await cropModel.findOne({
+            where: {
+                id: req.params.id,
+                user: nif
+            }
+        })
+        if (crop === null) {
+            res.status(404).send("Crop not found")
+            return
+        }
+        let areas = await areasModel.findAll({
+            where: {
+                crop: req.params.id
+            }
+        })
+        res.status(200).send(areas)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
