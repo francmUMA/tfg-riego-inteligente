@@ -192,3 +192,55 @@ export const updateCrop = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * 
+ * @description Obtiene un cultivo dado su id
+ * @param {
+ *  id: string
+ * }
+ * 
+ */
+
+export const getCrop = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid id")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Obtener cultivo -----------------------
+    try {
+        let crop = await cropModel.findOne({
+            where: {
+                id: req.body.id,
+                user: nif
+            }
+        })
+        if (crop === null) {
+            res.status(404).send("Crop not found")
+            return
+        }
+        res.status(200).send(crop)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
