@@ -1,4 +1,5 @@
 import cropModel from '../models/cropModel.js'
+import areasModel from '../../areas/models/areasModel.js'
 import { get_nif_by_token } from '../../users/controllers/UserController.js'
 import { v4, validate } from 'uuid'
 
