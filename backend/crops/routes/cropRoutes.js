@@ -4,7 +4,7 @@ import { createCrop, deleteCrop, getCrops, updateCrop, getCrop } from "../contro
 const router = express.Router();
 router.post('/', createCrop);
 router.get('/', getCrops);
-router.get('/id', getCrop);
+router.get('/:id', getCrop);
 router.put('/', updateCrop);
 router.delete('/', deleteCrop);
 

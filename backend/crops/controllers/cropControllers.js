@@ -218,11 +218,11 @@ export const getCrop = async (req, res) => {
     }
     // ----------------------------------------------------------
     // ------------------- Validar datos -------------------------
-    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
         res.status(400).send("Missing id")
         return
     }
-    if (!validate(req.body.id)) {
+    if (!validate(req.params.id)) {
         res.status(400).send("Invalid id")
         return
     }
@@ -231,7 +231,7 @@ export const getCrop = async (req, res) => {
     try {
         let crop = await cropModel.findOne({
             where: {
-                id: req.body.id,
+                id: req.params.id,
                 user: nif
             }
         })
