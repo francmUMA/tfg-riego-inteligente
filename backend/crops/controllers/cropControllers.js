@@ -1,5 +1,8 @@
 import cropModel from '../models/cropModel.js'
 import areasModel from '../../areas/models/areasModel.js'
+import deviceModel from '../../devices/models/deviceModel.js'
+import actuadoresModel from '../../actuadores/models/actuadoresModel.js'
+import sensorsModel from '../../sensors/models/sensorsModel.js'
 import { get_nif_by_token } from '../../users/controllers/UserController.js'
 import { v4, validate } from 'uuid'
 
@@ -298,4 +301,166 @@ export const getCropAreas = async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
+}
+
+/**
+ * @description Obtiene las dispositivos de un cultivo
+ * @param {
+ *  id: string
+ * }
+ */
+
+export const getCropDevices = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid id")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Obtener dispositivos -----------------
+    try {
+        let areas = await areasModel.findAll({
+            where: {
+                crop: req.params.id
+            }
+        })
+        let devices = []
+        for (let i = 0; i < areas.length; i++) {
+            let areaDevices = await deviceModel.findAll({
+                where: {
+                    area: areas[i].id
+                }
+            })
+            devices.push(...areaDevices)
+        }
+        res.status(200).send(devices)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/**
+ * @description Obtiene las sensores de un cultivo
+ * @param {
+*  id: string
+* }
+*/
+
+export const getCropSensors = async (req, res) => {
+   // --------------- Validacion de token -----------------------
+   let nif
+   try {
+       nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+   } catch (error) {
+       res.status(401).send("Invalid token")
+       return
+   }
+
+   if (nif === undefined) {
+       res.status(401).send("Invalid token")
+       return
+   }
+   // ----------------------------------------------------------
+   // ------------------- Validar datos -------------------------
+   if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+       res.status(400).send("Missing id")
+       return
+   }
+   if (!validate(req.params.id)) {
+       res.status(400).send("Invalid id")
+       return
+   }
+   // ----------------------------------------------------------
+   // ------------------- Obtener dispositivos -----------------
+   try {
+       let areas = await areasModel.findAll({
+           where: {
+               crop: req.params.id
+           }
+       })
+       let sensors = []
+       for (let i = 0; i < areas.length; i++) {
+           let areaSensors = await sensorsModel.findAll({
+               where: {
+                   area: areas[i].id
+               }
+           })
+           sensors.push(...areaSensors)
+       }
+       res.status(200).send(sensors)
+   } catch (error) {
+       res.status(500).send(error.message)
+   }
+}
+
+/**
+ * @description Obtiene las actuadores de un cultivo
+ * @param {
+*  id: string
+* }
+*/
+
+export const getCropActuadores = async (req, res) => {
+   // --------------- Validacion de token -----------------------
+   let nif
+   try {
+       nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+   } catch (error) {
+       res.status(401).send("Invalid token")
+       return
+   }
+
+   if (nif === undefined) {
+       res.status(401).send("Invalid token")
+       return
+   }
+   // ----------------------------------------------------------
+   // ------------------- Validar datos -------------------------
+   if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+       res.status(400).send("Missing id")
+       return
+   }
+   if (!validate(req.params.id)) {
+       res.status(400).send("Invalid id")
+       return
+   }
+   // ----------------------------------------------------------
+   // ------------------- Obtener dispositivos -----------------
+   try {
+       let areas = await areasModel.findAll({
+           where: {
+               crop: req.params.id
+           }
+       })
+       let actuadores = []
+       for (let i = 0; i < areas.length; i++) {
+           let areaActuadores = await actuadoresModel.findAll({
+               where: {
+                   area: areas[i].id
+               }
+           })
+           actuadores.push(...areaActuadores)
+       }
+       res.status(200).send(actuadores)
+   } catch (error) {
+       res.status(500).send(error.message)
+   }
 }
