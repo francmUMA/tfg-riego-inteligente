@@ -42,13 +42,32 @@
     "/dashboard/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/dashboard/layout.css",
       "static/chunks/app/dashboard/layout.js"
     ],
     "/dashboard/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/loading.js"
+    ],
+    "/dashboard/crops/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/crops/page.js"
+    ],
+    "/dashboard/crops/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/crops/layout.js"
+    ],
+    "/dashboard/crops/elem/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/crops/elem/page.js"
+    ],
+    "/dashboard/crops/elem/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/crops/elem/layout.js"
     ],
     "/dashboard/devices/page": [
       "static/chunks/webpack.js",
