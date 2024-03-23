@@ -530,3 +530,8 @@ export const updateDeviceName = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+export const getDeviceUuid = async (req, res) => {
+    let req_ip = req.connection.remoteAddress
+    console.log(req_ip)
+}
