@@ -6,3 +6,10 @@ body {
     background: linear-gradient(348deg, rgba(255,255,255,1) 35%, rgba(9,9,121,1) 56%, rgba(71,71,155,1) 100%);
 }
 
+@font-face {
+    font-family: "San Francisco";
+    src: url(/_next/static/media/san-francisco-reg.0fe7ec85.woff2);
+    font-weight: normal;
+    font-style: normal;
+  }
+

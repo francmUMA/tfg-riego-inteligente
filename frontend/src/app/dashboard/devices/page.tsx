@@ -9,6 +9,7 @@ import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPin
 import { Dialog, DialogTitle } from "@mui/material"
 import { MdAddLocationAlt } from "react-icons/md";
 import { Area, addArea, getAreas } from "../../lib/areasUtils"
+import { IoIosAddCircleOutline } from "react-icons/io"
 
 export default function Page() {
     const [devices, setDevices] = useState([])
@@ -154,7 +155,11 @@ export default function Page() {
                                         : "border-red-500 text-red-500 bg-gray-500/5"
                         }`}/>
                     </div>
-                    <button onClick={createDeviceButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
+                    <button 
+                        onClick={createDeviceButton} 
+                        className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            Añadir Dispositivo
+                    </button>
                 </div>
             </Dialog>
         )
@@ -298,79 +303,13 @@ export default function Page() {
     }
     //----------------------------------------------------------------------------------------------
     // ----------------------------------- Boton para añadir un area -------------------------------
-    const [IsOpenAddAreaDialog, setIsOpenAddAreaDialog] = useState(false)
     const [areas, setAreas] = useState<[Area]>([{id: "", name: "", user: "", color: ""}])
-    const [areaName, setAreaName] = useState("")
-    const [validAreaName, setValidAreaName] = useState(false)
-    const [emptyAreaName, setEmptyAreaName] = useState(true)
 
     const fetchAreas = async (token: string) => {
         const areas = await getAreas(token)
         setAreas(areas)
     }
 
-    const openAddAreaDialogButton = () => {
-        setIsOpenAddAreaDialog(true)
-    }
-    const closeAddAreaDialog = () => {
-        setIsOpenAddAreaDialog(false)
-    }
-
-    const handleAreaName = (e: { target: { value: string } }) => {
-        if (e.target.value == ""){
-            setEmptyAreaName(true)
-            setValidAreaName(false)
-        } else {
-            setEmptyAreaName(false)
-            let exists = areas.find((area: any) => area.name == e.target.value)
-            if (exists || e.target.value.length > 45) {
-                setValidAreaName(false)
-            } else {
-                setValidAreaName(true)
-                setAreaName(e.target.value)
-            }
-        }
-    }
-
-    const handleAddAreaButton = async () => {
-        if (validAreaName) {
-            // Añadir el area
-            const token = getCookie("token")
-            let res = await addArea(areaName, token as string)
-            if (res) {
-                alert("Area añadida correctamente")
-            } else {
-                alert("No se ha podido añadir el area")
-            }
-            closeAddAreaDialog()
-        }
-    }
-
-    const AddAreaDialog = () => {
-        return (
-            <Dialog open={IsOpenAddAreaDialog} onClose={closeAddAreaDialog}>
-                <DialogTitle className="w-full h-full border-b">Añade la información de la nueva zona</DialogTitle>
-                <div className={`p-5 w-full h-full col-span-2 flex flex-col gap-5 justify-center`}>
-                    <div className="w-full h-full flex flex-col">
-                        <label>Nombre</label>
-                        <input name="id" type="text" onChange={handleAreaName} onBlur={handleAreaName} placeholder="Nombre" required
-                                className={`transition easy-in-out duration-200
-                                w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                shadow-sm rounded-lg ${
-                                    emptyAreaName
-                                    ? "border-[#d6d3d1]"
-                                    : validAreaName
-                                        ? "border-green-500 text-[#22c55e] bg-gray-500/5"
-                                        : "border-red-500 text-red-500 bg-gray-500/5"
-                        }`}/>
-                    </div>
-                    <button onClick={handleAddAreaButton} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                        Añadir Zona
-                    </button>
-                </div>
-            </Dialog>
-        )
-    }
     // ---------------------------------------------------------------------------------------------
     // ------------------- Update Device Position -------------------
     const [newArea, setNewArea] = useState(areas[0] === undefined ? "" : areas[0].id)
@@ -436,18 +375,16 @@ export default function Page() {
     // ---------------------------------------------------------------------------------------------
 
     return (
-        <main className="">
+        <main className="flex flex-col gap-y-2">
             {AddDeviceDialog()}
             {UpdateDeviceAreaDialog()}
             {UpdateIpDialog()}
-            {AddAreaDialog()}
-            <div className="flex flex-row justify-between py-4">
-                <button onClick={handleAddDeviceButton} className="w-1/3 h-12 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Añadir Dispositivo</button>
+            <div className="">
                 <div className="flex gap-3 justify-end flex-grow">
                     <button 
-                        onClick={openAddAreaDialogButton}
-                        className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
-                        <MdAddLocationAlt size={24} className="w-6"/>
+                        onClick={handleAddDeviceButton} 
+                        className="w-12 h-12 flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                            <IoIosAddCircleOutline size={24} className="w-6"/>
                     </button>
                     <button
                         onClick={updateDevicesButton}
@@ -463,25 +400,25 @@ export default function Page() {
             {
                 devices.map((devices, index) => {
                     return (
-                            <div key={index} className="w-full h-full border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
-                                <div className="w-full h-full row-span-3">
-                                    <Link
-                                        key={devices}
-                                        href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
-                                        className=""
-                                    >
-                                        {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
-                                    </Link>
-                                </div>
-                                <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
-                                    <h1 className="col-span-4 p-5 text-2xl">{devices.name}</h1>
-                                    <button
-                                        onClick={() => handleDeviceInfoButton(index)}
-                                        className="border-l flex justify-center items-center rounded-md hover:bg-gray-50">
-                                        <EllipsisVerticalIcon className="w-1/2 h-1/2"/>
-                                    </button>
-                                </div>
+                        <div key={index} className="w-full h-72 border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
+                            <div className="w-full h-full row-span-3">
+                                <Link
+                                    key={devices}
+                                    href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
+                                    className=""
+                                >
+                                    {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
+                                </Link>
                             </div>
+                            <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
+                                <h1 className="col-span-4 p-5 text-2xl">{devices.name}</h1>
+                                <button
+                                    onClick={() => handleDeviceInfoButton(index)}
+                                    className="border-l flex justify-center items-center rounded-md hover:bg-gray-50">
+                                    <EllipsisVerticalIcon className="w-1/2 h-1/2"/>
+                                </button>
+                            </div>
+                        </div>
                     )
                 })
             }

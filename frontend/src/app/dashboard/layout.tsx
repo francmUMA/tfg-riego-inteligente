@@ -10,7 +10,7 @@ export default function Layout(
         <div className="w-full flex-none md:w-64">
           <SideNav />
         </div>
-        <div className="h-full w-full overflow-y-auto p-1">
+        <div className="h-full w-full overflow-y-auto py-4 pr-2">
           {children}
         </div>
       </div>

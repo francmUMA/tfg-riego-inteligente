@@ -129,3 +129,20 @@ export async function updatePositionActuador(id: string, Latitud: number, Longit
         return false
     }
 }
+
+export async function updateActuadorStatus(id: string, status: number, token: string){
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({id: id, status: status})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/status", options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+}

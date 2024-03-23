@@ -1,4 +1,4 @@
-// File: C:\Users\Fran\OneDrive - Universidad de Málaga\Documentos\tfg-riego-inteligente\frontend\src\app\register\page.tsx
+// File: /Users/dev-francm/Documents/tfg-riego-inteligente/frontend/src/app/register/page.tsx
 import * as entry from '../../../../src/app/register/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

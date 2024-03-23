@@ -2,7 +2,8 @@
 import {
   HomeIcon,
   CpuChipIcon,
-  MapIcon
+  MapIcon,
+  PresentationChartBarIcon
 } from '@heroicons/react/24/outline';
 import { PiPlant } from "react-icons/pi";
 import Link from 'next/link';
@@ -25,7 +26,8 @@ const links = [
     icon: CpuChipIcon,
   },
   { name: 'Map', href: '/dashboard/map', icon: MapIcon },
-  { name: 'Crops', href: '/dashboard/crop', icon: CropIcon},
+  { name: 'Crops', href: '/dashboard/crops', icon: CropIcon},
+  { name: 'Información', href: '/dashboard/info', icon: PresentationChartBarIcon },
 ];
 
 export default function NavLinks() {
@@ -38,7 +40,7 @@ export default function NavLinks() {
           <Link
             key={link.name}
             href={link.href}
-            className={`flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3
+            className={`flex h-[48px] grow shadow-sm items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-10 border border-white hover:border-indigo-600 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3
               ${pathname === link.href ? 'bg-sky-100 text-blue-600' : ''}
             `}
           >

@@ -3,9 +3,10 @@ import Footer from "./ui/welcome/Footer";
 import NavBar from "./ui/welcome/NavBar";
 import Image from "next/image";
 
+
 export default function Page() {
     return (
-        <div className="flex flex-col h-screen">
+        <div className={`flex flex-col h-screen`}>
             <div className="bg-white">
                 <NavBar />
             </div>

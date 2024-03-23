@@ -1,7 +1,7 @@
 'use client'
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { MdDone } from "react-icons/md";
 import {checkRegisterEmail} from "../../lib/checkEmail"
 import registerUser, { updateUserLocation } from "../../lib/registerUser"
@@ -9,8 +9,21 @@ import { getToken } from "../../lib/token"
 import { getCookie, setCookie } from "cookies-next"
 import"./bg-form.css"
 import { Map, APIProvider, Marker } from "@vis.gl/react-google-maps"
+import { getLocation } from "../../lib/miscUtils";
 
 export default function RegisterForm() {
+    const [startLocation, setStartLocation] = useState({lat: 0, lng: 0})
+
+    const getStartLocation = async () => {
+        let position = await getLocation()
+        if (position === undefined) return
+        setStartLocation({lat: position.lat, lng: position.lng})
+        setUserLocation({lat: position.lat, lng: position.lng})
+    }
+
+    useEffect(() => {
+        getStartLocation()
+    }, [])
 
     const [showForm, setShowForm] = useState(true)
 
@@ -205,7 +218,7 @@ export default function RegisterForm() {
                 </div>
                 <div className="w-2/3 h-2/3 rounded-md shadow-md overflow-hidden">
                     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY as string}>
-                        <Map mapId={"750877eaffcf7c34"} disableDefaultUI defaultCenter={{lat: 0, lng: 0}} defaultZoom={5} >
+                        <Map mapId={"750877eaffcf7c34"} disableDefaultUI defaultCenter={startLocation} defaultZoom={5} >
                             <Marker position={{lat: userLocation.lat, lng:userLocation.lng}} draggable onDragEnd={handleDragMarker}/>
                         </Map>
                     </APIProvider>
@@ -328,7 +341,7 @@ export default function RegisterForm() {
                             <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
                                 Crear cuenta</button>
                         </div>
-                </form>
+                    </form>
                 </div>
             </div>
                 

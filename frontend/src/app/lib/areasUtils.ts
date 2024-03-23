@@ -21,14 +21,14 @@ export async function getAreas(token: string) {
     }
 }
 
-export async function addArea(name: string, token: string) {
+export async function addArea(name: string, cropId:string, token: string) {
     let options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({name: name, color: '5833FF'})
+        body: JSON.stringify({name: name, crop: cropId, color: '5833FF'})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas", options)
     if (request.status === 200) {
@@ -67,5 +67,21 @@ export async function updateColorArea(color: string, id: string, token: string) 
         return true
     } else {
         return false
+    }
+}
+
+export async function getArea(id:string, token: string) {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas/" + id, options)
+    if (request.status === 200) {
+        return request.json()
+    } else {
+        return undefined
     }
 }

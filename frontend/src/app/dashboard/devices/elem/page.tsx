@@ -1,6 +1,6 @@
 'use client'
-import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo, updateDeviceArea } from "@/src/app/lib/devicesUtils";
-import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorArea, updateSensorPin } from "@/src/app/lib/sensorsUtils";
+import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
+import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorPin } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
@@ -20,7 +20,7 @@ import { FaRobot } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoIosCellular } from "react-icons/io";
 
-import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorArea, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
+import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
 
 
@@ -430,7 +430,6 @@ export default function Page() {
         let res = await getAreas(token as string)
         if (res.length > 0) {
         setAreas(res)
-        setNewActuadorArea(res[0].id)
         } else {
             setAreas([{
                 id: "",
@@ -442,27 +441,10 @@ export default function Page() {
     }
 
     // ------------------------------ Modificar Area -----------------------------------
-    const [newActuadorArea, setNewActuadorArea] = useState(areas[0] === undefined ? "" : areas[0].id)
     const [IsOpenUpdateActuadorAreaDialog, setIsOpenUpdateActuadorAreaDialog] = useState(false)
-
-    const handleActuadorArea = async () => {
-        const token = getCookie("token");
-        let actuador = deviceActuadores[actuadorIndex]
-        let res = await updateActuadorArea(actuador.id, newActuadorArea, token as string)
-        if (res) {
-            let newActuadores = await getActuadores(deviceId as string, token as string)
-            setDeviceActuadores(newActuadores)
-            closeUpdateActuadorAreaDialog()
-        }
-    }
-
-    const handleSelectNewActuadorArea = (e: any) => {
-        setNewActuadorArea(e.target.value)
-    }
 
     const closeUpdateActuadorAreaDialog = async () => {
         setIsOpenUpdateActuadorAreaDialog(false)
-        setNewActuadorArea(areas[0].id)
     }
 
     const handleOpenUpdateActuadorAreaDialogButton = (index: number) => {
@@ -488,28 +470,12 @@ export default function Page() {
     }
     // ----------------------------------------------------------------------------------------------------
     // ------------------------------ Modificar area del sensor -------------------------------------------
-    const [newSensorArea, setNewSensorArea] = useState(areas[0] === undefined ? "" : areas[0].id)
+
     const [IsOpenUpdateSensorAreaDialog, setIsOpenUpdateSensorAreaDialog] = useState(false)
     const [sensorIndex, setSensorIndex] = useState(0)
 
-    const handleSensorArea = async () => {
-        const token = getCookie("token");
-        let sensor = deviceSensors[sensorIndex]
-        let res = await updateSensorArea(sensor.id, newSensorArea, token as string)
-        if (res) {
-            let newSensors = await getSensors(deviceId as string, token as string)
-            setDeviceSensors(newSensors)
-            closeUpdateSensorAreaDialog()
-        }
-    }
-
-    const handleSelectNewSensorArea = (e: any) => {
-        setNewSensorArea(e.target.value)
-    }
-
     const closeUpdateSensorAreaDialog = async () => {
         setIsOpenUpdateSensorAreaDialog(false)
-        setNewSensorArea(areas[0].id)
     }
 
     const handleOpenUpdateSensorAreaDialogButton = (index: number) => {
@@ -651,29 +617,10 @@ export default function Page() {
     }
     // ----------------------------------------------------------------------------------------------------
     // ------------------- Update Device Position -------------------
-    const [newArea, setNewArea] = useState(areas[0] === undefined ? "" : areas[0].id)
     const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
-
-    const handleUpdateArea = async () => {
-        const token = getCookie("token");
-        let res = await updateDeviceArea(deviceId as string, newArea, token as string)
-        if (res) {
-            alert("Zona actualizada correctamente")
-            let newInfo = await getDeviceInfo(deviceId as string, token as string)
-            setDevice(newInfo)
-            closeUpdateAreaDialog()
-        } else {
-            alert("No se ha podido actualizar la zona")
-        }
-    }
-
-    const handleSelectNewArea = (e: any) => {
-        setNewArea(e.target.value)
-    }
 
     const closeUpdateAreaDialog = async () => {
         setIsOpenUpdateAreaDialog(false)
-        setNewArea(areas[0].id)
     }
 
     const openUpdateAreaDialog = () => {
@@ -689,14 +636,6 @@ export default function Page() {
                     Coloca el dispositivo
                 </DialogTitle>
                 <div className="flex items-center justify-center h-96">
-                    {/* {ElemPlacer({
-                        closeDialog: closeUpdateAreaDialog,
-                        elems: device,
-                        type: 0,
-                        elem: device,
-                        setElems: setDevice
-                    
-                    })} */}
                     <ElemPlacer closeDialog={closeUpdateAreaDialog} elems={device} type={0} elem={device} setElems={setDevice}/>
                 </div>
                 
@@ -708,7 +647,7 @@ export default function Page() {
 
     return (
         <main className="h-full w-full">
-            <div className="w-full h-full p-3 flex flex-col gap-3">
+            <div className="w-full h-full flex flex-col gap-3">
                 {deleteDeviceDialog()}
                 {SensorActuadorDialog()}
                 {updateActuadorPinDialog()}
@@ -799,7 +738,7 @@ export default function Page() {
                                 <p className="text-slate-400">Actuadores</p>
                             </div>
                             {
-                                deviceActuadores.length > 0
+                                deviceActuadores.length > 0 && deviceActuadores[0].id != ""
                                     ?   <div className="w-full h-full rounded-md overflow-x-auto">
                                             {
                                                 deviceActuadores.map((actuador, index) => {
@@ -863,7 +802,7 @@ export default function Page() {
                                 <p className="text-slate-400">Sensores</p>
                             </div>
                             {
-                                deviceSensors.length > 0
+                                deviceSensors.length > 0 && deviceSensors[0].id != ""
                                     ?   <div className="w-full h-full overflow-y-auto rounded-md">
                                             {
                                                 deviceSensors.map((sensor, index) => {
@@ -881,7 +820,7 @@ export default function Page() {
                                                                             ? <FaTemperatureQuarter size={22} className="w-9 text-indigo-600"></FaTemperatureQuarter>
                                                                             : sensor.type == "CAU"
                                                                                 ? <IoWaterOutline size={22} className="w-9 text-indigo-600"></IoWaterOutline>
-                                                                                : <p>?</p>
+                                                                                : "?"
                                                                 }
                                                                 {sensor.name}
                                                             </p>

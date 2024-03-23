@@ -46,6 +46,7 @@ const App = () => {
       sensors.push(...sensors_device)
     }
     setSensors(sensors)
+    console.log(sensors[0])
     let userinfo = await fetchUserInfo(token)
     let actuadores = []
     for (let device of response) {
@@ -597,6 +598,8 @@ const App = () => {
                       setEdit={setEditOneMarker}
                       edit={editOneMarker}  
                       setElems={setDevices}
+                      setActuadores={setActuadores}
+                      setSensors={setSensors}
                     />
                 </InfoWindow>
               }

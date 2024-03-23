@@ -1,4 +1,4 @@
-import { IoPlayCircleSharp, IoWifi } from "react-icons/io5";
+import { IoPlayCircleSharp, IoWifi, IoPauseCircleSharp, IoWaterOutline } from "react-icons/io5";
 import { MdLocationOn, MdEditLocationAlt, MdSignalWifiStatusbarNotConnected, MdOutlineDownloadDone } from "react-icons/md";
 import { FaRegTrashAlt, FaRobot } from "react-icons/fa";
 import { PiPolygon } from "react-icons/pi";
@@ -6,10 +6,11 @@ import { getCookie } from "cookies-next";
 import { deleteDevice, getDevices } from "@/src/app/lib/devicesUtils";
 import { deleteSensor } from "@/src/app/lib/sensorsUtils";
 import { HiMiniCpuChip } from "react-icons/hi2";
-import { deleteActuador, updateActuadorMode } from "@/src/app/lib/actuadorUtils";
+import { deleteActuador, getActuadores, updateActuadorMode, updateActuadorStatus } from "@/src/app/lib/actuadorUtils";
+import { getSensors } from "@/src/app/lib/sensorsUtils";
 
 
-const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setEdit, edit, actuadores}) => {
+const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensors, setActuadores, setEdit, edit, actuadores}) => {
 
     const handleRemoveElem = async () => {
         const token = getCookie('token')
@@ -18,6 +19,21 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setEdit, 
         if (type == 0){
             res = await deleteDevice(elem.id, token)
             elems = await getDevices(token)
+            // Hay que actualizar todos los actuadores y sensores
+            let sensors = []
+            let actuadores = []
+            for (let elem of elems) {
+                let deviceSensors = await getSensors(elem.id, token)
+                for (let sensor of deviceSensors) {
+                    sensors.push(sensor)
+                }
+                let deviceActuadores = await getActuadores(elem.id, token)
+                for (let actuador of deviceActuadores) {
+                    actuadores.push(actuador)
+                }
+            }
+            setSensors(sensors)
+            setActuadores(actuadores)
         } else if (type == 1) {
             res = await deleteSensor(elem.id, elem.device, token)
             if (res) {
@@ -67,10 +83,23 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setEdit, 
                     {
                         type == 2 && 
                             <button 
-                            className=" w-7 h-7 flex justify-center text-indigo-600 items-center bg-gray-50 
-                                        hover:bg-gray-200 rounded-md shadow-md">
-                                
-                                <IoPlayCircleSharp size={15}/>
+                            onClick={() => {
+                                const token = getCookie('token')
+                                let res = updateActuadorStatus(elem.id, !elem.status, token)
+                                if (res) {
+                                    setElems(actuadores.map((actuador) => {
+                                        if (actuador.id == elem.id && actuador.device == elem.device) actuador.status = !actuador.status
+                                        return actuador
+                                    }))
+                                }
+                            }}
+                            className={`w-7 h-7 flex justify-center text-indigo-600 items-center bg-gray-50 
+                                        hover:bg-gray-200 rounded-md shadow-md ${elem.mode == 1 && "disabled"}`}>
+                                {
+                                    elem.status == 0 
+                                        ? <IoPlayCircleSharp size={15}/>
+                                        : <IoPauseCircleSharp size={15}/>
+                                }
                             </button>
                     }
                     <button 
@@ -127,6 +156,23 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setEdit, 
                         <div className="flex flex-row gap-x-2 items-center">
                             <HiMiniCpuChip size={18} className="text-indigo-600"/>
                             {deviceName}
+                        </div>
+                }
+                {
+                    type == 1 && 
+                        <div className="flex flex-row gap-x-2 items-center">
+                            <IoWaterOutline size={18} className="text-indigo-600"/>
+                            <p>{elem.value == null ? "-" : 1}</p>
+                            <p>{
+                                elem.type == "DHT" ? "%" : elem.type == "TMP" ? "°C" : "m3"
+                            }</p>
+                        </div>
+                }
+                {
+                    type == 2 &&
+                        <div className="flex flex-row gap-x-2 items-center">
+                            <IoWaterOutline size={18} className="text-indigo-600"/>
+                            <p>{elem.status == 1 ? "Regando" : "Parado"}</p>
                         </div>
                 }
             </div>
