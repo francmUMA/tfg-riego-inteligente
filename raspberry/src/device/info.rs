@@ -67,8 +67,19 @@ pub async fn get_my_uuid() -> String {
     let res = client.get(url).send().await;
     if let Err(_) = res {
         println!("Error al obtener el UUID");
+        return uuid;
+    } 
+    let body = res.unwrap();
+    if body.status().is_success() {
+        let body_text = body.text().await;
+        if let Err(_) = body_text {
+            println!("Error al obtener el UUID");
+            return uuid;
+        }
+        uuid = body_text.unwrap();
+        println!("UUID: {}", uuid);
     } else {
-        println!("{:?}", res.unwrap());
+        println!("Error al obtener el UUID");
     }
     uuid
 }
