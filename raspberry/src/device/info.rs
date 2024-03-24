@@ -1,4 +1,7 @@
-struct Device {
+use std::error::Error;
+
+
+pub struct Device {
     id: String,
     name: String,
     latitud: f64,
@@ -44,14 +47,16 @@ impl Device {
 
 }
 
-// #[tokio::main]
-// pub async fn get_device_info() -> Device {
-//     use crate::utils::net;
-//     let ip = "192.168.1.137";
-//     let port = "3000";
-//     let address = net::ip_port_concat(ip.to_string(), port.to_string());
-//     let url = net::mk_url("http".to_string(), address, "device".to_string());
-// }
+#[tokio::main]
+pub async fn get_device_info(){
+    let uuid = get_my_uuid();
+    if uuid.len() == 0 {
+        println!("Error al obtener el UUID");
+        return;
+    }
+    println!("UUID: {}", uuid);
+    
+}
 
 #[tokio::main]
 pub async fn get_my_uuid() -> String {
@@ -77,7 +82,6 @@ pub async fn get_my_uuid() -> String {
             return uuid;
         }
         uuid = body_json.unwrap();
-        println!("UUID: {}", uuid);
     } else {
         println!("Error al obtener el UUID");
     }

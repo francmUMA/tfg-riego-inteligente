@@ -19,5 +19,5 @@ fn main() {
     //     std::thread::sleep(std::time::Duration::from_secs(60));
     // }
     use crate::device::info;
-    let info = info::get_my_uuid();
+    info::get_device_info();
 }

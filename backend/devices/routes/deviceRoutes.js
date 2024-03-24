@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/", getDevices)
 router.get("/id/:id", getDevice)
 router.get("/uuid", getDeviceUuid)
+router.get("/uuid/:uuid", getDeviceUuid)
 router.post("/", addDevice)
 router.delete("/:id", deleteDevice)
 router.put("/position", updatePosition)

@@ -531,6 +531,10 @@ export const updateDeviceName = async (req, res) => {
     }
 }
 
+/**
+ * @description: Obtiene el uuid de un dispositivo a partir de su ip
+ * @returns uuid
+ */
 export const getDeviceUuid = async (req, res) => {
     let req_ip = req.socket.remoteAddress
     let ip_split = req_ip.split(":")
@@ -542,6 +546,27 @@ export const getDeviceUuid = async (req, res) => {
             return
         }
         res.status(200).json(device.id)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/**
+ * @description: Obtiene el la información de un dispositivo en base a su uuid
+ * @param {
+ *     uuid: string
+ * } params
+ * @returns device
+ */
+
+export const getDeviceByUuid = async (req, res) => {
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.params.uuid } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        res.status(200).json(device)
     } catch (error) {
         res.status(500).send(error.message)
     }
