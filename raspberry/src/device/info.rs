@@ -50,10 +50,6 @@ impl Device {
 #[tokio::main]
 pub async fn get_device_info(){
     let uuid = get_my_uuid();
-    if uuid.len() == 0 {
-        println!("Error al obtener el UUID");
-        return;
-    }
     println!("UUID: {}", uuid);
     
 }
