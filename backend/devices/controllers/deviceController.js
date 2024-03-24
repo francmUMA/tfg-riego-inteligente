@@ -532,6 +532,6 @@ export const updateDeviceName = async (req, res) => {
 }
 
 export const getDeviceUuid = async (req, res) => {
-    let req_ip = req.connection.remoteAddress
+    let req_ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
     res.status(200).send(req_ip)
 }
