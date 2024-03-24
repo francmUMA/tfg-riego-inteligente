@@ -533,6 +533,16 @@ export const updateDeviceName = async (req, res) => {
 
 export const getDeviceUuid = async (req, res) => {
     let req_ip = req.socket.remoteAddress
-    let ip = req_ip.split(":")
-    res.status(200).send(ip[ip.length - 1])
+    let ip_split = req_ip.split(":")
+    let ip = ip_split[ip_split.length - 1]
+    try {
+        let device = await deviceModel.findOne({ where: { ip: ip } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        res.status(200).json(device)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
 }
