@@ -1,5 +1,3 @@
-use std::fmt::Error;
-
 struct Device {
     id: String,
     name: String,
@@ -64,19 +62,13 @@ pub async fn get_my_uuid() -> String {
     let address = net::ip_port_concat(ip.to_string(), port.to_string());
     let url = net::mk_url("http".to_string(), address, "api/devices/uuid".to_string());
 
-    use reqwest::get;
-    let res = get(url)
-        .await;
-    if let Err(e) = res {
-        println!("Error al obtener el uuid");
-        return "".to_string();
+    use reqwest::Client;
+    let client = Client::new();
+    let res = client.get(url).send().await;
+    if let Err(_) = res {
+        println!("Error al obtener el UUID");
     } else {
-        if res.unwrap().status().is_success() {
-            //TO-DO --- Sacar el uuid del json
-
-            uuid
-        } else {
-            "".to_string()
-        }
+        println!("{:?}", res.unwrap());
     }
+    uuid
 }
