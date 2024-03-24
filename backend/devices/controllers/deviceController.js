@@ -534,5 +534,5 @@ export const updateDeviceName = async (req, res) => {
 export const getDeviceUuid = async (req, res) => {
     let req_ip = req.socket.remoteAddress
     let ip = req_ip.split(":")
-    res.status(200).send(ip[3])
+    res.status(200).send(ip[ip.length - 1])
 }
