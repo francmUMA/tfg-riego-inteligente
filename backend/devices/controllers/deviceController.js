@@ -541,7 +541,7 @@ export const getDeviceUuid = async (req, res) => {
             res.status(404).send("Device not found")
             return
         }
-        res.status(200).json(device)
+        res.status(200).json(device.id)
     } catch (error) {
         res.status(500).send(error.message)
     }
