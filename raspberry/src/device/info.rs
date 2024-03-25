@@ -10,7 +10,7 @@ pub struct Device {
     longitud: f64,
     usuario: String,
     ip: String,
-    available: bool,
+    available: u8,
     area: String,
 }
 
@@ -22,7 +22,7 @@ impl Device {
         longitud: f64, 
         usuario: String, 
         ip: String, 
-        available: bool, 
+        available: u8, 
         area: String
                         ) -> Device {
         Device {
@@ -79,7 +79,7 @@ pub async fn get_device_info(uuid: String) -> Result<Device, String> {
             device_json["Longitud"].as_f64().unwrap(),
             device_json["usuario"].to_string(),
             device_json["ip"].to_string(),
-            device_json["available"].as_bool().unwrap(),
+            device_json["available"].as_u64().unwrap() as u8,
             device_json["area"].to_string()
         );
         println!("Dispositivo: {}\nName: {}\nip: {}\nAvailable: {}\nLatitud: {}", device.id, device.name, device.ip, device.available, device.latitud);
