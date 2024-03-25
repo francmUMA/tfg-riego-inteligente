@@ -105,7 +105,6 @@ pub async fn get_sensors_device(uuid: String, token: String) -> Result<Vec<Senso
             );
             sensors.push(sensor);
         }
-        print!("{}", sensors[0].get_id());
         return Ok(sensors);
     }
     
