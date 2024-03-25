@@ -1,4 +1,4 @@
-use crate::{device::{info::get_my_uuid, sensors}, utils::token::get_token};
+use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::token::get_token};
 
 // Definir módulos
 mod device;
@@ -37,9 +37,13 @@ fn main() {
         let sensors = sensors::get_sensors_device(uuid.clone(), token.clone().unwrap());
         if let Err(_) = sensors {
             println!("Error al obtener la información de los sensores");
-        } else {
-            println!("Sensor 1: {}", sensors.unwrap()[0].get_id());
         }
+        let actuadores = actuadores::get_actuators_device(uuid.clone(), token.clone().unwrap());
+        if let None = actuadores {
+            println!("Error al obtener la información de los actuadores");
+        } else {
+            println!("Actuador 1: {}", actuadores.unwrap().get(0).unwrap().get_id());
+        } 
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
 }
