@@ -108,7 +108,7 @@ pub async fn get_actuators_device(uuid: String, token: String) -> Option<Vec<Act
     // Datos listos
     let mut actuadores = Vec::new();
     for act in data.unwrap().as_array().unwrap() {
-        let actuator = Actuador::new(
+        let mut actuator = Actuador::new(
             act.get("id").unwrap().as_str().unwrap().to_string(),
             act.get("device").unwrap().as_str().unwrap().to_string(),
             act.get("device_pin").unwrap().clone(),
