@@ -52,11 +52,12 @@ fn main() {
         if actuadores.len() == 0 {
             println!("No hay actuadores disponibles");
         } else {
-            actuadores[0].open();
-            println!("Actuador abierto. Status: {} ", actuadores[0].get_status());
-            sleep(std::time::Duration::from_secs(5));
-            actuadores[0].close();
-            println!("Actuador cerrado. Status: {}", actuadores[0].get_status());
+            println!("Status: {}", actuadores[0].get_status());
+            if actuadores[0].get_status() == 0 {
+                actuadores[0].open();
+            } else {
+                actuadores[0].close();
+            }
         }
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
