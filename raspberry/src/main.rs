@@ -52,7 +52,7 @@ fn main() {
         if actuadores.len() == 0 {
             println!("No hay actuadores disponibles");
         } else {
-            println!("Status: {}", actuadores[0].get_status());
+            println!("Status: {}", actuadores[0].get_status() == 0);
             if actuadores[0].get_status() == 0 {
                 println!("Abriendo actuador");
                 actuadores[0].open();
