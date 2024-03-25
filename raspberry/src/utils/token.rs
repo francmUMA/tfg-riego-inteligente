@@ -23,7 +23,7 @@ pub async fn get_token(email: String, password: String) -> Option<String> {
                 return Some(token.to_string());
             }
         } else {
-            println!("Status diferente");
+            println!("{:?}", res);
         }
     } else {
         println!("Error en la petición");
