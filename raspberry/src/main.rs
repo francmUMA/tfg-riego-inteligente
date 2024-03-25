@@ -42,7 +42,7 @@ fn main() {
         if let None = actuadores {
             println!("Error al obtener la información de los actuadores");
         } else {
-            println!("Actuador 1: {}", actuadores.unwrap().get(0).unwrap().get_id());
+            println!("Actuador 1: {}", actuadores.unwrap()[0].get_id());
         } 
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
