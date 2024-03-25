@@ -2,7 +2,7 @@ use rppal::gpio::{Gpio, OutputPin};
 pub struct Actuador {
     id: String,
     device: String,
-    device_pin: OutputPin,
+    device_pin: Option<OutputPin>,
     area: Option<String>,
     mode: u8,
     latitud: Option<f64>,
@@ -25,14 +25,14 @@ impl Actuador {
         status: Value,
         name: String,
     ) -> Actuador {
-        let mut device_gpio = Gpio::new();
+        let mut device_gpio: Option<OutputPin> = None;
         let mut area_value: Option<String> = None;
         let mut latitud_value: Option<f64> = None;
         let mut longitud_value: Option<f64> = None;
         let mut status_value: u8 = 0;
         if device_pin.is_u64() {
             println!("Pin: {}", device_pin.as_u64().unwrap() as u8);
-            device_gpio.unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output();
+            device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
         }
         if area.is_string() {
             area_value = Some(area.to_string());
@@ -64,7 +64,7 @@ impl Actuador {
     }
 
     pub fn open(&mut self) -> bool{
-        self.device_pin.set_high();
+        self.device_pin.unwrap().set_high();
         self.status = 1;
         true
     }
