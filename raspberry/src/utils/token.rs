@@ -10,13 +10,13 @@ pub async fn get_token(email: String, password: String) -> Option<String> {
         "email": email,
         "password": password
     });
-    println!("{:?}", body);
     let res = client.post(url)
         .json(&body)
         .send()
         .await;
     if let Ok(res) = res {
         let status = res.status();
+        println!("{:?}", status);
         if status.is_success() {
             let body = res.json::<serde_json::Value>().await;
             if let Ok(body) = body {
