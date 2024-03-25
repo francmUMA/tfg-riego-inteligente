@@ -42,16 +42,16 @@ fn main() {
             println!("No hay sensores disponibles");
         }
 
-        let actuadores = actuadores::get_actuators_device(uuid.clone(), token.clone().unwrap());
-        if let None = actuadores {
+        let actuadores_wrapped = actuadores::get_actuators_device(uuid.clone(), token.clone().unwrap());
+        if let None = actuadores_wrapped {
             println!("Error al obtener la información de los actuadores");
-        } else if actuadores.unwrap().len() == 0 {
+        } 
+        let mut actuadores = actuadores_wrapped.unwrap();
+        if actuadores.len() == 0 {
             println!("No hay actuadores disponibles");
         } else {
-            actuadores.unwrap()[0].open();
-            println!("Actuador abierto");
+            actuadores[0].open();
         }
-
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
 }
