@@ -52,8 +52,10 @@ fn main() {
         } else {
             if actuadores[0].get_status() == 0 {
                 actuadores[0].open();
+                println!("Actuador abierto. Status: {} ", actuadores[0].get_status());
             } else {
                 actuadores[0].close();
+                println!("Actuador cerrado. Status: {}", actuadores[0].get_status());
             }
         }
         std::thread::sleep(std::time::Duration::from_secs(60));
