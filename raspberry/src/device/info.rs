@@ -48,10 +48,13 @@ impl Device {
 }
 
 #[tokio::main]
-pub async fn get_device_info(){
-    let uuid = get_my_uuid();
-    println!("UUID: {}", uuid);
-    
+pub async fn get_device_info(uuid: String){
+    use crate::utils::net;
+    let ip = "192.168.1.137";
+    let port = "3000";
+    let address = net::ip_port_concat(ip.to_string(), port.to_string());
+    let url = net::mk_url("http".to_string(), address, "api/devices/uuid/".to_string() + &uuid);
+    println!("URL: {}", url);
 }
 
 #[tokio::main]

@@ -1,3 +1,5 @@
+use crate::device::info::get_my_uuid;
+
 // Definir módulos
 mod device;
 mod sends;
@@ -19,5 +21,6 @@ fn main() {
     //     std::thread::sleep(std::time::Duration::from_secs(60));
     // }
     use crate::device::info;
-    info::get_device_info();
+    let uuid = get_my_uuid();
+    info::get_device_info(uuid);
 }
