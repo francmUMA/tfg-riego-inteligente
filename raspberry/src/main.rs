@@ -1,4 +1,4 @@
-use crate::device::{info::get_my_uuid, sensors};
+use crate::{device::{info::get_my_uuid, sensors}, utils::token::get_token};
 
 // Definir módulos
 mod device;
@@ -21,21 +21,22 @@ fn main() {
     //     std::thread::sleep(std::time::Duration::from_secs(60));
     // }
     use crate::device::info;
-    let token = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwicGFzc3dvcmQiOiJ0ZXN0X3Bhc3MiLCJleHAiOjE3MTEzNzczNDN9.mH2qElIY6blPpsimXYSVSOj68vPhfU_t2EUHb__hS_w".to_string();
-    let uuid = get_my_uuid();
-    loop {
-        let device = info::get_device_info(uuid.clone());
-        if let Err(_) = device {
-            println!("Error al obtener la información del dispositivo");
-        } else {
-            println!("Información del dispositivo obtenida");
-        }
-        let sensors = sensors::get_sensors_device(uuid.clone(), token.clone());
-        if let Err(_) = sensors {
-            println!("Error al obtener la información de los sensores");
-        } else {
-            println!("Sensor 1: {}", sensors.unwrap()[0].get_id());
-        }
-        std::thread::sleep(std::time::Duration::from_secs(60));
-    }
+    let token = get_token("test@gmail.com".to_string(), "test_pass".to_string());
+    println!("Token: {}", token.unwrap());
+    // let uuid = get_my_uuid();
+    // loop {
+    //     let device = info::get_device_info(uuid.clone());
+    //     if let Err(_) = device {
+    //         println!("Error al obtener la información del dispositivo");
+    //     } else {
+    //         println!("Información del dispositivo obtenida");
+    //     }
+    //     let sensors = sensors::get_sensors_device(uuid.clone(), token.clone());
+    //     if let Err(_) = sensors {
+    //         println!("Error al obtener la información de los sensores");
+    //     } else {
+    //         println!("Sensor 1: {}", sensors.unwrap()[0].get_id());
+    //     }
+    //     std::thread::sleep(std::time::Duration::from_secs(60));
+    // }
 }
