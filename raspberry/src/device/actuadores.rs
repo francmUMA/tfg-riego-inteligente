@@ -31,6 +31,7 @@ impl Actuador {
         let mut longitud_value: Option<f64> = None;
         let mut status_value: u8 = 0;
         if device_pin.is_u64() {
+            println!("Pin: {}", device_pin.as_u64().unwrap() as u8);
             device_gpio.unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output();
         }
         if area.is_string() {
