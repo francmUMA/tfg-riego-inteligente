@@ -22,7 +22,11 @@ pub async fn get_token(email: String, password: String) -> Option<String> {
                 let token = body["token"].as_str().unwrap();
                 return Some(token.to_string());
             }
+        } else {
+            println!("Status diferente");
         }
+    } else {
+        println!("Error en la petición");
     }
     None
 }
