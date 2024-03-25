@@ -73,10 +73,10 @@ pub async fn get_sensors_device(uuid: String, token: String) -> Result<Vec<Senso
                 sensor["id"].to_string(),
                 sensor["device"].to_string(),
                 sensor["device_pin"].as_u64().unwrap() as u8,
-                sensor["sensor_type"].to_string(),
+                sensor["type"].to_string(),
                 sensor["area"].to_string(),
-                sensor["latitud"].as_f64().unwrap(),
-                sensor["longitud"].as_f64().unwrap(),
+                sensor["Latitud"].as_f64().unwrap(),
+                sensor["Longitud"].as_f64().unwrap(),
                 sensor["name"].to_string(),
                 sensor["value"].as_u64().unwrap() as u32,
                 sensor["available"].as_u64().unwrap() as u8
