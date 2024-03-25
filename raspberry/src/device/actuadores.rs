@@ -68,6 +68,16 @@ impl Actuador {
         self.status = 1;
         true
     }
+
+    pub fn close(&mut self) -> bool {
+        self.device_pin.as_mut().unwrap().set_low();
+        self.status = 0;
+        true
+    }
+
+    pub fn get_status(&self) -> u8 {
+        self.status
+    }
 }
 
 #[tokio::main]

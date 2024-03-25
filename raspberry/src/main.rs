@@ -50,7 +50,11 @@ fn main() {
         if actuadores.len() == 0 {
             println!("No hay actuadores disponibles");
         } else {
-            actuadores[0].open();
+            if actuadores[0].get_status() == 0 {
+                actuadores[0].open();
+            } else {
+                actuadores[0].close();
+            }
         }
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
