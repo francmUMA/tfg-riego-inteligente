@@ -54,8 +54,10 @@ fn main() {
         } else {
             println!("Status: {}", actuadores[0].get_status());
             if actuadores[0].get_status() == 0 {
+                println!("Abriendo actuador");
                 actuadores[0].open();
             } else {
+                println!("Cerrando actuador");
                 actuadores[0].close();
             }
         }
