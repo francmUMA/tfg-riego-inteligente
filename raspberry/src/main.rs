@@ -1,4 +1,4 @@
-use crate::device::info::get_my_uuid;
+use crate::device::{info::get_my_uuid, sensors};
 
 // Definir módulos
 mod device;
@@ -28,6 +28,12 @@ fn main() {
             println!("Error al obtener la información del dispositivo");
         } else {
             println!("Información del dispositivo obtenida");
+        }
+        let sensors = sensors::get_sensors_device(uuid.clone());
+        if let Err(_) = sensors {
+            println!("Error al obtener la información de los sensores");
+        } else {
+            println!("Información de los sensores obtenida");
         }
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
