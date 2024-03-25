@@ -21,8 +21,12 @@ fn main() {
     //     std::thread::sleep(std::time::Duration::from_secs(60));
     // }
     use crate::device::info;
-    let token = get_token("test@gmail.com".to_string(), "test_pass".to_string());
-    println!("Token: {}", token.unwrap());
+    let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()); 
+    if token != None {
+        println!("Token obtenido");
+    } else {
+        println!("Error al obtener el token");
+    }
     // let uuid = get_my_uuid();
     // loop {
     //     let device = info::get_device_info(uuid.clone());
