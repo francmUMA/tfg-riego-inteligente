@@ -10,6 +10,7 @@ pub async fn get_token(email: String, password: String) -> Option<String> {
         "email": email,
         "password": password
     });
+    println!("{:?}", body);
     let res = client.post(url)
         .json(&body)
         .send()
