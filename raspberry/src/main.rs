@@ -21,6 +21,7 @@ fn main() {
     //     std::thread::sleep(std::time::Duration::from_secs(60));
     // }
     use crate::device::info;
+    let token = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwicGFzc3dvcmQiOiJ0ZXN0X3Bhc3MiLCJleHAiOjE3MTEzNzczNDN9.mH2qElIY6blPpsimXYSVSOj68vPhfU_t2EUHb__hS_w".to_string();
     let uuid = get_my_uuid();
     loop {
         let device = info::get_device_info(uuid.clone());
@@ -29,7 +30,7 @@ fn main() {
         } else {
             println!("Información del dispositivo obtenida");
         }
-        let sensors = sensors::get_sensors_device(uuid.clone());
+        let sensors = sensors::get_sensors_device(uuid.clone(), token.clone());
         if let Err(_) = sensors {
             println!("Error al obtener la información de los sensores");
         } else {

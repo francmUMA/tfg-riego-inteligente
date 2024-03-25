@@ -40,7 +40,7 @@ impl Sensor {
 }
 
 #[tokio::main]
-pub async fn get_sensors_device(uuid: String) -> Result<Vec<Sensor>, String> {
+pub async fn get_sensors_device(uuid: String, token: String) -> Result<Vec<Sensor>, String> {
     use crate::utils::net;
     let ip = "192.168.1.137";
     let port = "3000";
@@ -49,7 +49,7 @@ pub async fn get_sensors_device(uuid: String) -> Result<Vec<Sensor>, String> {
 
     use reqwest::Client;
     let client = Client::new();
-    let res = client.get(url).send().await;
+    let res = client.get(url).header("Authorization", "Bearer ".to_string() + &token).send().await;
     if let Err(_) = res {
         return Err("Error al obtener la información de los sensores".to_string());
     }
