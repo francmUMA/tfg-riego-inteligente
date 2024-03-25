@@ -67,7 +67,6 @@ pub async fn get_sensors_device(uuid: String, token: String) -> Result<Vec<Senso
         }
 
         let sensors_json = body_json.unwrap();
-        println!("{:?}", sensors_json);
         let mut sensors: Vec<Sensor> = Vec::new();
         for sensor in sensors_json.as_array().unwrap() {
             let sensor = Sensor::new(
