@@ -64,7 +64,7 @@ impl Actuador {
     }
 
     pub fn open(&mut self) -> bool{
-        self.device_pin.unwrap().set_high();
+        self.device_pin.as_mut().unwrap().set_high();
         self.status = 1;
         true
     }
