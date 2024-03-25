@@ -73,17 +73,7 @@ pub async fn get_device_info(uuid: String) -> Result<Device, String> {
         }
         let device_json = body_json.unwrap();
         println!("{}", device_json);
-        let device = Device::new(
-            device_json["id"].to_string(),
-            device_json["name"].to_string(),
-            device_json["Latitud"].as_f64().unwrap(),
-            device_json["Longitud"].as_f64().unwrap(),
-            device_json["usuario"].to_string(),
-            device_json["ip"].to_string(),
-            device_json["available"].as_bool().unwrap(),
-            device_json["area"].to_string()
-        );
-        return Ok(device);
+        return Err("Hola".to_string());
     }
     Err("Hola".to_string())
 
