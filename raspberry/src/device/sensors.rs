@@ -3,13 +3,13 @@ use serde_json::Value;
 pub struct  Sensor {
     id: String,
     device: String,
-    device_pin: u8,
+    device_pin: Option<u8>,
     sensor_type: String,
-    area: String,
-    latitud: f64,
-    longitud: f64,
+    area: Option<String>,
+    latitud: Option<f64>,
+    longitud: Option<f64>,
     name: String,
-    value: u32,
+    value: Option<u32>,
     available: u8
 }
 
@@ -49,13 +49,13 @@ impl Sensor {
         Sensor {
             id,
             device,
-            device_pin: device_pin_value.unwrap() as u8,
+            device_pin: device_pin_value,
             sensor_type,
-            area: area_value.unwrap(),
-            latitud: latitud_value.unwrap(),
-            longitud: longitud_value.unwrap(),
+            area: area_value,
+            latitud: latitud_value,
+            longitud: longitud_value,
             name,
-            value: value_value.unwrap(),
+            value: value_value,
             available
         }
     }
