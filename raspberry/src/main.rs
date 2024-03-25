@@ -24,6 +24,11 @@ fn main() {
     let uuid = get_my_uuid();
     loop {
         let device = info::get_device_info(uuid.clone());
+        if let Err(_) = device {
+            println!("Error al obtener la información del dispositivo");
+        } else {
+            println!("Información del dispositivo obtenida");
+        }
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
 }
