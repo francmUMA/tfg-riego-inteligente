@@ -23,7 +23,7 @@ fn main() {
     use crate::device::info;
     let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()); 
     if token != None {
-        println!("Token obtenido");
+        println!("{}", token.unwrap());
     } else {
         println!("Error al obtener el token");
     }
