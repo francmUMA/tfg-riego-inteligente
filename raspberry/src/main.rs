@@ -22,5 +22,8 @@ fn main() {
     // }
     use crate::device::info;
     let uuid = get_my_uuid();
-    let device = info::get_device_info(uuid);
+    loop {
+        let device = info::get_device_info(uuid.clone());
+        std::thread::sleep(std::time::Duration::from_secs(60));
+    }
 }
