@@ -1,8 +1,3 @@
-use std::error::Error;
-
-use serde_json::de;
-
-
 pub struct Device {
     id: String,
     name: String,
@@ -36,17 +31,6 @@ impl Device {
             area,
         }
     }
-
-    // Si hace falta, se pueden agregar más métodos
-    pub fn get_id(&self) -> &String {
-        &self.id
-    }
-
-    pub fn get_usuario(&self) -> &String {
-        &self.usuario
-    }
-    
-
 }
 
 #[tokio::main]
@@ -82,10 +66,9 @@ pub async fn get_device_info(uuid: String) -> Result<Device, String> {
             device_json["available"].as_u64().unwrap() as u8,
             device_json["area"].to_string()
         );
-        println!("Dispositivo: {}\nName: {}\nip: {}\nAvailable: {}\nLatitud: {}", device.id, device.name, device.ip, device.available, device.latitud);
-        return Err("Hola".to_string());
+        return Ok(device);
     }
-    Err("Hola".to_string())
+    Err("No se ha podido obtener la información del dispositivo".to_string())
 
 }
 

@@ -22,5 +22,5 @@ fn main() {
     // }
     use crate::device::info;
     let uuid = get_my_uuid();
-    info::get_device_info(uuid);
+    let device = info::get_device_info(uuid);
 }
