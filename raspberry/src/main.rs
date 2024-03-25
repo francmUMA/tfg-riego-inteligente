@@ -49,6 +49,7 @@ fn main() {
             println!("No hay actuadores disponibles");
         } else {
             actuadores.unwrap()[0].open();
+            println!("Actuador abierto");
         }
 
         std::thread::sleep(std::time::Duration::from_secs(60));
