@@ -34,16 +34,23 @@ fn main() {
         } else {
             println!("Información del dispositivo obtenida");
         }
+
         let sensors = sensors::get_sensors_device(uuid.clone(), token.clone().unwrap());
         if let Err(_) = sensors {
             println!("Error al obtener la información de los sensores");
+        } else if sensors.unwrap().len() == 0 {
+            println!("No hay sensores disponibles");
         }
+
         let actuadores = actuadores::get_actuators_device(uuid.clone(), token.clone().unwrap());
         if let None = actuadores {
             println!("Error al obtener la información de los actuadores");
+        } else if actuadores.unwrap().len() == 0 {
+            println!("No hay actuadores disponibles");
         } else {
-            println!("Actuador 1: {}", actuadores.unwrap()[0].get_id());
-        } 
+            actuadores.unwrap()[0].open();
+        }
+
         std::thread::sleep(std::time::Duration::from_secs(60));
     }
 }
