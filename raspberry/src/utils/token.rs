@@ -4,7 +4,7 @@ use serde_json::json;
 pub async fn get_token(email: String, password: String) -> Option<String> {
     let ip = "192.168.1.137";
     let port = "3000";
-    let url = format!("http://{}:{}/api/auth/login", ip, port);
+    let url = format!("http://{}:{}/api/auth", ip, port);
     let client = reqwest::Client::new();
     let body = json!({
         "email": email,
