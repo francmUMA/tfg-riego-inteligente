@@ -34,7 +34,7 @@ fn main() {
         if let Err(_) = sensors {
             println!("Error al obtener la información de los sensores");
         } else {
-            println!("Información de los sensores obtenida");
+            println!("Sensor 1: {}", sensors.unwrap()[0].get_id());
         }
         std::thread::sleep(std::time::Duration::from_secs(60));
     }

@@ -31,6 +31,9 @@ impl Device {
             area,
         }
     }
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+    }
 }
 
 #[tokio::main]

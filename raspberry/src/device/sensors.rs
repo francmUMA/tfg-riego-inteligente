@@ -37,6 +37,10 @@ impl Sensor {
             available
         }
     }
+
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+    }
 }
 
 #[tokio::main]
@@ -65,21 +69,21 @@ pub async fn get_sensors_device(uuid: String, token: String) -> Result<Vec<Senso
         let sensors_json = body_json.unwrap();
         println!("{:?}", sensors_json);
         let mut sensors: Vec<Sensor> = Vec::new();
-        // for sensor in sensors_json.as_array().unwrap() {
-        //     let sensor = Sensor::new(
-        //         sensor["id"].to_string(),
-        //         sensor["device"].to_string(),
-        //         sensor["device_pin"].as_u64().unwrap() as u8,
-        //         sensor["sensor_type"].to_string(),
-        //         sensor["area"].to_string(),
-        //         sensor["latitud"].as_f64().unwrap(),
-        //         sensor["longitud"].as_f64().unwrap(),
-        //         sensor["name"].to_string(),
-        //         sensor["value"].as_u64().unwrap() as u32,
-        //         sensor["available"].as_u64().unwrap() as u8
-        //     );
-        //     sensors.push(sensor);
-        // }
+        for sensor in sensors_json.as_array().unwrap() {
+            let sensor = Sensor::new(
+                sensor["id"].to_string(),
+                sensor["device"].to_string(),
+                sensor["device_pin"].as_u64().unwrap() as u8,
+                sensor["sensor_type"].to_string(),
+                sensor["area"].to_string(),
+                sensor["latitud"].as_f64().unwrap(),
+                sensor["longitud"].as_f64().unwrap(),
+                sensor["name"].to_string(),
+                sensor["value"].as_u64().unwrap() as u32,
+                sensor["available"].as_u64().unwrap() as u8
+            );
+            sensors.push(sensor);
+        }
         return Ok(sensors);
     }
     
