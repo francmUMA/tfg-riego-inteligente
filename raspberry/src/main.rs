@@ -78,12 +78,14 @@ fn main() {
     let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");
-    } else {
-        let actuadores = actuadores.unwrap();
-        for actuador in actuadores {
-            topics.push(format!("devices/{}/actuadores/{}/update/status", device_uuid, actuador.get_id()));
-        }
+        return;
+    } 
+    
+    let mut actuadores = actuadores.unwrap();
+    for actuador in actuadores {
+        topics.push(format!("devices/{}/actuadores/{}/update/status", device_uuid, actuador.get_id()));
     }
+    
 
     // Suscripción a los topics
     for topic in topics {
