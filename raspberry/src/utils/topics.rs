@@ -53,7 +53,7 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
                 println!("Tenemos los siguientes actuadores:");
                 actuadores.clear(); // Limpiar los actuadores existentes
                 for actuador in actuadores_fetch.iter() {
-                    actuadores.push(actuador);
+                    actuadores.push(actuador.to_owned());
                 }
                 for actuador in actuadores.iter() {
                     println!("Actuador con id: {} y nombre: {}", actuador.get_id(), actuador.get_name());
@@ -63,7 +63,7 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
                 return;
             }
         } else {
-            manage_topic_actuadores(topic, payload, actuadores);
+            
         }
     } else {
         manage_topic_device(topic, payload, device);
