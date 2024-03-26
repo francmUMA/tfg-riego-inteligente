@@ -34,7 +34,7 @@ fn main() {
         return;
     }
     let device_uuid = get_my_uuid();
-    let mut device = device::info::get_device_info(device_uuid);
+    let mut device = device::info::get_device_info(device_uuid.clone());
     if let Err(_) = device {
         println!("Error al obtener la información del dispositivo");
         return;
@@ -99,8 +99,8 @@ fn main() {
     loop {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
-        let payload = msg.payload_str().as_ref();
-        manage_msg(topic, payload,&mut device, &mut actuadores);
+        let payload = msg.payload_str();
+        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores);
     }
 
 
