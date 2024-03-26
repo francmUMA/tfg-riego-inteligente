@@ -97,18 +97,43 @@ fn main() {
     }
     let data = client.start_consuming();
 
-    // Suscripción a los topics
-    if let Err(_) = client.subscribe("test/led1", QOS_0) {
-        println!("No se ha podido suscribir al topic");
+    // Creación de los topics
+    let mut topics: Vec<String> = Vec::new();
+
+    // Devices topics
+    topics.push(format!("devices/{}/update/lat", device_uuid));
+    topics.push(format!("devices/{}/update/lng", device_uuid));
+    topics.push(format!("devices/{}/update/area", device_uuid));
+    topics.push(format!("devices/{}/update/name", device_uuid));
+
+    // Sensors topics
+
+    // Actuadores topics
+    let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
+    if actuadores.is_none() {
+        println!("Error al obtener los actuadores");
+    } else {
+        let actuadores = actuadores.unwrap();
+        for actuador in actuadores {
+            topics.push(format!("devices/{}/actuadores/{}/update/status", device_uuid, actuador.get_id()));
+        }
     }
 
-    // Mostrar mensajes recibidos
-    loop {
-        let msg = data.recv().unwrap().unwrap();
-        let topic = msg.topic();
-        let payload = msg.payload_str();
-        println!("Topic: {} \nPayload: {}", topic, payload);
+    // Suscripción a los topics
+    for topic in topics {
+        if let Err(_) = client.subscribe(&topic, QOS_0) {
+            println!("No se ha podido suscribir al topic: {}", topic);
+        }
+        println!("Suscrito al topic: {}", topic);
     }
+
+    // // Mostrar mensajes recibidos
+    // loop {
+    //     let msg = data.recv().unwrap().unwrap();
+    //     let topic = msg.topic();
+    //     let payload = msg.payload_str();
+    //     println!("Topic: {} \nPayload: {}", topic, payload);
+    // }
 
 
 }
