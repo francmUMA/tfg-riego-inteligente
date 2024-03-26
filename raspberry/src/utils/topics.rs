@@ -61,7 +61,7 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
                 return;
             }
         } else {
-            
+            manage_topic_actuadores(topic, payload, actuadores)
         }
     } else {
         manage_topic_device(topic, payload, device);

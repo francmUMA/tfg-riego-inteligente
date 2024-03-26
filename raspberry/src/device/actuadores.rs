@@ -107,8 +107,9 @@ pub async fn get_actuators_device(uuid: String, token: String) -> Option<Vec<Act
 
     let body = res.unwrap();
     if  !body.status().is_success() {
+        print!("Error: {}", body.status());
         return None;
-    }
+    } 
 
     let data: Result<Value, _> = body.json().await;
     if let Err(_) = data {
