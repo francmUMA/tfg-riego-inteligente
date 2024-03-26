@@ -92,10 +92,11 @@ impl Actuador {
 
 impl Clone for Actuador {
     fn clone(&self) -> Self {
+        let device_gpio_new = Gpio::new().unwrap().get(self.device_pin.unwrap().pin()).unwrap().into_output();
         Actuador {
             id: self.id.clone(),
             device: self.device.clone(),
-            device_pin: self.device_pin,
+            device_pin: Some(device_gpio_new),
             area: self.area.clone(),
             mode: self.mode,
             latitud: self.latitud,
