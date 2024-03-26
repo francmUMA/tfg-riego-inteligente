@@ -1,6 +1,6 @@
 use rppal::gpio::{Gpio, OutputPin};
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct Actuador {
     id: String,
     device: String,
