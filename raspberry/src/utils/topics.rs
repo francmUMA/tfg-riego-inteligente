@@ -48,19 +48,21 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
         if topic.contains("all") {
             // Se obtienen todos los actuadores
             let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()).unwrap();
-            let actuadores_fetch = actuadores::get_actuators_device(device.get_id(), token);
-            if actuadores_fetch.is_none() {
+            if let Some(actuadores_fetch) = actuadores::get_actuators_device(device.get_id(), token) {
+                println!("Actuadores obtenidos");
+                println!("Tenemos los siguientes actuadores:");
+                actuadores.clear(); // Limpiar los actuadores existentes
+                actuadores.extend_from_slice(&actuadores_fetch); // Extender el vector con los nuevos actuadores
+                for actuador in actuadores.iter() {
+                    println!("Actuador con id: {} y nombre: {}", actuador.get_id(), actuador.get_name());
+                }
+            } else {
                 println!("Error al obtener los actuadores");
                 return;
             }
-            actuadores.as_mut() = actuadores_fetch.unwrap().as_mut();
-            println!("Actuadores obtenidos");
-            println!("Tenemos los siguientes actuadores:");
-            for actuador in actuadores.iter() {
-                println!("Actuador con id: {} y nombre: {}", actuador.get_id(), actuador.get_name());
-            }
+        } else {
+            manage_topic_actuadores(topic, payload, actuadores);
         }
-        manage_topic_actuadores(topic, payload, actuadores);
     } else {
         manage_topic_device(topic, payload, device);
     }
