@@ -1,3 +1,5 @@
+use std::borrow::BorrowMut;
+
 use crate::device::{actuadores::{self, Actuador}, info::Device};
 
 fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>){
@@ -11,7 +13,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         println!("No se ha encontrado el actuador");
         return;
     }
-    let mut actuador = actuador.unwrap();
+    let actuador = actuador.unwrap().borrow_mut();
 
     // Hay que saber que es lo que se va a hacer con el actuador
     if topic.contains("update") {
