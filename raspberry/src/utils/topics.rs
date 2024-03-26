@@ -1,6 +1,6 @@
 use std::borrow::BorrowMut;
 
-use crate::device::{actuadores::{self, Actuador}, info::Device};
+use crate::{device::{actuadores::{self, Actuador}, info::Device}, utils::token::get_token};
 
 fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>){
     // Se obtiene el id del actuador
@@ -47,12 +47,13 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     if topic.contains("actuadores") {
         if topic.contains("all") {
             // Se obtienen todos los actuadores
-            let actuadores_fetch = actuadores::get_actuators_device(device.get_id(), device.get_token());
+            let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()).unwrap();
+            let actuadores_fetch = actuadores::get_actuators_device(device.get_id(), token);
             if actuadores_fetch.is_none() {
                 println!("Error al obtener los actuadores");
                 return;
             }
-            actuadores = actuadores_fetch.unwrap().as_mut();
+            actuadores.as_mut() = actuadores_fetch.unwrap().as_mut();
             println!("Actuadores obtenidos");
             println!("Tenemos los siguientes actuadores:");
             for actuador in actuadores.iter() {
