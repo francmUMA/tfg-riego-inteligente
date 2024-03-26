@@ -4,6 +4,7 @@ import areasModel from "../../areas/models/areasModel.js"
 import sensorModel from "../../sensors/models/sensorsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import { v4, validate } from "uuid"
+import { publish_msg } from "../../mqtt.js"
 
 /*
     @description: Devuelve los actuadores de un dispositivo
@@ -666,8 +667,9 @@ export const updateActuadorStatus = async (req, res) => {
         res.status(500).send(error.message)
     }
     // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -677,6 +679,9 @@ export const updateActuadorStatus = async (req, res) => {
     }
     // ------------------------------------ Actualizar Status ---------------------------------------------------------
     try {
+        let topic = `devices/${actuador.device}/actuators/${actuador.id}/update/status`
+        console.log("Publishing message")
+        publish_msg(topic, req.body.status, device.ip)
         actuador.status = req.body.status
         actuador.save()
         res.status(200).send("Status updated")
