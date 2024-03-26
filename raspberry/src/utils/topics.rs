@@ -8,26 +8,24 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
     let actuador_id = topic_split[3];
 
     // Se obtiene el actuador
-    let actuador = actuadores.iter().find(|actuador| actuador.get_id() == actuador_id);
-    if actuador.is_none() {
-        println!("No se ha encontrado el actuador");
-        return;
-    }
-    let actuador = actuador.unwrap().borrow_mut();
-
-    // Hay que saber que es lo que se va a hacer con el actuador
-    if topic.contains("update") {
-        // Hay que actualizar alguno de los atributos del actuador
-        if topic.contains("status") {
+    if let Some(actuador) = actuadores.iter_mut().find(|actuador| actuador.get_id() == actuador_id) {
+        // Hay que saber que es lo que se va a hacer con el actuador
+        if topic.contains("update") && topic.contains("status") {
             // Hay que saber si el payload es 1 o 0
-            if payload == "1" {
-                actuador.open();
-                println!("Abriendo el actuador con id {}", actuador.get_id());
-            } else if payload == "0" {
-                actuador.close();
-                println!("Cerrando el actuador con id {}", actuador.get_id());
+            match payload {
+                "1" => {
+                    actuador.open();
+                    println!("Abriendo el actuador con id {}", actuador.get_id());
+                }
+                "0" => {
+                    actuador.close();
+                    println!("Cerrando el actuador con id {}", actuador.get_id());
+                }
+                _ => println!("Payload no reconocido"),
             }
         }
+    } else {
+        println!("No se ha encontrado el actuador");
     }
 }
 
