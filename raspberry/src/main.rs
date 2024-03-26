@@ -3,7 +3,7 @@ use std::thread::sleep;
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::token::get_token};
 use mqtt::{QOS_0, topic};
 use paho_mqtt as mqtt;
-use sdt::time::Duration;
+use std::time::Duration;
 
 // Definir módulos
 mod device;
