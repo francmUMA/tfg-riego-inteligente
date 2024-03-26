@@ -45,6 +45,20 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     println!("Mensaje recibido en el topic: {}", topic);
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
+        if topic.contains(all) {
+            // Se obtienen todos los actuadores
+            let actuadores_fetch = actuadores::get_actuators_device(device.get_id(), device.get_token());
+            if actuadores_fetch.is_none() {
+                println!("Error al obtener los actuadores");
+                return;
+            }
+            actuadores = actuadores_fetch.unwrap().as_mut();
+            println!("Actuadores obtenidos");
+            println!("Tenemos los siguientes actuadores:");
+            for actuador in actuadores.iter() {
+                println!("Actuador con id: {} y nombre: {}", actuador.get_id(), actuador.get_name());
+            }
+        }
         manage_topic_actuadores(topic, payload, actuadores);
     } else {
         manage_topic_device(topic, payload, device);

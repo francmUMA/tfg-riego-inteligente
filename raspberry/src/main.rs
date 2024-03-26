@@ -75,6 +75,7 @@ fn main() {
     // Sensors topics
 
     // Actuadores topics
+    topics.push(format!("devices/{}/actuadores/update/all", device_uuid));
     let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");

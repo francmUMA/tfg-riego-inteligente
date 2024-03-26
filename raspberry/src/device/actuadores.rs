@@ -63,6 +63,10 @@ impl Actuador {
         self.id.clone()
     }
 
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
     pub fn open(&mut self) -> bool{
         self.device_pin.as_mut().unwrap().set_high();
         self.status = 1;

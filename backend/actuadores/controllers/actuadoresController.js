@@ -101,8 +101,9 @@ export const addActuador = async (req, res) => {
     }
 
     // Comprobar si el dispositivo existe y si es de este usuario
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -135,6 +136,9 @@ export const addActuador = async (req, res) => {
             name: req.body.name, 
             device: req.params.device 
         })
+        let topic = `devices/${req.params.device}/actuadores/update/all`
+        let payload = 1
+        publish_msg(topic, payload, device.ip)
         res.status(200).send("Actuator added")
     } catch (error) {
         res.status(500).send(error.message)
