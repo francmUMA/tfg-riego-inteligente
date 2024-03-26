@@ -136,8 +136,8 @@ export const addActuador = async (req, res) => {
             name: req.body.name, 
             device: req.params.device 
         })
-        let topic = `devices/${req.params.device}/actuadores/update/all`
-        let payload = 1
+        let topic = `devices/${device.id}/actuadores/update/all`
+        let payload = "1"
         publish_msg(topic, payload, device.ip)
         res.status(200).send("Actuator added")
     } catch (error) {
