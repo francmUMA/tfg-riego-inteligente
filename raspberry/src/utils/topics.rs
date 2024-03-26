@@ -11,7 +11,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         println!("No se ha encontrado el actuador");
         return;
     }
-    let actuador = actuador.unwrap();
+    let mut actuador = actuador.unwrap();
 
     // Hay que saber que es lo que se va a hacer con el actuador
     if topic.contains("update") {
