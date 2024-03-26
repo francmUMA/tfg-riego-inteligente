@@ -98,7 +98,7 @@ fn main() {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str().as_ref();
-        manage_msg(topic, payload,&mut device, actuadores);
+        manage_msg(topic, payload,&mut device, &mut actuadores);
     }
 
 
