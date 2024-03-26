@@ -679,8 +679,8 @@ export const updateActuadorStatus = async (req, res) => {
     }
     // ------------------------------------ Actualizar Status ---------------------------------------------------------
     try {
-        let topic = `devices/${actuador.device}/actuators/${actuador.id}/update/status`
-        console.log("Publishing message")
+        let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/status`
+        console.log("Publishing message " + req.body.status + " on " + topic)
         publish_msg(topic, req.body.status, device.ip)
         actuador.status = req.body.status
         actuador.save()
