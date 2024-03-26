@@ -78,6 +78,11 @@ impl Actuador {
     pub fn get_status(&self) -> u8 {
         self.status
     }
+
+    pub fn change_pin(&mut self, pin: u8) -> bool {
+        self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_output());
+        true
+    }
 }
 
 #[tokio::main]

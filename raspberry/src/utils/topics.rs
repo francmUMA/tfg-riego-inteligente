@@ -23,6 +23,14 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                 }
                 _ => println!("Payload no reconocido"),
             }
+        } else if topic.contains("update") && topic.contains("device_pin"){
+            let pin = payload.parse::<u8>().unwrap();
+            if pin > 0 && pin < 28 {
+                actuador.set_device_pin(pin);
+                println!("Cambiando el pin del actuador con id {} a {}", actuador.get_id(), pin);
+            } else {
+                println!("Pin no válido");
+            }
         }
     } else {
         println!("No se ha encontrado el actuador");
