@@ -52,7 +52,9 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
                 println!("Actuadores obtenidos");
                 println!("Tenemos los siguientes actuadores:");
                 actuadores.clear(); // Limpiar los actuadores existentes
-                actuadores.extend_from_slice(&actuadores_fetch); // Extender el vector con los nuevos actuadores
+                for actuador in actuadores_fetch.iter() {
+                    actuadores.push(actuador.clone());
+                }
                 for actuador in actuadores.iter() {
                     println!("Actuador con id: {} y nombre: {}", actuador.get_id(), actuador.get_name());
                 }
