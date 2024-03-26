@@ -1,7 +1,7 @@
 use std::thread::sleep;
 
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::token::get_token};
-use mqtt::{QOS_0, topic};
+use mqtt::{client, topic, QOS_0};
 use paho_mqtt as mqtt;
 use std::time::Duration;
 
@@ -91,10 +91,11 @@ fn main() {
     if let Err(_) = client {
         println!("No se ha podido crear el cliente");
     }
-    if let Err(_) = client.unwrap().connect(con_opts) {
+    let client = client.unwrap();
+    if let Err(_) = client.connect(con_opts) {
         println!("No se ha podido conectar");
     }
-    let data = client.unwrap().start_consuming();
+    let data = client.start_consuming();
 
     // Suscripción a los topics
     if let Err(_) = client.unwrap().subscribe("test/led1", QOS_0) {
