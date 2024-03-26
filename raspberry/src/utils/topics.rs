@@ -48,6 +48,8 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
         if topic.contains("all") {
             // Se obtienen todos los actuadores
             let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()).unwrap();
+            println!("Token: {}", token);
+            println!("Device id: {}", device.get_id());
             if let Some(actuadores_fetch) = actuadores::get_actuators_device(device.get_id(), token) {
                 println!("Actuadores obtenidos");
                 println!("Tenemos los siguientes actuadores:");
