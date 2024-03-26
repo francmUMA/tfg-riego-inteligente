@@ -1,6 +1,5 @@
 use rppal::gpio::{Gpio, OutputPin};
 
-#[derive(Clone)]
 pub struct Actuador {
     id: String,
     device: String,
@@ -91,6 +90,21 @@ impl Actuador {
     }
 }
 
+impl Clone for Actuador {
+    fn clone(&self) -> Self {
+        Actuador {
+            id: self.id.clone(),
+            device: self.device.clone(),
+            device_pin: self.device_pin,
+            area: self.area.clone(),
+            mode: self.mode,
+            latitud: self.latitud,
+            longitud: self.longitud,
+            status: self.status,
+            name: self.name.clone(),
+        }
+    }
+}
 
 #[tokio::main]
 pub async fn get_actuators_device(uuid: String, token: String) -> Option<Vec<Actuador>> {
