@@ -98,7 +98,7 @@ fn main() {
     let data = client.start_consuming();
 
     // Suscripción a los topics
-    if let Err(_) = client.unwrap().subscribe("test/led1", QOS_0) {
+    if let Err(_) = client.subscribe("test/led1", QOS_0) {
         println!("No se ha podido suscribir al topic");
     }
 
