@@ -1,4 +1,6 @@
 use rppal::gpio::{Gpio, OutputPin};
+
+#[derive(Copy, Clone)]
 pub struct Actuador {
     id: String,
     device: String,
@@ -88,6 +90,7 @@ impl Actuador {
         true
     }
 }
+
 
 #[tokio::main]
 pub async fn get_actuators_device(uuid: String, token: String) -> Option<Vec<Actuador>> {
