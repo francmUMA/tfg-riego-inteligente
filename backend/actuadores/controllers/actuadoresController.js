@@ -420,8 +420,9 @@ export const updateActuadorDevicePin = async (req, res) => {
         res.status(500).send(error.message)
     }
     // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -450,6 +451,9 @@ export const updateActuadorDevicePin = async (req, res) => {
     }
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
+        let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/device_pin`
+        let payload = req.body.device_pin
+        publish_msg(topic, payload, device.ip)
         actuador.device_pin = req.body.device_pin
         actuador.save()
         res.status(200).send("Device pin updated")
