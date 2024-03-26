@@ -100,11 +100,10 @@ fn main() {
 
     // Mostrar mensajes recibidos
     loop {
-        if let Ok(msg) = data.recv().unwrap() {
-            let topic = msg.topic();
-            let payload = msg.payload_str();
-            println!("Topic: {}, Payload: {}", topic, payload);
-        }
+        let msg = data.recv().unwrap().unwrap();
+        let topic = msg.topic();
+        let payload = msg.payload_str();
+        println!("Topic: {} \nPayload: {}", topic, payload);
     }
 
 
