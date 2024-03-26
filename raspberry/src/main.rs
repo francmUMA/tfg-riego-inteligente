@@ -98,5 +98,14 @@ fn main() {
         println!("No se ha podido suscribir al topic");
     }
 
+    // Mostrar mensajes recibidos
+    loop {
+        if let Ok(msg) = data.recv() {
+            let topic = msg.topic();
+            let payload = msg.payload_str();
+            println!("Topic: {}, Payload: {}", topic, payload);
+        }
+    }
+
 
 }
