@@ -90,23 +90,6 @@ impl Actuador {
     }
 }
 
-impl Clone for Actuador {
-    fn clone(&self) -> Self {
-        let device_gpio_new = Gpio::new().unwrap().get(self.device_pin.as_mut().unwrap().pin()).unwrap().into_output();
-        Actuador {
-            id: self.id.clone(),
-            device: self.device.clone(),
-            device_pin: Some(device_gpio_new),
-            area: self.area.clone(),
-            mode: self.mode,
-            latitud: self.latitud,
-            longitud: self.longitud,
-            status: self.status,
-            name: self.name.clone(),
-        }
-    }
-}
-
 #[tokio::main]
 pub async fn get_actuators_device(uuid: String, token: String) -> Option<Vec<Actuador>> {
     let ip = "192.168.1.137";
