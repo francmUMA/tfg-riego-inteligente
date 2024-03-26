@@ -45,7 +45,7 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     println!("Mensaje recibido en el topic: {}", topic);
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
-        if topic.contains(all) {
+        if topic.contains("all") {
             // Se obtienen todos los actuadores
             let actuadores_fetch = actuadores::get_actuators_device(device.get_id(), device.get_token());
             if actuadores_fetch.is_none() {
