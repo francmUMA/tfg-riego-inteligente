@@ -82,7 +82,7 @@ fn main() {
     } 
     
     let mut actuadores = actuadores.unwrap();
-    for actuador in actuadores {
+    for actuador in actuadores.iter() {
         topics.push(format!("devices/{}/actuadores/{}/update/status", device_uuid, actuador.get_id()));
     }
     
