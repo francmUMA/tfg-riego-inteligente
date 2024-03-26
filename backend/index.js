@@ -12,6 +12,7 @@ import coordsRoutes from "./coordenadas/routes/coordsRoute.js"
 import cropRoutes from "./crops/routes/cropRoutes.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
+import { publish_msg } from "./mqtt.js";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);
 });
 
+publish_msg("test", "Hola mundo", "192.168.1.137")
 
 // Ping a los dispositivos cada 5 minutos
 schedule.scheduleJob('* * * * *', checkDevices)
