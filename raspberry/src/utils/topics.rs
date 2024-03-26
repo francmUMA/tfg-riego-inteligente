@@ -11,7 +11,22 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         println!("No se ha encontrado el actuador");
         return;
     }
-    println!("Actuador encontrado: {}", actuador_id);
+    let actuador = actuador.unwrap();
+
+    // Hay que saber que es lo que se va a hacer con el actuador
+    if topic.contains("update") {
+        // Hay que actualizar alguno de los atributos del actuador
+        if topic.contains("status") {
+            // Hay que saber si el payload es 1 o 0
+            if payload == "1" {
+                actuador.open();
+                println!("Abriendo el actuador con id {}", actuador.get_id());
+            } else if payload == "0" {
+                actuador.close();
+                println!("Cerrando el actuador con id {}", actuador.get_id());
+            }
+        }
+    }
 }
 
 fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
