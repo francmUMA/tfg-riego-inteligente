@@ -71,12 +71,11 @@ fn main() {
     topics.push(format!("devices/{}/update/lng", device_uuid));
     topics.push(format!("devices/{}/update/area", device_uuid));
     topics.push(format!("devices/{}/update/name", device_uuid));
-    topics.push(format!("test/json"));
 
     // Sensors topics
 
     // Actuadores topics
-    topics.push(format!("devices/{}/actuadores/update/all", device_uuid));
+    topics.push(format!("devices/{}/actuadores/new", device_uuid));
     let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");
@@ -118,13 +117,6 @@ fn main() {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str();
-        if topic == "test/json" {
-            let json_recv: Result<Value, _> = serde_json::from_str(payload.as_ref());
-            if let Err(_) = json_recv {
-                println!("Error al parsear el json");
-            }
-            println!("Json recibido: {:?}", json_recv.unwrap());
-        }
         manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores);
     }
 }

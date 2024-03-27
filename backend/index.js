@@ -45,15 +45,6 @@ app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);
 });
 
-let data = {
-    "id": "1",
-    "topic": "test",
-    "message": "Hola mundo"
-}
-
-schedule.scheduleJob('* * * * *', () => {
-    publish_msg("test/json", JSON.stringify(data), "192.168.1.137")
-})
 // Ping a los dispositivos cada 5 minutos
 schedule.scheduleJob('* * * * *', checkDevices)
 
