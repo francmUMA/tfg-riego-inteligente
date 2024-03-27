@@ -89,7 +89,7 @@ fn main() {
     let receiver = client.start_consuming();
     client.subscribe("test/msg");
     loop {
-        let msg = receiver.recv().unwrap();
+        let msg = receiver.recv().unwrap().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str();
         println!("Mensaje recibido en el topic: {}", topic);
