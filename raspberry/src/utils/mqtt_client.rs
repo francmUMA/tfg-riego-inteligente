@@ -52,6 +52,6 @@ impl MqttClient {
     }
 
     pub fn start_consuming(&self) -> Receiver<Option<Message>> {
-        &self.client.start_consuming();
+        &self.client.start_consuming()
     }
 }
