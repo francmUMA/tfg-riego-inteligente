@@ -93,6 +93,6 @@ fn main() {
         let topic = msg.topic();
         let payload = msg.payload_str();
         println!("Mensaje recibido en el topic: {}", topic);
-        // manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);
+        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);
     }
 }
