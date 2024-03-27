@@ -1,4 +1,5 @@
 use paho_mqtt as mqtt;
+use std::time::Duration;
 
 use crate::device;
 
