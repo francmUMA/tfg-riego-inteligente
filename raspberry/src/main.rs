@@ -113,6 +113,7 @@ fn main() {
     // }
 
     // Mostrar mensajes recibidos
+    use serde_json::Value;
     loop {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
