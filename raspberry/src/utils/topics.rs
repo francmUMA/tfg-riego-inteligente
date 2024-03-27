@@ -52,18 +52,14 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         actuadores.push(actuador);
     } else if topic.contains("delete"){
         // Hay que eliminar el actuador cuyo id está en el payload
-        actuadores.iter_mut().map(|actuador| if actuador.get_id() == payload {
-            actuador.close();
-            actuador.clean_pin();
-        });
+        for act in actuadores.iter_mut(){
+            act.close();
+            act.clean_pin();
+        }
         let index = actuadores.iter().position(|actuador| actuador.get_id() == payload).unwrap();
-        let mut actuador = actuadores.remove(index);
+        let actuador = actuadores.remove(index);
         println!("Actuador eliminado: {} con id {}", actuador.get_name(), actuador.get_id());
         unsuscribe_actuador_topics(actuador, mqtt_client);
-        println!("ACTUADORES: ");
-        for act in actuadores.iter(){
-            println!("{} con id {}", act.get_name(), act.get_id());
-        }
     }else {
         // Se obtiene el id del actuador
         let topic_split: Vec<&str> = topic.split("/").collect();
