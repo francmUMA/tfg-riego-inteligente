@@ -1,8 +1,9 @@
 use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
 
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{mqtt_client, token::get_token}};
-use mqtt::{client, topic, QOS_0};
+use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
+use tokio::net::unix::pipe::Receiver;
 use utils::topics::manage_msg;
 use std::time::Duration;
 
@@ -83,14 +84,16 @@ fn main() {
         }
     }
 
-    let receiver = client.start_consuming();
-
     // Mostrar mensajes recibidos
     use serde_json::Value;
     loop {
-        let msg = receiver.recv().unwrap();
+        let msg = client.get_msg();
+        if msg.is_none() {
+            continue;
+        }
         let topic = msg.topic();
         let payload = msg.payload_str();
-        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);
+        println!("Mensaje recibido en el topic: {}", topic);
+        // manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);
     }
 }
