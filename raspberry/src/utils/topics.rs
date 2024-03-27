@@ -8,13 +8,17 @@ use paho_mqtt as mqtt;
 use super::mqtt_client::MqttClient;
 
 fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
-    if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str()){
-        println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
-        return false;
-    }
+    // if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str()){
+    //     println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
+    //     return false;
+    // }
 
-    if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/device_pin", device_id, actuador_id).as_str()){
-        println!("No se ha podido suscribir al topic de device_pin del actuador con id {}", actuador_id);
+    // if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/device_pin", device_id, actuador_id).as_str()){
+    //     println!("No se ha podido suscribir al topic de device_pin del actuador con id {}", actuador_id);
+    //     return false;
+    // }
+    if !mqtt_client.subscribe("test/msg"){
+        println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
         return false;
     }
 
@@ -23,25 +27,23 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
 
 fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, device_id: String, mqtt_client: &mut MqttClient){
     if topic.contains("new"){
-        if !mqtt_client.subscribe("test/msg"){
-            println!("No se ha podido suscribir al topic de nuevos actuadores");
-            return;
+        let payload_json: Value = serde_json::from_str(payload).unwrap();
+        let actuador = Actuador::new(
+            payload_json["id"].as_str().unwrap().to_string(),
+            payload_json["device"].as_str().unwrap().to_string(),
+            payload_json["device_pin"].clone(),
+            payload_json["area"].clone(),
+            payload_json["mode"].clone(),
+            payload_json["Latitud"].clone(),
+            payload_json["Longitud"].clone(),
+            payload_json["status"].clone(),
+            payload_json["name"].as_str().unwrap().to_string(),
+        );
+        println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
+        if !suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client){
+            return
         }
-        // let payload_json: Value = serde_json::from_str(payload).unwrap();
-        // let actuador = Actuador::new(
-        //     payload_json["id"].as_str().unwrap().to_string(),
-        //     payload_json["device"].as_str().unwrap().to_string(),
-        //     payload_json["device_pin"].clone(),
-        //     payload_json["area"].clone(),
-        //     payload_json["mode"].clone(),
-        //     payload_json["Latitud"].clone(),
-        //     payload_json["Longitud"].clone(),
-        //     payload_json["status"].clone(),
-        //     payload_json["name"].as_str().unwrap().to_string(),
-        // );
-        // println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
-        // suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client);
-        // actuadores.push(actuador);
+        actuadores.push(actuador);
     } else {
         // Se obtiene el id del actuador
         let topic_split: Vec<&str> = topic.split("/").collect();
