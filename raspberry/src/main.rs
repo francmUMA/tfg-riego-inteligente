@@ -97,6 +97,21 @@ fn main() {
         println!("Suscrito al topic: {}", topic);
     }
 
+    // Crear un json y enviarlo
+    use serde_json::json;
+    let data = json!({
+        "lat": 0.0,
+        "lng": 0.0,
+        "area": "Casa",
+        "name": "Casa de prueba"
+    });
+    let msg = mqtt::Message::new("test/json", data, QOS_0);
+    
+    if let Err(_) = client.publish(msg) {
+        println!("No se ha podido enviar la información");
+    }
+
+
     // Mostrar mensajes recibidos
     loop {
         let msg = data.recv().unwrap().unwrap();
