@@ -83,18 +83,12 @@ fn main() {
         }
     }
 
-    // Mostrar topics suscritos
-    for topic in client.get_topics() {
-        println!("Suscrito al topic: {}", topic);
-    }
-
     // Mostrar mensajes recibidos
-//     use serde_json::Value;
-//     loop {
-//         let msg = data.recv().unwrap().unwrap();
-//         let topic = msg.topic();
-//         let payload = msg.payload_str();
-//         //
-//         // manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client.borrow_mut());
-//     }
+    use serde_json::Value;
+    loop {
+        let msg = data.recv().unwrap().unwrap();
+        let topic = msg.topic();
+        let payload = msg.payload_str();
+        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);
+    }
 }
