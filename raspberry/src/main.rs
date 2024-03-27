@@ -118,7 +118,7 @@ fn main() {
         let topic = msg.topic();
         let payload = msg.payload_str();
         if topic == "test/json" {
-            let json_recv = serde_json::from_str(payload.as_ref());
+            let json_recv: Result<Value, _> = serde_json::from_str(payload.as_ref());
             if let Err(_) = json_recv {
                 println!("Error al parsear el json");
             }
