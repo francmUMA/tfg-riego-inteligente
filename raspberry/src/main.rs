@@ -83,10 +83,12 @@ fn main() {
         }
     }
 
+    let receiver = client.start_consuming();
+
     // Mostrar mensajes recibidos
     use serde_json::Value;
     loop {
-        let msg = data.recv().unwrap().unwrap();
+        let msg = receiver.recv().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str();
         manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);

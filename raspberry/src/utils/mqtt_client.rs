@@ -1,4 +1,6 @@
+use mqtt::Message;
 use paho_mqtt as mqtt;
+use tokio::net::unix::pipe::Receiver;
 use std::time::Duration;
 
 use crate::device;
@@ -30,7 +32,6 @@ impl MqttClient {
             println!("No se ha podido conectar");
             return None;
         }
-        let data = client.start_consuming();
         Some(MqttClient {
             client,
             topics: Vec::new(),
@@ -49,5 +50,13 @@ impl MqttClient {
 
     pub fn get_topics(&self) -> &Vec<String> {
         &self.topics
+    }
+
+    pub fn start_consuming(&self) -> Receiver<Option<Message>> {
+        &self.client.start_consuming();
+    }
+
+    pub fn stop_consuming(&self) {
+        &self.client.stop_consuming();
     }
 }
