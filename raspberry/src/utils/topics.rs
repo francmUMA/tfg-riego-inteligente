@@ -21,7 +21,7 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
     true
 }
 
-fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, device_id: String, mqtt_client: &mut MqttClient){
+fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
         let actuador = Actuador::new(
@@ -36,7 +36,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             payload_json["name"].as_str().unwrap().to_string(),
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
-        if !suscribe_actuador_topics(actuador.get_id().clone(), device_id, mqtt_client){
+        if !suscribe_actuador_topics(actuador.get_id().clone(), actuador.get_device().clone(), mqtt_client){
             return
         }
         actuadores.push(actuador);
@@ -84,7 +84,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
 pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
-        manage_topic_actuadores(topic, payload, actuadores, device.get_id().clone(), mqtt_client);
+        manage_topic_actuadores(topic, payload, actuadores, mqtt_client);
     } else {
         manage_topic_device(topic, payload, device);
     }
