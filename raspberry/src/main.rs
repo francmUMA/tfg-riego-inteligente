@@ -86,8 +86,7 @@ fn main() {
 
     // Mostrar mensajes recibidos
     use serde_json::Value;
-    let receiver = client.start_consuming();
-    client.subscribe("test/msg");
+    let mut receiver = client.start_consuming();
     loop {
         let msg = receiver.recv().unwrap().unwrap();
         let topic = msg.topic();
