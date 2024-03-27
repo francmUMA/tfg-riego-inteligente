@@ -52,6 +52,7 @@ let data = {
 }
 
 publish_msg("test/json", data, "192.168.1.137")
+schedule.scheduleJob('* * * * *', publish_msg("test/json", data, "192.168.1.137"))
 
 // Ping a los dispositivos cada 5 minutos
 schedule.scheduleJob('* * * * *', checkDevices)

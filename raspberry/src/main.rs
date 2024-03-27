@@ -31,13 +31,13 @@ fn main() {
     let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()); 
     if token.is_none() {
         println!("Error al obtener el token");
-        // return;
+        return;
     }
     let device_uuid = get_my_uuid();
     let mut device = device::info::get_device_info(device_uuid.clone());
     if let Err(_) = device {
         println!("Error al obtener la información del dispositivo");
-        // return;
+        return;
     }
     let mut device = device.unwrap();
     
@@ -80,7 +80,7 @@ fn main() {
     let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");
-        // return;
+        return;
     } 
     
     let mut actuadores = actuadores.unwrap();
