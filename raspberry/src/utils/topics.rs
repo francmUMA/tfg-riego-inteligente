@@ -5,7 +5,7 @@ use mqtt::QOS_0;
 use serde_json::{to_string, Value};
 use paho_mqtt as mqtt;
 
-fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mqtt::Client) -> bool{
+fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mut mqtt::Client) -> bool{
     if let Err(_) = mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str(), QOS_0){
         println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
         return false;
@@ -19,7 +19,7 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
     true
 }
 
-fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, device_id: String, mqtt_client: &mqtt::Client){
+fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, device_id: String, mqtt_client: &mut mqtt::Client){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
         let actuador = Actuador::new(
@@ -77,7 +77,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
     println!("Topic de dispositivos");
 }
 
-pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: &mqtt::Client){
+pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: &mut mqtt::Client){
     println!("Mensaje recibido en el topic: {}", topic);
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {

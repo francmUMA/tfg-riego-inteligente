@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, thread::sleep};
+use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
 
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::token::get_token};
 use mqtt::{client, topic, QOS_0};
@@ -57,7 +57,7 @@ fn main() {
     if let Err(_) = client {
         println!("No se ha podido crear el cliente");
     }
-    let client = client.unwrap();
+    let mut client = client.unwrap();
     if let Err(_) = client.connect(con_opts) {
         println!("No se ha podido conectar");
     }
@@ -97,26 +97,12 @@ fn main() {
         println!("Suscrito al topic: {}", topic);
     }
 
-    // Crear un json y enviarlo
-    // use serde_json::json;
-    // let json_test = json!({
-    //     "lat": 0.0,
-    //     "lng": 0.0,
-    //     "area": "Casa",
-    //     "name": "Casa de prueba"
-    // });
-    // let msg = mqtt::Message::new("test/json", json_test.to_string(), QOS_0);
-    
-    // if let Err(_) = client.publish(msg) {
-    //     println!("No se ha podido enviar la información");
-    // }
-
     // Mostrar mensajes recibidos
     use serde_json::Value;
     loop {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str();
-        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client.borrow());
+        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client.borrow_mut());
     }
 }
