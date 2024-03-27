@@ -51,7 +51,6 @@ let data = {
     "message": "Hola mundo"
 }
 
-publish_msg("test/json", data, "192.168.1.137")
 schedule.scheduleJob('* * * * *', () => {
     publish_msg("test/json", JSON.stringify(data), "192.168.1.137")
 })
