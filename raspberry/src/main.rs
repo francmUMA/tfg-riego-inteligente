@@ -1,6 +1,6 @@
 use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
 
-use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::token::get_token};
+use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{mqtt_client, token::get_token}};
 use mqtt::{client, topic, QOS_0};
 use paho_mqtt as mqtt;
 use utils::topics::manage_msg;
@@ -43,25 +43,12 @@ fn main() {
     
     // Cliente de mqtt
     let ip = "192.168.1.137";
-    let client_id = format!("dev-{}", device_uuid);
-    let uri = format!("tcp://{}:1883", ip);
-    let opts = mqtt::CreateOptionsBuilder::new()
-            .server_uri(uri)
-            .client_id(client_id)
-            .finalize();
-    let con_opts = mqtt::ConnectOptionsBuilder::new()
-            .keep_alive_interval(Duration::from_secs(20))
-            .clean_session(true)
-            .finalize();
-    let client = paho_mqtt::Client::new(opts);
-    if let Err(_) = client {
-        println!("No se ha podido crear el cliente");
+    let mut client = mqtt_client::MqttClient::new(ip.to_string(), device_uuid);
+    if client.is_none() {
+        println!("Error al crear el cliente mqtt");
+        return;
     }
     let mut client = client.unwrap();
-    if let Err(_) = client.connect(con_opts) {
-        println!("No se ha podido conectar");
-    }
-    let data = client.start_consuming();
 
     // Creación de los topics
     let mut topics: Vec<String> = Vec::new();
@@ -91,18 +78,23 @@ fn main() {
 
     // Suscripción a los topics
     for topic in topics {
-        if let Err(_) = client.subscribe(&topic, QOS_0) {
-            println!("No se ha podido suscribir al topic: {}", topic);
+        if !client.subscribe(topic.as_str()) {
+            println!("Error al suscribirse al topic: {}", topic);
         }
+    }
+
+    // Mostrar topics suscritos
+    for topic in client.get_topics() {
         println!("Suscrito al topic: {}", topic);
     }
 
     // Mostrar mensajes recibidos
-    use serde_json::Value;
-    loop {
-        let msg = data.recv().unwrap().unwrap();
-        let topic = msg.topic();
-        let payload = msg.payload_str();
-        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client.borrow_mut());
-    }
+//     use serde_json::Value;
+//     loop {
+//         let msg = data.recv().unwrap().unwrap();
+//         let topic = msg.topic();
+//         let payload = msg.payload_str();
+//         //
+//         // manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client.borrow_mut());
+//     }
 }
