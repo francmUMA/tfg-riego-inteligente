@@ -6,6 +6,7 @@ use serde_json::Value;
 fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
+        println!("Mode: {}", payload_json["mode"]);
         let actuador = Actuador::new(
             payload_json["id"].as_str().unwrap().to_string(),
             payload_json["device"].as_str().unwrap().to_string(),
