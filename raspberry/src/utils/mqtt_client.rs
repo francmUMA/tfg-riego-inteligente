@@ -47,6 +47,15 @@ impl MqttClient {
         true
     }
 
+    pub fn unsubscribe(&mut self, topic: &str) -> bool {
+        if let Err(_) = self.client.unsubscribe(topic) {
+            return false;
+        }
+        let index = self.topics.iter().position(|t| t == topic).unwrap();
+        self.topics.remove(index);
+        true
+    }
+
     pub fn get_topics(&self) -> &Vec<String> {
         &self.topics
     }

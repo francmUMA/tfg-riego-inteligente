@@ -459,6 +459,7 @@ export const updateActuadorDevicePin = async (req, res) => {
         let payload = req.body.device_pin
         publish_msg(topic, payload, device.ip)
         actuador.device_pin = req.body.device_pin
+        actuador.status = 0
         actuador.save()
         res.status(200).send("Device pin updated")
     } catch (error) {

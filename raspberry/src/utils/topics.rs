@@ -21,6 +21,16 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
     true
 }
 
+fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
+    if !mqtt_client.unsubscribe(format!("devices/{}/actuadores/{}/update/status", actuador.get_device(), actuador.get_id()).as_str()){
+        println!("No se ha podido desuscribir al topic de status del actuador con id {}", actuador.get_id());
+    }
+
+    if !mqtt_client.unsubscribe(format!("devices/{}/actuadores/{}/update/device_pin", actuador.get_device(), actuador.get_id()).as_str()){
+        println!("No se ha podido desuscribir al topic de device_pin del actuador con id {}", actuador.get_id());
+    }
+}
+
 fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
@@ -40,7 +50,17 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             return
         }
         actuadores.push(actuador);
-    } else {
+    } else if topic.contains("delete"){
+        // Hay que eliminar el actuador cuyo id está en el payload
+        let index = actuadores.iter().position(|actuador| actuador.get_id() == payload).unwrap();
+        let actuador = actuadores.remove(index);
+        println!("Actuador eliminado: {} con id {}", actuador.get_name(), actuador.get_id());
+        unsuscribe_actuador_topics(actuador, mqtt_client);
+        println!("ACTUADORES: ");
+        for act in actuadores.iter(){
+            println!("{} con id {}", act.get_name(), act.get_id());
+        }
+    }else {
         // Se obtiene el id del actuador
         let topic_split: Vec<&str> = topic.split("/").collect();
         let actuador_id = topic_split[3];
