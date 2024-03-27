@@ -4,11 +4,11 @@ use crate::{device::{actuadores::{self, Actuador}, info::Device}, utils::token::
 use serde_json::Value;
 use paho_mqtt as mqtt;
 
-fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: mqtt::Client) -> bool{
+fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mqtt::Client) -> bool{
     true
 }
 
-fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, device_id: String, mqtt_client: mqtt::Client){
+fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, device_id: String, mqtt_client: &mqtt::Client){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
         let actuador = Actuador::new(
@@ -66,7 +66,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
     println!("Topic de dispositivos");
 }
 
-pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: mqtt::Client){
+pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: &mqtt::Client){
     println!("Mensaje recibido en el topic: {}", topic);
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
