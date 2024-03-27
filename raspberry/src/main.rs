@@ -1,4 +1,4 @@
-use std::thread::sleep;
+use std::{borrow::Borrow, thread::sleep};
 
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::token::get_token};
 use mqtt::{client, topic, QOS_0};
@@ -117,6 +117,6 @@ fn main() {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str();
-        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client);
+        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  client.borrow());
     }
 }

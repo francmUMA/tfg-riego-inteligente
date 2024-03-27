@@ -1,4 +1,4 @@
-use std::borrow::BorrowMut;
+use std::borrow::{Borrow, BorrowMut};
 
 use crate::{device::{actuadores::{self, Actuador}, info::Device}, utils::token::get_token};
 use serde_json::Value;
@@ -24,7 +24,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
         actuadores.push(actuador);
-        suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client);
+        suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client.borrow());
     } else {
         // Se obtiene el id del actuador
         let topic_split: Vec<&str> = topic.split("/").collect();
@@ -70,7 +70,7 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     println!("Mensaje recibido en el topic: {}", topic);
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
-        manage_topic_actuadores(topic, payload, actuadores, device.get_id().clone(), mqtt_client);
+        manage_topic_actuadores(topic, payload, actuadores, device.get_id().clone(), mqtt_client.borrow());
     } else {
         manage_topic_device(topic, payload, device);
     }
