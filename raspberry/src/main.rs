@@ -64,6 +64,7 @@ fn main() {
 
     // Actuadores topics
     topics.push(format!("devices/{}/actuadores/new", device_uuid));
+    topics.push(format!("devices/{}/actuadores/delete", device_uuid));
     let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");

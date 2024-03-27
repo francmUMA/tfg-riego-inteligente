@@ -183,8 +183,9 @@ export const deleteActuador = async (req, res) => {
     }
 
     // Comprobar si el dispositivo existe y si es de este usuario
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -218,6 +219,9 @@ export const deleteActuador = async (req, res) => {
     // ----------------------------------------------------------
     try {
         await actuadoresModel.destroy({ where: { id: req.body.id, device: req.params.device } })
+        let topic = `devices/${device.id}/actuadores/delete`
+        let payload = req.body.id
+        publish_msg(topic, payload, device.ip)
         res.status(200).send("Actuator deleted")
     } catch (error) {
         res.status(500).send(error.message)

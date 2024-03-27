@@ -12,7 +12,6 @@ export const publish_msg = (topic, payload, ip) => {
         connectTimeout: 4000
     })
     client.on("connect", () => {
-        console.log("Conectado al broker");
         client.publish(topic, payload);
         client.end();
     })
