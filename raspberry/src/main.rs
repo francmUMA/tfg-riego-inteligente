@@ -76,7 +76,6 @@ fn main() {
         topics.push(format!("devices/{}/actuadores/{}/update/device_pin", device_uuid, actuador.get_id()));
     }
     
-
     // Suscripción a los topics
     for topic in topics {
         if !client.subscribe(topic.as_str()) {

@@ -36,7 +36,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             payload_json["name"].as_str().unwrap().to_string(),
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
-        if !suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client){
+        if !suscribe_actuador_topics(actuador.get_id().clone(), device_id, mqtt_client){
             return
         }
         actuadores.push(actuador);
