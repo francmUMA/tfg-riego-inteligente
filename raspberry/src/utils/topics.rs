@@ -17,8 +17,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             payload_json["status"].clone(),
             payload_json["name"].as_str().unwrap().to_string(),
         );
-        actuadores.push(actuador);
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
+        actuadores.push(actuador);
     } else {
         // Se obtiene el id del actuador
         let topic_split: Vec<&str> = topic.split("/").collect();
