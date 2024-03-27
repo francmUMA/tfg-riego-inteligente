@@ -43,7 +43,7 @@ fn main() {
     
     // Cliente de mqtt
     let ip = "192.168.1.137";
-    let mut client = mqtt_client::MqttClient::new(ip.to_string(), device_uuid);
+    let mut client = mqtt_client::MqttClient::new(ip.to_string(), device_uuid.clone());
     if client.is_none() {
         println!("Error al crear el cliente mqtt");
         return;
