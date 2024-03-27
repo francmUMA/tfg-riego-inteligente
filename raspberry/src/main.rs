@@ -105,7 +105,7 @@ fn main() {
         "area": "Casa",
         "name": "Casa de prueba"
     });
-    let msg = mqtt::Message::new("test/json", data, QOS_0);
+    let msg = mqtt::Message::new("test/json", data.to_string(), QOS_0);
     
     if let Err(_) = client.publish(msg) {
         println!("No se ha podido enviar la información");
