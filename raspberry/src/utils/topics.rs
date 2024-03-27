@@ -23,8 +23,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             payload_json["name"].as_str().unwrap().to_string(),
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
-        actuadores.push(actuador);
         suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client.borrow());
+        actuadores.push(actuador);
     } else {
         // Se obtiene el id del actuador
         let topic_split: Vec<&str> = topic.split("/").collect();
