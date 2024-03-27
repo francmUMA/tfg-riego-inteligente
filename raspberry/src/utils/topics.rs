@@ -8,17 +8,13 @@ use paho_mqtt as mqtt;
 use super::mqtt_client::MqttClient;
 
 fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
-    // if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str()){
-    //     println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
-    //     return false;
-    // }
-
-    // if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/device_pin", device_id, actuador_id).as_str()){
-    //     println!("No se ha podido suscribir al topic de device_pin del actuador con id {}", actuador_id);
-    //     return false;
-    // }
-    if !mqtt_client.subscribe("test/msg"){
+    if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str()){
         println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
+        return false;
+    }
+
+    if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/device_pin", device_id, actuador_id).as_str()){
+        println!("No se ha podido suscribir al topic de device_pin del actuador con id {}", actuador_id);
         return false;
     }
 
