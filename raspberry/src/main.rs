@@ -71,6 +71,7 @@ fn main() {
     topics.push(format!("devices/{}/update/lng", device_uuid));
     topics.push(format!("devices/{}/update/area", device_uuid));
     topics.push(format!("devices/{}/update/name", device_uuid));
+    topics.push(format!("test/json"));
 
     // Sensors topics
 
@@ -98,27 +99,31 @@ fn main() {
     }
 
     // Crear un json y enviarlo
-    use serde_json::json;
-    let json_test = json!({
-        "lat": 0.0,
-        "lng": 0.0,
-        "area": "Casa",
-        "name": "Casa de prueba"
-    });
-    let msg = mqtt::Message::new("test/json", json_test.to_string(), QOS_0);
+    // use serde_json::json;
+    // let json_test = json!({
+    //     "lat": 0.0,
+    //     "lng": 0.0,
+    //     "area": "Casa",
+    //     "name": "Casa de prueba"
+    // });
+    // let msg = mqtt::Message::new("test/json", json_test.to_string(), QOS_0);
     
-    if let Err(_) = client.publish(msg) {
-        println!("No se ha podido enviar la información");
-    }
-
+    // if let Err(_) = client.publish(msg) {
+    //     println!("No se ha podido enviar la información");
+    // }
 
     // Mostrar mensajes recibidos
     loop {
         let msg = data.recv().unwrap().unwrap();
         let topic = msg.topic();
         let payload = msg.payload_str();
+        if topic == "test/json" {
+            let json_recv = serde_json::from_str(payload.as_ref());
+            if let Err(_) = json_recv {
+                println!("Error al parsear el json");
+            }
+            println!("Json recibido: {:?}", json_recv.unwrap());
+        }
         manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores);
     }
-
-
 }
