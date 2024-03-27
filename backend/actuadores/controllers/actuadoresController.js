@@ -131,12 +131,13 @@ export const addActuador = async (req, res) => {
     try {
         // Crear el uuid
         let uuid = v4()
-        let actuador = await actuadoresModel.create({ 
+        await actuadoresModel.create({ 
             id: uuid,
             name: req.body.name, 
             device: req.params.device 
         })
         let topic = `devices/${device.id}/actuadores/new`
+        let actuador = await actuadoresModel.findOne({ where: { id: uuid } })
         publish_msg(topic, JSON.stringify(actuador), device.ip)
         res.status(200).send("Actuator added")
     } catch (error) {
