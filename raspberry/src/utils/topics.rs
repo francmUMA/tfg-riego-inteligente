@@ -23,7 +23,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             payload_json["name"].as_str().unwrap().to_string(),
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
-        suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client.borrow());
+        suscribe_actuador_topics(actuador.get_id().clone(), device_id.clone(), mqtt_client);
         actuadores.push(actuador);
     } else {
         // Se obtiene el id del actuador
@@ -70,7 +70,7 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     println!("Mensaje recibido en el topic: {}", topic);
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
-        manage_topic_actuadores(topic, payload, actuadores, device.get_id().clone(), mqtt_client.borrow());
+        manage_topic_actuadores(topic, payload, actuadores, device.get_id().clone(), mqtt_client);
     } else {
         manage_topic_device(topic, payload, device);
     }
