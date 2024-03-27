@@ -80,7 +80,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
 }
 
 pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
-    if !client.subscribe("test/msg"){
+    if !mqtt_client.subscribe("test/msg"){
         println!("No se ha podido suscribir al topic");
     }
     // Hay que saber si el topic es de un actuador o de un dispositivo
