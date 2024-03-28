@@ -1,11 +1,11 @@
-use rppal::gpio::OutputPin;
+use rppal::gpio::InputPin;
 use rppal::gpio::Gpio;
 use serde_json::Value;
 
 pub struct  Sensor {
     id: String,
     device: String,
-    device_pin: Option<OutputPin>,
+    device_pin: Option<InputPin>,
     sensor_type: String,
     area: Option<String>,
     latitud: Option<f64>,
@@ -28,7 +28,7 @@ impl Sensor {
         value: Value,
         available: u8
     ) -> Sensor {
-        let mut device_pin_value: Option<OutputPin> = None;
+        let mut device_pin_value: Option<InputPin> = None;
         let mut area_value: Option<String> = None;
         let mut latitud_value: Option<f64> = None;
         let mut longitud_value: Option<f64> = None;
