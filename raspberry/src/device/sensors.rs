@@ -89,7 +89,7 @@ impl Sensor {
     }
 }
 
-fn read_humidity(pin: &mut Option<OutputPin>) -> u8{
+fn read_humidity(pin: &mut Option<InputPin>) -> u8{
     return 2;
 }
 
