@@ -15,7 +15,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             payload_json["id"].as_str().unwrap().to_string(),
             payload_json["device"].as_str().unwrap().to_string(),
             payload_json["device_pin"].clone(),
-            payload_json["type"].to_owned(),
+            payload_json["type"].to_string(),
             payload_json["area"].clone(),
             payload_json["Latitud"].clone(),
             payload_json["Longitud"].clone(),
