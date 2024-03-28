@@ -1,8 +1,8 @@
 import mqtt from "mqtt";
 
-export const publish_msg = (topic, payload, ip) => {
+export const publish_msg = (topic, payload) => {
     const protocol = "mqtt";
-    const host = ip;
+    const host = "192.168.1.137";
     const port = 1883;
     const client_id = "server";
     const url = `${protocol}://${host}:${port}`

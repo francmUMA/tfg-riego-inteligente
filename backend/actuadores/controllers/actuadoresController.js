@@ -138,7 +138,7 @@ export const addActuador = async (req, res) => {
         })
         let topic = `devices/${device.id}/actuadores/new`
         let actuador = await actuadoresModel.findOne({ where: { id: uuid } })
-        publish_msg(topic, JSON.stringify(actuador), device.ip)
+        publish_msg(topic, JSON.stringify(actuador))
         res.status(200).send("Actuator added")
     } catch (error) {
         res.status(500).send(error.message)
@@ -221,7 +221,7 @@ export const deleteActuador = async (req, res) => {
         await actuadoresModel.destroy({ where: { id: req.body.id, device: req.params.device } })
         let topic = `devices/${device.id}/actuadores/delete`
         let payload = req.body.id
-        publish_msg(topic, payload, device.ip)
+        publish_msg(topic, payload)
         res.status(200).send("Actuator deleted")
     } catch (error) {
         res.status(500).send(error.message)
@@ -461,7 +461,7 @@ export const updateActuadorDevicePin = async (req, res) => {
     try {
         let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/device_pin`
         let payload = req.body.device_pin
-        publish_msg(topic, payload, device.ip)
+        publish_msg(topic, payload)
         actuador.device_pin = req.body.device_pin
         actuador.status = 0
         actuador.save()
@@ -694,7 +694,7 @@ export const updateActuadorStatus = async (req, res) => {
     try {
         let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/status`
         let payload = req.body.status == true || req.body.status == 1 ? "1" : "0"
-        publish_msg(topic, payload, device.ip)
+        publish_msg(topic, payload)
         actuador.status = req.body.status
         actuador.save()
         res.status(200).send("Status updated")

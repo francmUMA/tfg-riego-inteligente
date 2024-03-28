@@ -4,6 +4,7 @@ import areasModel from "../../areas/models/areasModel.js"
 import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import {v4, validate} from 'uuid'
+import { publish_msg } from "../../mqtt.js"
 
 
 /*
@@ -136,6 +137,8 @@ export const addSensor = async (req, res) => {
     let uuid = v4()
     try {
         await sensorsModel.create({ id: uuid, name: req.body.name, type: req.body.type, device: req.params.device })
+        let sensor = await sensorsModel.findOne({ where: { id: uuid } })
+        publish_msg(`device/${sensor.device}/sensors/new`, JSON.stringify(sensor))
         res.status(200).send("Sensor added")
     } catch (error) {
         res.status(500).send(error.message)
@@ -212,6 +215,8 @@ export const deleteSensor = async (req, res) => {
     // ----------------------------------------------------------
     try {
         await sensorsModel.destroy({ where: { id: req.body.id, device: req.params.device } })
+        let payload = req.body.id
+        publish_msg(`device/${req.params.device}/sensors/delete`, payload)
         res.status(200).send("Sensor deleted")
     } catch (error) {
         res.status(500).send(error.message)
@@ -382,6 +387,8 @@ export const updateSensorDevicePin = async (req, res) => {
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
         sensor.device_pin = req.body.device_pin
+        let payload = req.body.device_pin
+        publish_msg(`device/${sensor.device}/sensors/${sensor.id}/update/device_pin`, payload)
         sensor.save()
         res.status(200).send("Sensor pin updated")
     } catch (error) {
