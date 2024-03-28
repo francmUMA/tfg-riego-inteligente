@@ -31,7 +31,7 @@ impl Sensor {
         let mut area_value: Option<String> = None;
         let mut latitud_value: Option<f64> = None;
         let mut longitud_value: Option<f64> = None;
-        let mut value_value: Option<u32> = None;
+        let mut value_value: Option<u8> = None;
         if device_pin.is_u64() {
             device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
         }
@@ -69,12 +69,13 @@ impl Sensor {
         self.name.clone()
     }
 
-    pub fn read(&self) -> String {
+    pub fn read(&self) -> bool {
         self.value = Some(read_humidity(self.device_pin));
+        true
     }
 }
 
-fn read_humidity(pin: Option<u8>) -> u8{
+fn read_humidity(pin: Option<OutputPin>) -> u8{
     return 2;
 }
 
