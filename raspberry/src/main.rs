@@ -65,7 +65,7 @@ fn main() {
     // Actuadores topics
     topics.push(format!("devices/{}/actuadores/new", device_uuid));
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));
-    let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.unwrap());
+    let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.clone().unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");
         return;
@@ -77,7 +77,7 @@ fn main() {
         topics.push(format!("devices/{}/actuadores/{}/update/device_pin", device_uuid, actuador.get_id()));
     }
 
-    let mut sensors = sensors::get_sensors_device(device_uuid.clone(), token.unwrap());
+    let mut sensors = sensors::get_sensors_device(device_uuid.clone(), token.clone().unwrap());
     if sensors.is_err() {
         println!("Error al obtener los sensores");
         return;
