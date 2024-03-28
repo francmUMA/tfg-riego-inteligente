@@ -1,4 +1,5 @@
 use rppal::gpio::OutputPin;
+use rppal::gpio::Gpio;
 use serde_json::Value;
 
 pub struct  Sensor {
@@ -33,7 +34,7 @@ impl Sensor {
         let mut longitud_value: Option<f64> = None;
         let mut value_value: Option<u8> = None;
         if device_pin.is_u64() {
-            device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
+            device_pin_value = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
         }
         if area.is_string() {
             area_value = Some(area.to_string());
