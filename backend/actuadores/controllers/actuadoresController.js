@@ -461,6 +461,7 @@ export const updateActuadorDevicePin = async (req, res) => {
     try {
         let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/device_pin`
         let payload = req.body.device_pin
+        if (typeof payload !== "string") payload = payload.toString()
         publish_msg(topic, payload)
         actuador.device_pin = req.body.device_pin
         actuador.status = 0
