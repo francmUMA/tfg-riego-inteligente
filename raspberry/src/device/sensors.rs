@@ -79,6 +79,14 @@ impl Sensor {
         self.value = Some(read_humidity(&mut self.device_pin));
         true
     }
+
+    pub fn get_device(&self) -> String {
+        self.device.clone()
+    }
+
+    pub fn clean_pin(&mut self) {
+        self.device_pin = None;
+    }
 }
 
 fn read_humidity(pin: &mut Option<OutputPin>) -> u8{

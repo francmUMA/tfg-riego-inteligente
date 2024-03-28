@@ -10,9 +10,33 @@ use super::mqtt_client::MqttClient;
 //------------------------------------- SENSORES ----------------------------------------------------------------------------------------
 fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, mqtt_client: &mut MqttClient){
     if topic.contains("new"){
-
+        let payload_json: Value = serde_json::from_str(payload).unwrap();
+        let sensor = Sensor::new(
+            payload_json["id"].as_str().unwrap().to_string(),
+            payload_json["device"].as_str().unwrap().to_string(),
+            payload_json["device_pin"].clone(),
+            payload_json["type"].clone(),
+            payload_json["area"].clone(),
+            payload_json["Latitud"].clone(),
+            payload_json["Longitud"].clone(),
+            payload_json["name"].as_str().unwrap().to_string(),
+            payload_json["value"].clone(),
+            payload_json["available"].as_u64().unwrap() as u8
+        );
+        println!("Sensor añadido: {} con id {}", sensor.get_name(), sensor.get_id());
+        if !suscribe_sensor_topics(sensor.get_id().clone(), sensor.get_device().clone(), mqtt_client){
+            return
+        }
+        sensors.push(sensor);
     } else if topic.contains("delete"){
-
+        // Hay que eliminar el sensor cuyo id está en el payload
+        for sensor in sensors.iter_mut(){
+            sensor.clean_pin();
+        }
+        let index = sensors.iter().position(|sensor| sensor.get_id() == payload).unwrap();
+        let sensor = sensors.remove(index);
+        println!("Sensor eliminado: {} con id {}", sensor.get_name(), sensor.get_id());
+        unsubscribe_sensor_topics(sensor, mqtt_client);
     } else {
         // Se obtiene el id del sensor
         let topic_split: Vec<&str> = topic.split("/").collect();
@@ -44,7 +68,7 @@ fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mu
     true
 }
 
-fn unsubscribe_sensor_topics(sensor: Actuador, mqtt_client: &mut MqttClient){
+fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
     if !mqtt_client.unsubscribe(format!("devices/{}/sensores/{}/update/device_pin", sensor.get_device(), sensor.get_id()).as_str()){
         println!("No se ha podido desuscribir al topic de device_pin del sensor con id {}", sensor.get_id());
     }
