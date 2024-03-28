@@ -172,7 +172,6 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
 
 //------------------------------------- MANAGE MSG ---------------------------------------------------------------------------------------
 pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, sensors: &mut Vec<Sensor>, mqtt_client: &mut MqttClient){
-    // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
         manage_topic_actuadores(topic, payload, actuadores, mqtt_client);
     } else if topic.contains("sensors") {

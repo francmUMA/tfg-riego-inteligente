@@ -12,6 +12,7 @@ export const publish_msg = (topic, payload) => {
         connectTimeout: 4000
     })
     client.on("connect", () => {
+        console.log("Send msg: " + payload + " to topic: " + topic)
         client.publish(topic, payload);
         client.end();
     })
