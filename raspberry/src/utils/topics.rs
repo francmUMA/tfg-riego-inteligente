@@ -1,12 +1,56 @@
 use std::borrow::{Borrow, BorrowMut};
 
-use crate::{device::{actuadores::{self, Actuador}, info::Device}, utils::token::get_token};
+use crate::{device::{actuadores::{self, Actuador}, info::Device, sensors::{self, Sensor}}, utils::token::get_token};
 use mqtt::{client, QOS_0};
 use serde_json::{to_string, Value};
 use paho_mqtt as mqtt;
 
 use super::mqtt_client::MqttClient;
 
+//------------------------------------- SENSORES ----------------------------------------------------------------------------------------
+fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, mqtt_client: &mut MqttClient){
+    if topic.contains("new"){
+
+    } else if topic.contains("delete"){
+
+    } else {
+        // Se obtiene el id del sensor
+        let topic_split: Vec<&str> = topic.split("/").collect();
+        let sensor_id = topic_split[3];
+
+        // Se obtiene el sensor
+        if let Some(sensor) = sensors.iter_mut().find(|sensor| sensor.get_id() == sensor_id) {
+            // Hay que saber que es lo que se va a hacer con el sensor
+            if topic.contains("update") && topic.contains("device_pin") {
+                let pin = payload.parse::<u8>().unwrap();
+                if pin > 0 && pin < 28 {
+                    sensor.change_pin(pin);
+                    println!("Cambiando el pin del sensor con id {} a {}", sensor.get_id(), pin);
+                } else {
+                    println!("Pin no válido");
+                }
+            }
+        } else {
+            println!("No se ha encontrado el sensor");
+        }
+    }
+}
+
+fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
+    if !mqtt_client.subscribe(format!("devices/{}/sensores/{}/update/device_pin", device_id, sensor_id).as_str()){
+        println!("No se ha podido suscribir al topic de device_pin del sensor con id {}", sensor_id);
+        return false;
+    }
+    true
+}
+
+fn unsubscribe_sensor_topics(sensor: Actuador, mqtt_client: &mut MqttClient){
+    if !mqtt_client.unsubscribe(format!("devices/{}/sensores/{}/update/device_pin", sensor.get_device(), sensor.get_id()).as_str()){
+        println!("No se ha podido desuscribir al topic de device_pin del sensor con id {}", sensor.get_id());
+    }
+}
+
+//------------------------------------- ACTUADORES --------------------------------------------------------------------------------------
 fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
     if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str()){
         println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
@@ -97,14 +141,18 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
     
 }
 
+//------------------------------------- DEVICE -------------------------------------------------------------------------------------------
 fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
     println!("Topic de dispositivos");
 }
 
-pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
+//------------------------------------- MANAGE MSG ---------------------------------------------------------------------------------------
+pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, sensors: &mut Vec<Sensor>, mqtt_client: &mut MqttClient){
     // Hay que saber si el topic es de un actuador o de un dispositivo
     if topic.contains("actuadores") {
         manage_topic_actuadores(topic, payload, actuadores, mqtt_client);
+    } else if topic.contains("sensors") {
+        manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else {
         manage_topic_device(topic, payload, device);
     }

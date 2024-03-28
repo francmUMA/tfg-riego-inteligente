@@ -34,7 +34,7 @@ impl Sensor {
         let mut longitud_value: Option<f64> = None;
         let mut value_value: Option<u8> = None;
         if device_pin.is_u64() {
-            device_pin_value = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
+            device_pin_value = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_input());
         }
         if area.is_string() {
             area_value = Some(area.to_string());
@@ -68,6 +68,11 @@ impl Sensor {
 
     pub fn get_name(&self) -> String {
         self.name.clone()
+    }
+
+    pub fn change_pin(&mut self, pin: u8) -> bool {
+        self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_input());
+        true
     }
 
     pub fn read(&mut self) -> bool {

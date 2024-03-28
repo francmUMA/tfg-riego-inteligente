@@ -61,10 +61,13 @@ fn main() {
     topics.push(format!("devices/{}/update/name", device_uuid));
 
     // Sensors topics
+    topics.push(format!("devices/{}/sensors/new", device_uuid));
+    topics.push(format!("devices/{}/sensors/delete", device_uuid));
 
     // Actuadores topics
     topics.push(format!("devices/{}/actuadores/new", device_uuid));
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));
+
     let mut actuadores = actuadores::get_actuators_device(device_uuid.clone(), token.clone().unwrap());
     if actuadores.is_none() {
         println!("Error al obtener los actuadores");
@@ -85,7 +88,7 @@ fn main() {
 
     let mut sensors = sensors.unwrap();
     for sensor in sensors.iter() {
-        println!("Sensor: {} Name: {}", sensor.get_id(), sensor.get_name());
+        topics.push(format!("devices/{}/sensors/{}/update/device_pin", device_uuid, sensor.get_id()));
     }
     
     // Suscripción a los topics
@@ -103,6 +106,6 @@ fn main() {
         let topic = msg.topic();
         let payload = msg.payload_str();
         println!("Mensaje recibido en el topic: {}", topic);
-        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores,  &mut client);
+        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores, &mut sensors, &mut client);
     }
 }
