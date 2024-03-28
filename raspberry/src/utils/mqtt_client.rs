@@ -58,8 +58,6 @@ impl MqttClient {
             println!("No se ha podido desuscribir al topic: {}", topic);
             return false;
         }
-        let index = self.topics.iter().position(|t| t == topic).unwrap();
-        self.topics.remove(index);
         println!("Desuscrito al topic: {}", topic);
         true
     }
