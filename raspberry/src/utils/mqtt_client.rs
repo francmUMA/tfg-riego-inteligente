@@ -48,11 +48,19 @@ impl MqttClient {
     }
 
     pub fn unsubscribe(&mut self, topic: &str) -> bool {
+        let index = self.topics.iter().position(|t| t == topic);
+        if index.is_none() {
+            println!("No se ha podido desuscribir al topic: {}", topic);
+            return false;
+        }
+        self.topics.remove(index.unwrap());
         if let Err(_) = self.client.unsubscribe(topic) {
+            println!("No se ha podido desuscribir al topic: {}", topic);
             return false;
         }
         let index = self.topics.iter().position(|t| t == topic).unwrap();
         self.topics.remove(index);
+        println!("Desuscrito al topic: {}", topic);
         true
     }
 
