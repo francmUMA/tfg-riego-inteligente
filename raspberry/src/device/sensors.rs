@@ -70,13 +70,13 @@ impl Sensor {
         self.name.clone()
     }
 
-    pub fn read(&self) -> bool {
-        self.value = Some(read_humidity(&self.device_pin));
+    pub fn read(&mut self) -> bool {
+        self.value = Some(read_humidity(&mut self.device_pin));
         true
     }
 }
 
-fn read_humidity(pin: &Option<OutputPin>) -> u8{
+fn read_humidity(pin: &mut Option<OutputPin>) -> u8{
     return 2;
 }
 
