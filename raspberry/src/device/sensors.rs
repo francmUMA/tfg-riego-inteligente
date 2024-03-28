@@ -75,9 +75,15 @@ impl Sensor {
         true
     }
 
-    pub fn read(&mut self) -> bool {
-        self.value = Some(read_humidity(&mut self.device_pin));
-        true
+    pub fn read(&mut self) -> Option<u8> {
+        if self.sensor_type == "DHT" {
+            self.value = Some(read_humidity(&mut self.device_pin));
+        } else if self.sensor_type == "TMP" {
+            self.value = Some(read_tmp(&mut self.device_pin));
+        } else if self.sensor_type == "CAU" {
+            self.value = Some(read_caudal(&mut self.device_pin));
+        }
+        self.value.clone()
     }
 
     pub fn get_device(&self) -> String {
@@ -90,7 +96,15 @@ impl Sensor {
 }
 
 fn read_humidity(pin: &mut Option<InputPin>) -> u8{
+    return 1;
+}
+
+fn read_tmp(pin: &mut Option<InputPin>) -> u8{
     return 2;
+}
+
+fn read_caudal(pin: &mut Option<InputPin>) -> u8{
+    return 3;
 }
 
 #[tokio::main]

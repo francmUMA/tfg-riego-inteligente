@@ -69,4 +69,14 @@ impl MqttClient {
     pub fn start_consuming(&self) -> Receiver<Option<Message>> {
         self.client.start_consuming()
     }
+
+    pub fn publish(&self, topic: &str, payload: &str) -> bool {
+        let msg = mqtt::Message::new(topic, payload, mqtt::QOS_0);
+        if let Err(_) = self.client.publish(msg) {
+            println!("No se ha podido publicar el mensaje");
+            return false;
+        }
+        println!("Mensaje publicado en el topic: {}", topic);
+        true
+    }
 }

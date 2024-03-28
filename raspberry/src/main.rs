@@ -3,6 +3,7 @@ use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{mqtt_client, token::get_token}};
 use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
+use serde_json::json;
 use tokio::net::unix::pipe::Receiver;
 use utils::topics::manage_msg;
 use std::time::Duration;
@@ -100,12 +101,55 @@ fn main() {
 
     // Mostrar mensajes recibidos
     use serde_json::Value;
-    let mut receiver = client.start_consuming();
+    // let mut receiver = client.start_consuming();
+    // loop {
+    //     let msg = receiver.recv().unwrap().unwrap();
+    //     let topic = msg.topic();
+    //     let payload = msg.payload_str();
+    //     println!("Mensaje recibido en el topic: {}", topic);
+    //     manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores, &mut sensors, &mut client);
+    // }
+    // Crear un hilo que se encargue de recibir los mensajes y otro de publicar los mensajes
+    use std::thread;
+
+    // Hilo de recepción
+    thread::spawn(|| {
+        let mut receiver = client.start_consuming();
+        loop {
+            let msg = receiver.recv().unwrap().unwrap();
+            let topic = msg.topic();
+            let payload = msg.payload_str();
+            println!("Mensaje recibido en el topic: {}", topic);
+            manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores, &mut sensors, &mut client);
+        }
+    });
+
+    // Hilo de publicación
+    thread::spawn(|| {
+        loop {
+            //let time_now = utils::time::create_unix_timestamp();
+            for sensor in sensors.iter() {
+                let time_now = utils::time::create_unix_timestamp();
+                let value = sensor.read();
+                if value.is_none() {
+                    println!("Error al leer el sensor");
+                    continue;
+                }
+                let value = value.unwrap();
+                let payload = json!({
+                    "time": time_now,
+                    "value": value
+                });
+                let topic = format!("devices/{}/sensors/{}/value", device_uuid, sensor.get_id());
+                if !client.publish(topic.as_str(), payload.to_string().as_str()) {
+                    println!("Error al publicar el mensaje");
+                }
+                std::thread::sleep(std::time::Duration::from_secs(30));
+            }
+        }
+    });
+
     loop {
-        let msg = receiver.recv().unwrap().unwrap();
-        let topic = msg.topic();
-        let payload = msg.payload_str();
-        println!("Mensaje recibido en el topic: {}", topic);
-        manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores, &mut sensors, &mut client);
+        sleep(Duration::from_secs(1));
     }
 }
