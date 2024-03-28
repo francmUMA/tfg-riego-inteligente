@@ -388,6 +388,7 @@ export const updateSensorDevicePin = async (req, res) => {
     try {
         sensor.device_pin = req.body.device_pin
         let payload = req.body.device_pin
+        if (typeof payload !== "string") payload = payload.toString()
         publish_msg(`devices/${sensor.device}/sensors/${sensor.id}/update/device_pin`, payload)
         sensor.save()
         res.status(200).send("Sensor pin updated")
