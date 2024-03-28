@@ -1,6 +1,3 @@
-use std::borrow::BorrowMut;
-use std::borrow::Borrow;
-
 use rppal::gpio::OutputPin;
 use rppal::gpio::Gpio;
 use serde_json::Value;
@@ -74,7 +71,7 @@ impl Sensor {
     }
 
     pub fn read(&self) -> bool {
-        self.value = Some(read_humidity(self.device_pin.borrow()));
+        self.value = Some(read_humidity(&self.device_pin));
         true
     }
 }
