@@ -76,6 +76,17 @@ fn main() {
         topics.push(format!("devices/{}/actuadores/{}/update/status", device_uuid, actuador.get_id()));
         topics.push(format!("devices/{}/actuadores/{}/update/device_pin", device_uuid, actuador.get_id()));
     }
+
+    let mut sensors = sensors::get_sensors_device(device_uuid.clone(), token.unwrap());
+    if sensors.is_err() {
+        println!("Error al obtener los sensores");
+        return;
+    }
+
+    let mut sensors = sensors.unwrap();
+    for sensor in sensors.iter() {
+        println!("Sensor: {} Name: {}", sensor.get_id(), sensor.get_name());
+    }
     
     // Suscripción a los topics
     for topic in topics {

@@ -1,15 +1,16 @@
+use rppal::gpio::OutputPin;
 use serde_json::Value;
 
 pub struct  Sensor {
     id: String,
     device: String,
-    device_pin: Option<u8>,
+    device_pin: Option<OutputPin>,
     sensor_type: String,
     area: Option<String>,
     latitud: Option<f64>,
     longitud: Option<f64>,
     name: String,
-    value: Option<u32>,
+    value: Option<u8>,
     available: u8
 }
 
@@ -26,13 +27,13 @@ impl Sensor {
         value: Value,
         available: u8
     ) -> Sensor {
-        let mut device_pin_value: Option<u8> = None;
+        let mut device_pin_value: Option<OutputPin> = None;
         let mut area_value: Option<String> = None;
         let mut latitud_value: Option<f64> = None;
         let mut longitud_value: Option<f64> = None;
         let mut value_value: Option<u32> = None;
-        if device_pin.as_u64().is_some() {
-            device_pin_value = Some(device_pin.as_u64().unwrap() as u8);
+        if device_pin.is_u64() {
+            device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
         }
         if area.is_string() {
             area_value = Some(area.to_string());
@@ -44,7 +45,7 @@ impl Sensor {
             longitud_value = Some(longitud.as_f64().unwrap());
         }
         if value.is_u64() {
-            value_value = Some(value.as_u64().unwrap() as u32);
+            value_value = Some(value.as_u64().unwrap() as u8);
         }
         Sensor {
             id,
@@ -63,6 +64,18 @@ impl Sensor {
     pub fn get_id(&self) -> String {
         self.id.clone()
     }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn read(&self) -> String {
+        self.value = Some(read_humidity(self.device_pin));
+    }
+}
+
+fn read_humidity(pin: Option<u8>) -> u8{
+    return 2;
 }
 
 #[tokio::main]
