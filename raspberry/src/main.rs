@@ -1,9 +1,10 @@
 use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
+use std::sync::{Arc, Mutex};
 
 use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{mqtt_client, token::get_token}};
 use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
-use serde_json::json;
+use serde_json::{de, json};
 use tokio::net::unix::pipe::Receiver;
 use utils::topics::manage_msg;
 use std::time::Duration;
@@ -41,7 +42,7 @@ fn main() {
         println!("Error al obtener la información del dispositivo");
         return;
     }
-    let mut device = device.unwrap();
+    let mut device = Arc::new(Mutex::new(device.unwrap()));
     
     // Cliente de mqtt
     let ip = "192.168.1.137";
@@ -99,21 +100,11 @@ fn main() {
         }
     }
 
-    // Mostrar mensajes recibidos
     use serde_json::Value;
-    // let mut receiver = client.start_consuming();
-    // loop {
-    //     let msg = receiver.recv().unwrap().unwrap();
-    //     let topic = msg.topic();
-    //     let payload = msg.payload_str();
-    //     println!("Mensaje recibido en el topic: {}", topic);
-    //     manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores, &mut sensors, &mut client);
-    // }
-    // Crear un hilo que se encargue de recibir los mensajes y otro de publicar los mensajes
     use std::thread;
 
     // Hilo de recepción
-    thread::spawn(|| {
+    thread::spawn(move || {
         let mut receiver = client.start_consuming();
         loop {
             let msg = receiver.recv().unwrap().unwrap();
@@ -125,10 +116,10 @@ fn main() {
     });
 
     // Hilo de publicación
-    thread::spawn(|| {
+    thread::spawn(move || {
         loop {
             //let time_now = utils::time::create_unix_timestamp();
-            for sensor in sensors.iter() {
+            for sensor in sensors.iter_mut() {
                 let time_now = utils::time::create_unix_timestamp();
                 let value = sensor.read();
                 if value.is_none() {
