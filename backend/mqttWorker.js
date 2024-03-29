@@ -8,7 +8,7 @@ if (!isMainThread){
         clean: true,
         connectTimeout: 4000
     })
-
+    console.log("Hola")
     client.on('connect',async () => {
         console.log("Conectando")
         try {
