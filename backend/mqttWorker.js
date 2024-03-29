@@ -16,6 +16,7 @@ if (!isMainThread){
                     }
                 })
             })
+            console.log("Conexión con el broker MQTT exitosa")
         } catch (error) {
             console.log(error)
         }
