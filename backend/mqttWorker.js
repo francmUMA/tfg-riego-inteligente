@@ -1,4 +1,4 @@
-import {Worker, isMainThread, parentPort} from 'worker_threads'
+import {isMainThread, parentPort} from 'worker_threads'
 import mqtt from "mqtt"
 import sensorsModel from './sensors/models/sensorsModel.js'
 
@@ -8,18 +8,18 @@ if (!isMainThread){
         clean: true,
         connectTimeout: 4000
     })
-    console.log("Hola")
     client.on('connect',async () => {
         console.log("Conectando")
         try {
             let sensors = await sensorsModel.findAll()
             sensors.forEach(sensor => {
-                let topic = `devices/${sensor.device_id}/sensors/${sensor.sensor_id}/value`
+                let topic = `devices/${sensor.device}/sensors/${sensor.id}/value`
                 client.subscribe(topic, (err) => {
                     if (err) {
                         console.log("No se ha podido suscribir al topic: " + topic)
                     }
                 })
+                console.log(`Suscrito al topic: ${topic}`)
             })
             console.log("Conexión con el broker MQTT exitosa")
         } catch (error) {
