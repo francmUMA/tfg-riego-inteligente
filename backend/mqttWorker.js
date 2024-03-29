@@ -3,8 +3,11 @@ import mqtt from "mqtt"
 import sensorsModel from './sensors/models/sensorsModel.js'
 
 if (!isMainThread){
-    console.log("Worker thread")
-    const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`)
+    const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
+        clientId: 'server_recv',
+        clean: true,
+        connectTimeout: 4000
+    })
 
     client.on('connect',async () => {
         console.log("Conectando")
