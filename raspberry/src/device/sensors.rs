@@ -52,7 +52,7 @@ impl Sensor {
             id,
             device,
             device_pin: device_pin_value,
-            sensor_type: sensor_type.chars().filter(|c| c != '"').collect::<String>(),
+            sensor_type: sensor_type.chars().filter(|c| c.to_ascii_lowercase() != '"'.to_ascii_lowercase()).collect::<String>(),
             area: area_value,
             latitud: latitud_value,
             longitud: longitud_value,
