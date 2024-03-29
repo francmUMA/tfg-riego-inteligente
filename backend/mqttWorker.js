@@ -1,8 +1,9 @@
 import {Worker, isMainThread, parentPort} from 'worker_threads'
 import mqtt from "mqtt"
 import sensorsModel from './sensors/models/sensorsModel.js'
-console.log("Worker thread")
+
 if (!isMainThread){
+    console.log("Worker thread")
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`)
 
     client.on('connect',async () => {
@@ -43,6 +44,4 @@ if (!isMainThread){
             })
         }
     })
-} else {
-    console.log("Main thread")
 }
