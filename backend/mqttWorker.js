@@ -1,9 +1,9 @@
-import {isMainThread, parentPort} from 'worker_threads'
+import {Worker, isMainThread, parentPort} from 'worker_threads'
 import mqtt from "mqtt"
 import sensorsModel from './sensors/models/sensorsModel.js'
 
 if (!isMainThread){
-    const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`)
+    let client
 
     client.on('connect',async () => {
         try {
@@ -16,7 +16,6 @@ if (!isMainThread){
                     }
                 })
             })
-            console.log("Conexión con el broker MQTT exitosa")
         } catch (error) {
             console.log(error)
         }
@@ -40,6 +39,13 @@ if (!isMainThread){
                     console.log("No se ha podido desuscribir al topic: " + data.topic)
                 }
             })
+        } else if (data.command === 'start'){
+            try {
+                client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`)
+                console.log("Conexión con el broker MQTT exitosa")
+            } catch (error) {
+                console.log(error)
+            }
         }
     })
 }
