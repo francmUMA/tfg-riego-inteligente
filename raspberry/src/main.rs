@@ -134,11 +134,11 @@ fn main() {
     thread::spawn(move || {
         loop {
             //let time_now = utils::time::create_unix_timestamp();
-            for sensor in sensors.lock().unwrap().iter_mut() {
+            for sensor in sensors_publisher.lock().unwrap().iter_mut() {
                 let time_now = utils::time::create_unix_timestamp();
                 let value = sensor.read();
                 if value.is_none() {
-                    println!("Error al leer el sensor");
+                    println!("Error al leer el sensor: {}", sensor.get_id());
                     continue;
                 }
                 let value = value.unwrap();
@@ -150,8 +150,8 @@ fn main() {
                 if !client_publisher.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
                     println!("Error al publicar el mensaje");
                 }
-                std::thread::sleep(std::time::Duration::from_secs(30));
             }
+            std::thread::sleep(std::time::Duration::from_secs(30));
         }
     });
 
