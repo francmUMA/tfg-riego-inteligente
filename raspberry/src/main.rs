@@ -147,7 +147,7 @@ fn main() {
                     "value": value
                 });
                 let topic = format!("devices/{}/sensors/{}/value", device_uuid_clone, sensor.get_id());
-                if !client.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
+                if !client_publisher.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
                     println!("Error al publicar el mensaje");
                 }
                 std::thread::sleep(std::time::Duration::from_secs(30));
