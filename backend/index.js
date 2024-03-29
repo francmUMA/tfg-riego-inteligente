@@ -42,7 +42,7 @@ try {
     console.log("Conexión con la base de datos fallida");
 }
 
-export const mqttWorker = new Worker('./mqttWorker.js')
+const mqttWorker = new Worker('./mqttWorker.js')
 
 export const sendCommandToWorker = (command, topic) =>{
     mqttWorker.postMessage({command: command, topic: topic})
@@ -60,11 +60,6 @@ mqttWorker.on('message',async message => {
         console.log(error)
     }
 })
-
-
-mqttWorker.postMessage({command: 'start'})
-
-
 
 // Arrancar el servidor
 app.listen(app.get("port"), () => {

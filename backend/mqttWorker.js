@@ -6,6 +6,7 @@ if (!isMainThread){
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`)
 
     client.on('connect',async () => {
+        console.log("Conectando")
         try {
             let sensors = await sensorsModel.findAll()
             sensors.forEach(sensor => {
