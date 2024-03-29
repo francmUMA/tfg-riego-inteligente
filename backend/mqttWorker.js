@@ -3,28 +3,28 @@ import mqtt from "mqtt"
 import sensorsModel from './sensors/models/sensorsModel.js'
 
 if (!isMainThread){
-    const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
+    const client = mqtt.connect(`mqtt://192.168.1.137:1883`, {
         clientId: 'server_recv',
         clean: true,
         connectTimeout: 4000
     })
     console.log("Hola")
-    client.on('connect',async () => {
+    client.on("connect",async () => {
         console.log("Conectando")
-        try {
-            let sensors = await sensorsModel.findAll()
-            sensors.forEach(sensor => {
-                let topic = `devices/${sensor.device_id}/sensors/${sensor.sensor_id}/value`
-                client.subscribe(topic, (err) => {
-                    if (err) {
-                        console.log("No se ha podido suscribir al topic: " + topic)
-                    }
-                })
-            })
-            console.log("Conexión con el broker MQTT exitosa")
-        } catch (error) {
-            console.log(error)
-        }
+        // try {
+        //     let sensors = await sensorsModel.findAll()
+        //     sensors.forEach(sensor => {
+        //         let topic = `devices/${sensor.device_id}/sensors/${sensor.sensor_id}/value`
+        //         client.subscribe(topic, (err) => {
+        //             if (err) {
+        //                 console.log("No se ha podido suscribir al topic: " + topic)
+        //             }
+        //         })
+        //     })
+        //     console.log("Conexión con el broker MQTT exitosa")
+        // } catch (error) {
+        //     console.log(error)
+        // }
     })
 
     client.on('message', (topic, message) => {
