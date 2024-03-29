@@ -83,6 +83,7 @@ impl Sensor {
         } else if self.sensor_type == "CAU" {
             self.value = Some(read_caudal(&mut self.device_pin));
         }
+        print!("Valor del sensor {}: ", self.value.unwrap_or_else(|| 0));
         self.value.clone()
     }
 
