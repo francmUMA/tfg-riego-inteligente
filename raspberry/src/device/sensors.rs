@@ -52,7 +52,7 @@ impl Sensor {
             id,
             device,
             device_pin: device_pin_value,
-            sensor_type,
+            sensor_type: sensor_type.chars().filter(|c| c != '"').collect::<String>(),
             area: area_value,
             latitud: latitud_value,
             longitud: longitud_value,
@@ -76,7 +76,7 @@ impl Sensor {
     }
 
     pub fn read(&mut self) -> Option<u8> {
-        println!("Tipo de sensor: {}", self.sensor_type.as_str());
+        println!("Tipo de sensor: {}", self.sensor_type);
         if self.sensor_type.as_str() == "DHT" {
             self.value = Some(read_humidity(&mut self.device_pin));
         } else if self.sensor_type.as_str() == "TMP" {
