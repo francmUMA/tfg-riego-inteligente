@@ -62,6 +62,8 @@ mqttWorker.on('message',async message => {
 })
 
 
+mqttWorker.postMessage({command: 'start'})
+
 
 
 // Arrancar el servidor
