@@ -51,7 +51,7 @@ fn main() {
         println!("Error al crear el cliente mqtt");
         return;
     }
-    let mut client = client.unwrap();
+    let mut client = Arc::new(Mutex::new(client.unwrap()));
 
     // Creación de los topics
     let mut topics: Vec<String> = Vec::new();
@@ -76,8 +76,8 @@ fn main() {
         return;
     } 
     
-    let mut actuadores = actuadores.unwrap();
-    for actuador in actuadores.iter() {
+    let mut actuadores =Arc::new(Mutex::new(actuadores.unwrap()));
+    for actuador in actuadores.lock().unwrap().iter() {
         topics.push(format!("devices/{}/actuadores/{}/update/status", device_uuid, actuador.get_id()));
         topics.push(format!("devices/{}/actuadores/{}/update/device_pin", device_uuid, actuador.get_id()));
     }
@@ -88,14 +88,14 @@ fn main() {
         return;
     }
 
-    let mut sensors = sensors.unwrap();
-    for sensor in sensors.iter() {
+    let mut sensors = Arc::new(Mutex::new(sensors.unwrap()));
+    for sensor in sensors.lock().unwrap().iter() {
         topics.push(format!("devices/{}/sensors/{}/update/device_pin", device_uuid, sensor.get_id()));
     }
-    
+
     // Suscripción a los topics
     for topic in topics {
-        if !client.subscribe(topic.as_str()) {
+        if !client.lock().unwrap().subscribe(topic.as_str()) {
             println!("Error al suscribirse al topic: {}", topic);
         }
     }
@@ -103,23 +103,38 @@ fn main() {
     use serde_json::Value;
     use std::thread;
 
+    let actuadores_receiver = Arc::clone(&actuadores);
+    let sensors_receiver = Arc::clone(&sensors);
+    let device_receiver = Arc::clone(&device);
+    let client_receiver = Arc::clone(&client);
+
     // Hilo de recepción
     thread::spawn(move || {
-        let mut receiver = client.start_consuming();
+        let mut receiver = client_receiver.lock().unwrap().start_consuming();
         loop {
             let msg = receiver.recv().unwrap().unwrap();
             let topic = msg.topic();
             let payload = msg.payload_str();
             println!("Mensaje recibido en el topic: {}", topic);
-            manage_msg(topic, payload.as_ref(), &mut device, &mut actuadores, &mut sensors, &mut client);
+            manage_msg(topic, payload.as_ref(), 
+                    &mut device_receiver.lock().unwrap(), 
+                &mut actuadores_receiver.lock().unwrap(),
+                   &mut sensors_receiver.lock().unwrap(), 
+               &mut client_receiver.lock().unwrap()
+            );
         }
     });
+
+    let client_publisher = Arc::clone(&client);
+    let device_uuid_clone = device_uuid.clone();
+    let sensors_publisher = Arc::clone(&sensors);
+    let actuadores_publisher = Arc::clone(&actuadores);
 
     // Hilo de publicación
     thread::spawn(move || {
         loop {
             //let time_now = utils::time::create_unix_timestamp();
-            for sensor in sensors.iter_mut() {
+            for sensor in sensors.lock().unwrap().iter_mut() {
                 let time_now = utils::time::create_unix_timestamp();
                 let value = sensor.read();
                 if value.is_none() {
@@ -131,8 +146,8 @@ fn main() {
                     "time": time_now,
                     "value": value
                 });
-                let topic = format!("devices/{}/sensors/{}/value", device_uuid, sensor.get_id());
-                if !client.publish(topic.as_str(), payload.to_string().as_str()) {
+                let topic = format!("devices/{}/sensors/{}/value", device_uuid_clone, sensor.get_id());
+                if !client.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
                     println!("Error al publicar el mensaje");
                 }
                 std::thread::sleep(std::time::Duration::from_secs(30));
