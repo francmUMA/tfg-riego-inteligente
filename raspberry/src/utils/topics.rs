@@ -69,7 +69,7 @@ fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mu
 }
 
 fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
-    if !mqtt_client.unsubscribe(format!("devices/{}/sensores/{}/update/device_pin", sensor.get_device(), sensor.get_id()).as_str()){
+    if !mqtt_client.unsubscribe(format!("devices/{}/sensores/{}/update/device_pin", sensor.get_device().clone(), sensor.get_id()).as_str()){
         println!("No se ha podido desuscribir al topic de device_pin del sensor con id {}", sensor.get_id());
     }
 }
