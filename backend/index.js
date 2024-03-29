@@ -13,6 +13,8 @@ import cropRoutes from "./crops/routes/cropRoutes.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
 import { publish_msg } from "./mqtt.js";
+import { Worker } from 'worker_threads'
+import sensorsModel from "./sensors/models/sensorsModel.js";
 
 const app = express();
 
@@ -39,6 +41,28 @@ try {
 } catch (error) {
     console.log("Conexión con la base de datos fallida");
 }
+
+export const mqttWorker = new Worker('./mqttWorker.js')
+
+export const sendCommandToWorker = (command, topic) =>{
+    mqttWorker.postMessage({command: command, topic: topic})
+}
+
+mqttWorker.on('message',async message => {
+    console.log(`Received message (parent): ${message.message} from topic: ${message.topic}`)
+    let sensor_id = message.topic.split('/')[3]
+    try{
+        let sensor = await sensorsModel.findOne({where: {id: sensor_id}})
+        if (sensor != null) {
+            sensor.value = message.message
+        }
+    } catch(error){
+        console.log(error)
+    }
+})
+
+
+
 
 // Arrancar el servidor
 app.listen(app.get("port"), () => {
