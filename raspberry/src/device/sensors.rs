@@ -76,12 +76,11 @@ impl Sensor {
     }
 
     pub fn read(&mut self) -> Option<u8> {
-        println!("Type: {}", self.sensor_type);
-        if self.sensor_type == "DHT" {
+        if self.sensor_type.as_str() == "DHT" {
             self.value = Some(read_humidity(&mut self.device_pin));
-        } else if self.sensor_type == "TMP" {
+        } else if self.sensor_type.as_str() == "TMP" {
             self.value = Some(read_tmp(&mut self.device_pin));
-        } else if self.sensor_type == "CAU" {
+        } else if self.sensor_type.as_str() == "CAU" {
             self.value = Some(read_caudal(&mut self.device_pin));
         }
         
