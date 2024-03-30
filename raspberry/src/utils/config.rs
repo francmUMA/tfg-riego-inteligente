@@ -37,7 +37,7 @@ pub fn create_config_file() -> bool {
         "device_uuid": "Esto es una prueba",
         "device_name": "device",
         "device_pin": 1,
-        "mqtt_broker": "192.168.1.137"
+        "mqtt_broker": 192.168.1.137
     });
 
     let config = serde_json::to_string(&config);

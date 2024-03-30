@@ -6,7 +6,7 @@ use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
 use serde_json::{de, json};
 use tokio::net::unix::pipe::Receiver;
-use utils::{config::create_config_file, topics::manage_msg};
+use utils::{config::{create_config_file, read_config_file}, topics::manage_msg};
 use std::time::Duration;
 
 // Definir módulos
@@ -31,6 +31,13 @@ fn main() {
     // }
 
     create_config_file();
+    let info = read_config_file("device_uuid".to_string());
+    if info.is_none() {
+        println!("Error al leer la información");
+        return;
+    }
+    let info = info.unwrap();
+    println!("Info: {}", info);
 
     // Inicilización de datos básicos
     // let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()); 
