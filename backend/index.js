@@ -48,17 +48,11 @@ export const sendCommandToWorker = (command, topic) =>{
     mqttWorker.postMessage({command: command, topic: topic})
 }
 
-mqttWorker.on('message',async message => {
-    console.log(`Received message (parent): ${message.message} from topic: ${message.topic}`)
+mqttWorker.on('message', message => {
     let sensor_id = message.topic.split('/')[3]
-    try{
-        let sensor = await sensorsModel.findOne({where: {id: sensor_id}})
-        if (sensor != null) {
-            sensor.value = message.message
-        }
-    } catch(error){
-        console.log(error)
-    }
+    let time = JSON.parse(message['time'])
+    let value = JSON.parse(message['value'])
+    console.log("Id: " + sensor_id + " Time: " + time + " Value: " + value)
 })
 
 // Arrancar el servidor
