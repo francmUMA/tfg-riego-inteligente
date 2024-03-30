@@ -51,7 +51,8 @@ export const sendCommandToWorker = (command, topic) =>{
 mqttWorker.on('message', message => {
     try {
         let sensor_id = message.topic.split('/')[3]
-        console.log("Time: " + message.time)
+        let data = JSON.parse(message.message)
+        console.log("Time: " + data.time + " Value: " + data.value)
         // let time = JSON.parse(message['time'])
         // let value = JSON.parse(message['value'])
         // console.log("Id: " + sensor_id + " Time: " + time + " Value: " + value)
