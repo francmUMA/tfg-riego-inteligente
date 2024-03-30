@@ -27,6 +27,12 @@ pub fn read_config_file(attribute: String) -> Option<String> {
 }
 
 pub fn create_config_file() -> bool {
+    let file = fs::File::create("config.json");
+    if file.is_err() {
+        println!("Error al crear el archivo de configuración");
+        return false;
+    }
+
     let config = json!({
         "device_uuid": "Esto es una prueba",
         "device_name": "device",
@@ -36,7 +42,7 @@ pub fn create_config_file() -> bool {
 
     let config = serde_json::to_string(&config);
     if config.is_err() {
-        println!("Error al crear el archivo de configuración");
+        println!("Error al crear la configuración");
         return false;
     }
 
