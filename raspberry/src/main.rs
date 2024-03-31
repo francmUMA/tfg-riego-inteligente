@@ -33,10 +33,10 @@ fn main() {
         mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
     }
 
-    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), device_uuid.clone());
+    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), "to-do".to_string());
     while client.is_none() {
         println!("Error al crear el cliente mqtt");
-        client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), device_uuid.clone());
+        client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), "to-do".to_string());
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
 
