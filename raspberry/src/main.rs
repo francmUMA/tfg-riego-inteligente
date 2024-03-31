@@ -1,4 +1,4 @@
-use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
+use std::{any::Any, borrow::{Borrow, BorrowMut}, thread::sleep};
 use std::sync::{Arc, Mutex};
 
 use crate::{device::{actuadores, info::{get_my_uuid, register_device}, sensors}, utils::{config::update_config_file, mqtt_client, token::get_token}};
@@ -27,9 +27,10 @@ fn main() {
     drop(config);       // Liberar memoria ya que no es necesaria
 
     // Crear cliente mqtt
-    let mqtt_broker_ip: Option<String>;
-    while mqtt_broker_ip = read_config_file("mqtt_broker".to_string()).is_none() {
+    let mut mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
+    while mqtt_broker_ip.is_none() {
         println!("Error al leer la dirección del broker mqtt");
+        mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
     }
 
     let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), device_uuid.clone());
@@ -46,7 +47,7 @@ fn main() {
 
     if device_uuid == "-" {
         println!("No se ha registrado el dispositivo, iniciando registro...");
-        while !register_device(client.lock().unwrap()){
+        while !register_device(client.into_inner().unwrap()){
             println!("Error al registrar el dispositivo");
         }
     }
