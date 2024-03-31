@@ -1,7 +1,7 @@
 use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
 use std::sync::{Arc, Mutex};
 
-use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{mqtt_client, token::get_token}};
+use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{config::update_config_file, mqtt_client, token::get_token}};
 use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
 use serde_json::{de, json};
@@ -31,9 +31,9 @@ fn main() {
     // }
 
     create_config_file();
-    let info = read_config_file("mqtt_brok".to_string());
+    update_config_file("device_uuid".to_string(), "1234567890".to_string());
+    let info = read_config_file("device_uuid".to_string());
     if info.is_none() {
-        println!("Error al leer la información");
         return;
     }
     let info = info.unwrap();
