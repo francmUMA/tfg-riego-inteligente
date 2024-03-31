@@ -40,10 +40,12 @@ fn main() {
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
 
-    let device_uuid: Option<String>;
-    while device_uuid = read_config_file("device_uuid".to_string()).is_none() {
+    let mut device_uuid = read_config_file("device_uuid".to_string());
+    while device_uuid.is_none() {
         println!("Error al leer el UUID del dispositivo");
+        device_uuid = read_config_file("device_uuid".to_string());
     }
+    let device_uuid = device_uuid.unwrap();
 
     if device_uuid == "-" {
         println!("No se ha registrado el dispositivo, iniciando registro...");
