@@ -21,9 +21,13 @@ pub fn read_config_file(attribute: String) -> Option<String> {
     }
 
     let config_json = config_json.unwrap();
-    println!("Config: {}", config_json.to_string());
+    let att_data = config_json[attribute.as_str()].as_str();
+    if att_data.is_none() {
+        println!("No se ha podido obtener el atributo: {}", attribute);
+        return None;
+    }
 
-    Some(config_json.to_string())
+    Some(att_data.unwrap().to_string())
 }
 
 pub fn create_config_file() -> bool {
@@ -34,10 +38,11 @@ pub fn create_config_file() -> bool {
     }
 
     let config = json!({
-        "device_uuid": "Esto es una prueba",
-        "device_name": "device",
-        "device_pin": 1,
-        "mqtt_broker": 192.168.1.137
+        "device_uuid": "-",
+        "device_name": "-",
+        "email": "-",
+        "password": "-",
+        "mqtt_broker": "192.168.1.137"
     });
 
     let config = serde_json::to_string(&config);

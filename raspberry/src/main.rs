@@ -31,7 +31,7 @@ fn main() {
     // }
 
     create_config_file();
-    let info = read_config_file("device_uuid".to_string());
+    let info = read_config_file("mqtt_broker".to_string());
     if info.is_none() {
         println!("Error al leer la información");
         return;
