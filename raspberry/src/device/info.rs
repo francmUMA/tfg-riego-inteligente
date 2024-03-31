@@ -1,3 +1,6 @@
+use crate::utils::{config::update_config_file, mqtt_client::MqttClient};
+use uuid::Uuid;
+
 pub struct Device {
     id: String,
     name: String,
@@ -73,6 +76,18 @@ pub async fn get_device_info(uuid: String) -> Result<Device, String> {
     }
     Err("No se ha podido obtener la información del dispositivo".to_string())
 
+}
+
+pub fn register_device(mqtt_client: MqttClient) -> bool{
+    let uuid = Uuid::new_v4().to_string();
+    if !mqtt_client.publish("devices/new", uuid.as_str()){
+        return false;
+    }
+    if !update_config_file("device_uuid".to_string(),uuid){
+        return false;
+    }
+    println!("Dispositivo registrado con UUID: {}", uuid);
+    true
 }
 
 #[tokio::main]

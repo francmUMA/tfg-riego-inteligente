@@ -1,7 +1,7 @@
 use std::{borrow::{Borrow, BorrowMut}, thread::sleep};
 use std::sync::{Arc, Mutex};
 
-use crate::{device::{actuadores, info::get_my_uuid, sensors}, utils::{config::update_config_file, mqtt_client, token::get_token}};
+use crate::{device::{actuadores, info::{get_my_uuid, register_device}, sensors}, utils::{config::update_config_file, mqtt_client, token::get_token}};
 use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
 use serde_json::{de, json};
@@ -16,28 +16,41 @@ mod utils;
 
 
 fn main() {
-    // let ip = "192.168.1.148";
-    // let port = "3000";
-    // let device_id = 1;
-    // loop {
-    //     let time_now = utils::time::create_unix_timestamp();
-    //     let res = sends::temperature::send_temperature(ip.to_string(), port.to_string(), device_id, time_now);
-    //     if res {
-    //         println!("Información enviada");
-    //     } else {
-    //         println!("Error al enviar la información");
-    //     }
-    //     std::thread::sleep(std::time::Duration::from_secs(60));
-    // }
-
-    create_config_file();
-    update_config_file("device_uuid".to_string(), "1234567890".to_string());
-    let info = read_config_file("device_uuid".to_string());
-    if info.is_none() {
-        return;
+    // Comprobar si hay fichero de configuración
+    let config = read_config_file("config.json".to_string());
+    if config.is_none() {
+        while !create_config_file() {
+            println!("Error al crear el archivo de configuración");
+        }
     }
-    let info = info.unwrap();
-    println!("Info: {}", info);
+
+    drop(config);       // Liberar memoria ya que no es necesaria
+
+    // Crear cliente mqtt
+    let mqtt_broker_ip: Option<String>;
+    while mqtt_broker_ip = read_config_file("mqtt_broker".to_string()).is_none() {
+        println!("Error al leer la dirección del broker mqtt");
+    }
+
+    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), device_uuid.clone());
+    while client.is_none() {
+        println!("Error al crear el cliente mqtt");
+        client = mqtt_client::MqttClient::new(mqtt_broker_ip.unwrap(), device_uuid.clone());
+    }
+    let mut client = Arc::new(Mutex::new(client.unwrap()));
+
+    let device_uuid: Option<String>;
+    while device_uuid = read_config_file("device_uuid".to_string()).is_none() {
+        println!("Error al leer el UUID del dispositivo");
+    }
+
+    if device_uuid == "-" {
+        println!("No se ha registrado el dispositivo, iniciando registro...");
+        while !register_device(client.lock().unwrap()){
+            println!("Error al registrar el dispositivo");
+        }
+    }
+
 
     // Inicilización de datos básicos
     // let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()); 
@@ -52,15 +65,6 @@ fn main() {
     //     return;
     // }
     // let mut device = Arc::new(Mutex::new(device.unwrap()));
-    
-    // // Cliente de mqtt
-    // let ip = "192.168.1.137";
-    // let mut client = mqtt_client::MqttClient::new(ip.to_string(), device_uuid.clone());
-    // if client.is_none() {
-    //     println!("Error al crear el cliente mqtt");
-    //     return;
-    // }
-    // let mut client = Arc::new(Mutex::new(client.unwrap()));
 
     // // Creación de los topics
     // let mut topics: Vec<String> = Vec::new();
