@@ -41,6 +41,7 @@ fn main() {
         client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "to-do".to_string());
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
+    let client_clone = Arc::clone(&client);
 
     let mut device_uuid = read_config_file("device_uuid".to_string());
     while device_uuid.is_none() {
@@ -51,7 +52,7 @@ fn main() {
 
     if device_uuid == "-" {
         println!("No se ha registrado el dispositivo, iniciando registro...");
-        while !register_device(client.clone().lock().unwrap()){
+        while !register_device(client_clone.lock().unwrap()) {
             println!("Error al registrar el dispositivo");
         }
     }
