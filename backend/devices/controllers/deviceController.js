@@ -576,7 +576,7 @@ export const registerDevice = async (uuid) => {
     // El dispositivo tendrá como usuario 00000000A (default) hasta que algún usuario lo reclame
     try {
         if (!validate(uuid)) {
-            console.log("Invalid uuid")
+            console.log("Invalid uuid: ", uuid)
             return false
         }
 
