@@ -1,17 +1,15 @@
-use std::{any::Any, borrow::{Borrow, BorrowMut}, fs, thread::sleep};
+use std::{fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
-use mqtt::{client, topic, Message, QOS_0};
+use mqtt::{client, topic};
 use paho_mqtt as mqtt;
 use serde_json::{de, json};
-use tokio::net::unix::pipe::Receiver;
 use utils::{config::{create_config_file, read_config_file}, topics::manage_msg};
 use std::time::Duration;
 
 // Definir módulos
 mod device;
-mod sends;
 mod utils;
 
 
@@ -67,7 +65,7 @@ fn main() {
     // Crear actuadores, sensores y device
     let actuadores: Arc<Mutex<Vec<actuadores::Actuador>>> = Arc::new(Mutex::new(Vec::new()));
     let sensors: Arc<Mutex<Vec<Sensor>>> = Arc::new(Mutex::new(Vec::new()));
-    let device: Arc<Mutex<Device>> = Arc::new(Mutex::new(device::Device::initialize(device_uuid.clone())));
+    let device: Arc<Mutex<Device>> = Arc::new(Mutex::new(Device::initialize(device_uuid.clone())));
 
     // Suscribirse a los topics
     for topic in topics {
@@ -100,7 +98,6 @@ fn main() {
             );
         }
     });
-
 
     let client_publisher = Arc::clone(&client);
     let device_uuid_clone = device_uuid.clone();
