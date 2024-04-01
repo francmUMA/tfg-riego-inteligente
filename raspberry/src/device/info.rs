@@ -1,7 +1,6 @@
 use std::sync::MutexGuard;
 
 use crate::utils::{config::update_config_file, mqtt_client::MqttClient};
-use uuid::Uuid;
 
 pub struct Device {
     id: String,
@@ -36,53 +35,39 @@ impl Device {
             area,
         }
     }
+
+    pub fn initialize(
+        id: String
+    ) -> Device {
+        Device {
+            id,
+            name: "".to_string(),
+            latitud: 0.0,
+            longitud: 0.0,
+            usuario: "00000000A".to_string(),
+            ip: "".to_string(),
+            available: 0,
+            area: "".to_string(),
+        }
+    }
+
     pub fn get_id(&self) -> String {
         self.id.clone()
     }
 }
 
-pub async fn get_device_info(device_json: Value) -> Option<Device>{
+pub fn get_device(device_json: Value) -> Option<Device>{
     None
 }
 
-pub fn register_device(mqtt_client: MutexGuard<'_,MqttClient>) -> bool{
-    let uuid = Uuid::new_v4().to_string();
+pub fn initialize() -> Option<Device>{
+    None
+}
+
+pub fn register_device(uuid: String, mqtt_client: MutexGuard<'_,MqttClient>) -> bool{
     if !mqtt_client.publish("devices/new", uuid.as_str()){
-        return false;
-    }
-    if !update_config_file("device_uuid".to_string(),uuid.clone()){
         return false;
     }
     println!("Dispositivo registrado con UUID: {}", uuid);
     true
-}
-
-#[tokio::main]
-pub async fn get_my_uuid() -> String {
-    use crate::utils::net;
-    let mut uuid = String::new();
-    let ip = "192.168.1.137";
-    let port = "3000";
-    let address = net::ip_port_concat(ip.to_string(), port.to_string());
-    let url = net::mk_url("http".to_string(), address, "api/devices/uuid".to_string());
-
-    use reqwest::Client;
-    let client = Client::new();
-    let res = client.get(url).send().await;
-    if let Err(_) = res {
-        println!("Error al obtener el UUID");
-        return uuid;
-    } 
-    let body = res.unwrap();
-    if body.status().is_success() {
-        let body_json = body.json().await;
-        if let Err(_) = body_json {
-            println!("Error al obtener el UUID");
-            return uuid;
-        }
-        uuid = body_json.unwrap();
-    } else {
-        println!("Error al obtener el UUID");
-    }
-    uuid
 }

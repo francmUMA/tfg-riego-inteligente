@@ -67,12 +67,14 @@ pub fn create_config_file() -> bool {
         return false;
     }
 
+    use uuid::Uuid;
+    let uuid = Uuid::new_v4();
+
     let config = json!({
-        "device_uuid": "-",
+        "device_uuid": uuid.to_string(),
         "device_name": "-",
-        "email": "-",
-        "password": "-",
-        "mqtt_broker": "192.168.1.137"
+        "nif": "00000000A"
+        "mqtt_broker": "192.168.1.128"
     });
 
     let config = serde_json::to_string(&config);

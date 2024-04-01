@@ -109,48 +109,6 @@ fn read_caudal(pin: &mut Option<InputPin>) -> u8{
     return 3;
 }
 
-#[tokio::main]
-pub async fn get_sensors_device(uuid: String, token: String) -> Result<Vec<Sensor>, String> {
-    use crate::utils::net;
-    let ip = "192.168.1.137";
-    let port = "3000";
-    let address = net::ip_port_concat(ip.to_string(), port.to_string());
-    let url = net::mk_url("http".to_string(), address, "api/sensores/".to_string() + &uuid);
-
-    use reqwest::Client;
-    let client = Client::new();
-    let res = client.get(url).header("Authorization", "Bearer ".to_string() + &token).send().await;
-    if let Err(_) = res {
-        return Err("Error al obtener la información de los sensores".to_string());
-    }
-
-    use serde_json::Value;
-    let data = res.unwrap();
-    if data.status().is_success(){
-        let body_json: Result<Value, _> = data.json().await;
-        if let Err(_) = body_json {
-            return Err("Error al obtener la información de los sensores".to_string());
-        }
-
-        let sensors_json = body_json.unwrap();
-        let mut sensors: Vec<Sensor> = Vec::new();
-        for sensor in sensors_json.as_array().unwrap() {
-            let sensor = Sensor::new(
-                sensor["id"].as_str().unwrap().to_string(),
-                sensor["device"].to_string(),
-                sensor["device_pin"].clone(),
-                sensor["type"].to_string(),
-                sensor["area"].clone(),
-                sensor["Latitud"].clone(),
-                sensor["Longitud"].clone(),
-                sensor["name"].to_string(),
-                sensor["value"].clone(),
-                sensor["available"].as_u64().unwrap() as u8
-            );
-            sensors.push(sensor);
-        }
-        return Ok(sensors);
-    }
-    
-    Err("No se pudo obtener la información de los sensores".to_string())
+pub fn get_sensors_device() -> Option<Vec<Sensor>> {
+    None
 }
