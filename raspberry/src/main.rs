@@ -54,11 +54,11 @@ fn main() {
         mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
     }
     let mqtt_broker_ip = mqtt_broker_ip.unwrap();
-    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "to-do".to_string());
+    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "device_uuid".to_string());
     while client.is_none() {
         println!("Error al crear el cliente mqtt");
         sleep(Duration::from_secs(30));
-        client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "to-do".to_string());
+        client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "device_uuid".to_string());
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
 
@@ -106,6 +106,12 @@ fn main() {
 
     // Hilo de publicación
     thread::spawn(move || {
+        // Publica en /devices/id/start un 1 para que le mande su información
+        let topic = format!("devices/start");
+        while !client_publisher.lock().unwrap().publish(topic.as_str(), device_uuid_clone.clone().as_str()) {
+            println!("Error al publicar el mensaje de inicio");
+            sleep(Duration::from_secs(30));
+        }
         loop {
             //let time_now = utils::time::create_unix_timestamp();
             for sensor in sensors_publisher.lock().unwrap().iter_mut() {

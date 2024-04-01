@@ -2,6 +2,8 @@ use std::fs;
 use serde_json::Value;
 use serde_json::json;
 
+use crate::utils::mqtt_client::MqttClient;
+
 pub fn update_config_file(attribute: String, value: String) -> bool {
     let config_json = fs::read_to_string("config.json");
     if config_json.is_err() {
@@ -91,5 +93,11 @@ pub fn create_config_file() -> bool {
         return false;
     }
 
-    true
+    // Registrar el device en el server
+    let aux_client = MqttClient::new("192.168.1.128".to_string(), uuid.to_string().clone());
+    if aux_client.is_none() {
+        println!("Error al crear el cliente mqtt");
+        return false;
+    }
+    return aux_client.unwrap().publish("devices/new", uuid.to_string().as_str());
 }

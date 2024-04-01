@@ -167,7 +167,10 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
 
 //------------------------------------- DEVICE -------------------------------------------------------------------------------------------
 fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
-    println!("Topic de dispositivos");
+    if topic.contains(info) {
+        let device_json: Value = serde_json::from_str(payload).unwrap();
+        println!("Información del dispositivo: {}", device_json.to_string());
+    }
 }
 
 //------------------------------------- MANAGE MSG ---------------------------------------------------------------------------------------
