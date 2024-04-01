@@ -571,3 +571,27 @@ export const getDeviceByUuid = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+export const registerDevice = async (uuid) => {
+    // El dispositivo tendrá como usuario 00000000A (default) hasta que algún usuario lo reclame
+    try {
+        if (!validate(uuid)) {
+            console.log("Invalid uuid")
+            return false
+        }
+
+        let device = {
+            id: uuid,
+            name: "NR-"+uuid,
+            Usuario: "00000000A",
+            ip: "0.0.0.0",
+        }
+
+        await deviceModel.create(device)
+        return true
+
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}

@@ -48,19 +48,6 @@ export const sendCommandToWorker = (command, topic) =>{
     mqttWorker.postMessage({command: command, topic: topic})
 }
 
-mqttWorker.on('message', message => {
-    try {
-        let sensor_id = message.topic.split('/')[3]
-        let data = JSON.parse(message.message)
-        console.log("Time: " + data.time + " Value: " + data.value)
-        // let time = JSON.parse(message['time'])
-        // let value = JSON.parse(message['value'])
-        // console.log("Id: " + sensor_id + " Time: " + time + " Value: " + value)
-    } catch (error) {
-        console.log(error)
-    }
-})
-
 // Arrancar el servidor
 app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);

@@ -34,7 +34,8 @@ if (!isMainThread){
 
     client.on('message', (topic, message) => {
         console.log(`Received message: ${message.toString()} from topic: ${topic}`)
-        parentPort.postMessage({topic: topic, message: message.toString()})
+        let data = JSON.parse(message.toString())
+        console.log(data)
     })
 
     parentPort.on('message', (data) => {
