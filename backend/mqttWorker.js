@@ -11,6 +11,11 @@ if (!isMainThread){
     client.on('connect',async () => {
         console.log("Conectando")
         try {
+            client.subscribe('devices/new', (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: devices/new")
+                }
+            })
             let sensors = await sensorsModel.findAll()
             sensors.forEach(sensor => {
                 let topic = `devices/${sensor.device}/sensors/${sensor.id}/value`
