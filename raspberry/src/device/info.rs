@@ -85,7 +85,7 @@ pub fn register_device(mqtt_client: MutexGuard<'_,MqttClient>) -> bool{
     if !mqtt_client.publish("devices/new", uuid.as_str()){
         return false;
     }
-    if !update_config_file("device_uuid".to_string(),uuid){
+    if !update_config_file("device_uuid".to_string(),uuid.clone()){
         return false;
     }
     println!("Dispositivo registrado con UUID: {}", uuid);
