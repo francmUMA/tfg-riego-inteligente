@@ -80,7 +80,7 @@ pub async fn get_device_info(uuid: String) -> Result<Device, String> {
 
 }
 
-pub fn register_device(mqtt_client: MutexGuard<_,MqttClient>) -> bool{
+pub fn register_device(mqtt_client: MutexGuard<'_,MqttClient>) -> bool{
     let uuid = Uuid::new_v4().to_string();
     if !mqtt_client.publish("devices/new", uuid.as_str()){
         return false;

@@ -42,7 +42,6 @@ fn main() {
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
     let client_clone = Arc::clone(&client);
-
     let mut device_uuid = read_config_file("device_uuid".to_string());
     while device_uuid.is_none() {
         println!("Error al leer el UUID del dispositivo");
