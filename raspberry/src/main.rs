@@ -49,7 +49,7 @@ fn main() {
         sleep(Duration::from_secs(30));
         device_uuid = read_config_file("device_uuid".to_string());
     }
-    let device_uuid = device_uuid.unwrap();
+    let mut device_uuid = device_uuid.unwrap();
 
     if device_uuid == "-" {
         println!("No se ha registrado el dispositivo, iniciando registro...");
@@ -57,22 +57,10 @@ fn main() {
             println!("Error al registrar el dispositivo");
             sleep(Duration::from_secs(30));
         }
+        device_uuid = read_config_file("device_uuid".to_string()).unwrap();
     }
 
-
-    // Inicilización de datos básicos
-    // let token = get_token("test@gmail.com".to_string(), "test_pass".to_string()); 
-    // if token.is_none() {
-    //     println!("Error al obtener el token");
-    //     return;
-    // }
-    // let device_uuid = get_my_uuid();
-    // let mut device = device::info::get_device_info(device_uuid.clone());
-    // if let Err(_) = device {
-    //     println!("Error al obtener la información del dispositivo");
-    //     return;
-    // }
-    // let mut device = Arc::new(Mutex::new(device.unwrap()));
+    
 
     // // Creación de los topics
     // let mut topics: Vec<String> = Vec::new();
