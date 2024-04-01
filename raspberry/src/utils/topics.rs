@@ -169,7 +169,14 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
 fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
     if topic.contains("info") {
         let device_json: Value = serde_json::from_str(payload).unwrap();
-        println!("Información del dispositivo: {}", device_json.to_string());
+        device.set_name(device_json["name"].as_str().unwrap().to_string());
+        device.set_latitud(device_json["Latitud"].as_f64());
+        device.set_longitud(device_json["Longitud"].as_f64());
+        device.set_area(device_json["area"].as_str().unwrap());
+        device.set_available(1);
+        device.set_usuario(device_json["usuario"].as_str().unwrap().to_string());
+        device.set_ip(device_json["ip"].as_str().unwrap().to_string());
+        println!("Información del dispositivo actualizada -> {}", device.get_name());
     }
 }
 

@@ -37,6 +37,49 @@ impl Device {
         }
     }
 
+    pub fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+
+    pub fn set_latitud(&mut self, latitud: Option<f64>) {
+        if latitud.is_none() {
+            return;
+        }
+        self.latitud = latitud;
+    }
+
+    pub fn set_longitud(&mut self, longitud: Option<f64>) {
+        if longitud.is_none() {
+            return;
+        }
+        self.longitud = longitud;
+    }
+
+    pub fn set_usuario(&mut self, usuario: String) {
+        self.usuario = usuario;
+    }
+
+    pub fn set_ip(&mut self, ip: String) {
+        self.ip = ip;
+    }
+
+    pub fn set_available(&mut self, available: u8) {
+        self.available = available;
+    }
+
+    pub fn set_area(&mut self, area: Option<String>) {
+        if area.is_none() {
+            return;
+        }
+        self.area = area;
+    }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+
+
     pub fn initialize(
         id: String
     ) -> Device {
@@ -58,10 +101,6 @@ impl Device {
 }
 
 pub fn get_device(device_json: Value) -> Option<Device>{
-    None
-}
-
-pub fn initialize() -> Option<Device>{
     None
 }
 
