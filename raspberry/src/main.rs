@@ -1,7 +1,7 @@
 use std::{any::Any, borrow::{Borrow, BorrowMut}, fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
-use crate::{device::{actuadores, info::{get_my_uuid, register_device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client, token::get_token}};
+use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic, Message, QOS_0};
 use paho_mqtt as mqtt;
 use serde_json::{de, json};
@@ -67,7 +67,7 @@ fn main() {
     // Crear actuadores, sensores y device
     let actuadores: Arc<Mutex<Vec<actuadores::Actuador>>> = Arc::new(Mutex::new(Vec::new()));
     let sensors: Arc<Mutex<Vec<Sensor>>> = Arc::new(Mutex::new(Vec::new()));
-    let device: Arc<Mutex<device::Device>> = Arc::new(Mutex::new(device::Device::initialize(device_uuid.clone())));
+    let device: Arc<Mutex<Device>> = Arc::new(Mutex::new(device::Device::initialize(device_uuid.clone())));
 
     // Suscribirse a los topics
     for topic in topics {

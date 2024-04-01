@@ -73,7 +73,7 @@ pub fn create_config_file() -> bool {
     let config = json!({
         "device_uuid": uuid.to_string(),
         "device_name": "-",
-        "nif": "00000000A"
+        "nif": "00000000A",
         "mqtt_broker": "192.168.1.128"
     });
 
