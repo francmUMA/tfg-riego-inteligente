@@ -1,4 +1,4 @@
-use std::{any::Any, borrow::{Borrow, BorrowMut}, thread::sleep};
+use std::{any::Any, borrow::{Borrow, BorrowMut}, fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
 use crate::{device::{actuadores, info::{get_my_uuid, register_device}, sensors}, utils::{config::update_config_file, mqtt_client, token::get_token}};
@@ -17,13 +17,13 @@ mod utils;
 
 fn main() {
     // Comprobar si hay fichero de configuración
-    let config = read_config_file("config.json".to_string());
-    if config.is_none() {
+    let config = fs::metadata("config.json");
+    if config.is_err() {
         while !create_config_file() {
             println!("Error al crear el archivo de configuración");
+            sleep(Duration::from_secs(30));
         }
     }
-
     drop(config);       // Liberar memoria ya que no es necesaria
 
     // Crear cliente mqtt
