@@ -1,6 +1,6 @@
 use std::borrow::{Borrow, BorrowMut};
 
-use crate::{device::actuadores::{self, Actuador}, info::Device, sensors::{self, Sensor}};
+use crate::{device::{actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}};
 use mqtt::{client, QOS_0};
 use serde_json::{to_string, Value};
 use paho_mqtt as mqtt;
