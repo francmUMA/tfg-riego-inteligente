@@ -33,7 +33,6 @@ fn main() {
         sleep(Duration::from_secs(30));
         mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
     }
-
     let mqtt_broker_ip = mqtt_broker_ip.unwrap();
 
     let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "to-do".to_string());
