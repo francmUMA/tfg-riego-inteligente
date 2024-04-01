@@ -588,6 +588,7 @@ export const registerDevice = async (uuid) => {
         }
 
         await deviceModel.create(device)
+        console.log("Device " + uuid + " registered")
         return true
 
     } catch (error) {
