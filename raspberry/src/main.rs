@@ -30,6 +30,7 @@ fn main() {
     let mut mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
     while mqtt_broker_ip.is_none() {
         println!("Error al leer la dirección del broker mqtt");
+        sleep(Duration::from_secs(30));
         mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
     }
 
@@ -38,6 +39,7 @@ fn main() {
     let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "to-do".to_string());
     while client.is_none() {
         println!("Error al crear el cliente mqtt");
+        sleep(Duration::from_secs(30));
         client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "to-do".to_string());
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
@@ -45,6 +47,7 @@ fn main() {
     let mut device_uuid = read_config_file("device_uuid".to_string());
     while device_uuid.is_none() {
         println!("Error al leer el UUID del dispositivo");
+        sleep(Duration::from_secs(30));
         device_uuid = read_config_file("device_uuid".to_string());
     }
     let device_uuid = device_uuid.unwrap();
@@ -53,6 +56,7 @@ fn main() {
         println!("No se ha registrado el dispositivo, iniciando registro...");
         while !register_device(client_clone.lock().unwrap()) {
             println!("Error al registrar el dispositivo");
+            sleep(Duration::from_secs(30));
         }
     }
 
