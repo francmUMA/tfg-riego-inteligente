@@ -106,6 +106,7 @@ fn main() {
 
     // Hilo de publicación
     thread::spawn(move || {
+        sleep(Duration::from_secs(20));
         // Publica en /devices/id/start un 1 para que le mande su información
         let topic = format!("devices/start");
         while !client_publisher.lock().unwrap().publish(topic.as_str(), device_uuid_clone.clone().as_str()) {
