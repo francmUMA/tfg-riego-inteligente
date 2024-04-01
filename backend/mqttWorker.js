@@ -45,7 +45,7 @@ if (!isMainThread){
         if (topic === 'devices/new'){
             registerDevice(message.toString())
         } else if (topic.includes('start')){
-            let device_data = await deviceModel.findOne({id: message.toString()})
+            let device_data = await deviceModel.findOne({where: {id: message.toString()}})
             if (device_data == null) {
                 console.log("No se ha encontrado el dispositivo")
                 return
@@ -55,7 +55,7 @@ if (!isMainThread){
                     console.log("No se ha podido enviar la información del dispositivo")
                 }
             })
-            let sensors = await sensorsModel.findAll({device: device_data.id})
+            let sensors = await sensorsModel.findAll({where: {device: device_data.id}})
             if (sensors == null) {
                 console.log("No se han encontrado sensores")
             }
@@ -68,7 +68,7 @@ if (!isMainThread){
                 })
             }
 
-            let actuadores = await actuadoresModel.findAll({device: device_data.id})
+            let actuadores = await actuadoresModel.findAll({where: {device: device_data.id}})
             if (actuadores == null) {
                 console.log("No se han encontrado actuadores")
             }
