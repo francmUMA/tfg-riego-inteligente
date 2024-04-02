@@ -94,6 +94,20 @@ export default function Page() {
     const [name, setName] = useState("")
     const [validName, setValidName] = useState(false)
     const [emptyName, setEmptyName] = useState(true)
+    const [emptyId, setEmptyId] = useState(true)
+    const [id, setId] = useState("")
+    const [validId, setValidId] = useState(false)
+
+    const handleId  = (e: { target: { value: string } }) => {
+        if (e.target.value.length < 0){
+            setEmptyId(true)
+            setValidId(false)
+            return
+        }
+        setValidId(true)
+        setEmptyId(false)
+        setId(e.target.value)
+    }
 
     const handleIP = (e: { target: { value: string } }) => {
         if (e.target.value === '') {
@@ -129,6 +143,19 @@ export default function Page() {
                 <div className={`p-5 w-full h-full col-span-2 flex justify-center ${
                     IsOpenAddDeviceDialog ? "flex flex-col gap-5 justify-center items-center" : "hidden"
                     }`}>
+                    <div className="w-full h-full flex flex-col">
+                        <label className="font-medium">Identificador</label>
+                        <input name="name" type="text" onChange={handleId} onBlur={handleId} placeholder="Identificador" required
+                                    className={`transition easy-in-out duration-200
+                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                    shadow-sm rounded-lg ${
+                                        emptyId
+                                        ? "border-[#d6d3d1]"
+                                        : validId
+                                            ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                            : "border-red-500 text-red-500 bg-gray-500/5"
+                        }`}/>
+                    </div>
                     <div className="w-full h-full flex flex-col">
                         <label className="font-medium">Nombre</label>
                         <input name="name" type="text" onChange={handleName} onBlur={handleName} placeholder="Nombre" required
@@ -180,9 +207,10 @@ export default function Page() {
     const createDeviceButton = async () => {
         setEmptyName(true)
         setEmptyIp(true)
-        if (validName && validIp) {
+        setEmptyId(true)
+        if (validName && validIp && validId) {
             const token = getCookie("token")
-            let addDevice = await createDevice(name, ip, token as string)
+            let addDevice = await createDevice(id, name, ip, token as string)
             if (addDevice) {
                 alert("Dispositivo añadido correctamente")
                 fetchDevices(token as string)

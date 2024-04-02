@@ -1,9 +1,6 @@
 {
   "/login/page": "app/login/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/crops/page": "app/dashboard/crops/page.js",
   "/dashboard/devices/page": "app/dashboard/devices/page.js",
-  "/dashboard/map/page": "app/dashboard/map/page.js",
-  "/dashboard/crops/elem/page": "app/dashboard/crops/elem/page.js",
   "/dashboard/devices/elem/page": "app/dashboard/devices/elem/page.js"
 }

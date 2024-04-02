@@ -668,6 +668,9 @@ video {
 .h-7 {
   height: 1.75rem;
 }
+.h-72 {
+  height: 18rem;
+}
 .h-8 {
   height: 2rem;
 }
@@ -688,9 +691,6 @@ video {
 }
 .h-screen {
   height: 100vh;
-}
-.h-72 {
-  height: 18rem;
 }
 .min-h-12 {
   min-height: 3rem;
