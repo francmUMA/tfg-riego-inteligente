@@ -44,8 +44,8 @@ try {
 
 const mqttWorker = new Worker('./mqttWorker.js')
 
-export const sendCommandToWorker = (command, topic) =>{
-    mqttWorker.postMessage({command: command, topic: topic})
+export const sendCommandToWorker = (command, topic, payload) =>{
+    mqttWorker.postMessage({command: command, topic: topic, payload: payload})
 }
 
 // Arrancar el servidor

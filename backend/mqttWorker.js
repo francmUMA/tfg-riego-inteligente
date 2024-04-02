@@ -100,6 +100,12 @@ if (!isMainThread){
                     console.log("No se ha podido desuscribir al topic: " + data.topic)
                 }
             })
+        } else if (data.command === 'register'){
+            client.publish(data.topic, data.payload, (err) => {
+                if (err) {
+                    console.log("No se ha podido registrar el dispositivo")
+                }
+            })
         }
     })
 }

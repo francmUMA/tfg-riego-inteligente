@@ -78,6 +78,10 @@ impl Device {
         self.name.clone()
     }
 
+    pub fn get_user(&self) -> String {
+        self.usuario.clone()
+    }
+
 
 
     pub fn initialize(

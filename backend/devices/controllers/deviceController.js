@@ -3,6 +3,7 @@ import areaModel from "../../areas/models/areasModel.js";
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { v4, validate } from 'uuid';
+import { sendCommandToWorker } from "../../index.js";
 /*
     @description: Obtiene todos los dispositivos de un usuario
 */
@@ -26,8 +27,9 @@ export const getDevices = async (req, res) => {
 /*
     @description: Añade un dispositivo a un usuario
     @body: {
-        name: string,     // Nombre del dispositivo
-        ip: string      // Direccion ip del dispositivo
+        id: string,         // Identificador del dispositivo
+        name: string,       // Nombre del dispositivo
+        ip: string          // Direccion ip del dispositivo
     }
 */
 export const addDevice = async (req, res) => {
@@ -70,17 +72,33 @@ export const addDevice = async (req, res) => {
             return
         }
     }
-    let uuid = v4()
+
+    if (req.body.id === undefined) {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid uuid")
+        return
+    }
+
     try {
-        let device = {
-            id: uuid,
-            name: req.body.name,
-            Usuario: nif,
-            ip: req.body.ip,
-            available: 0
+        let device = await deviceModel.findOne({ where: { id: req.body.id } })
+        if (device == null) {
+            res.status(400).send("Device doesnt exists")
+            return
         }
-        await deviceModel.create(device)
-        res.status(200).send("Device added") 
+        if (device.Usuario != "00000000A") {
+            res.status(400).send("Device already claimed")
+            return
+        }
+        device.Usuario = nif
+        device.name = req.body.name
+        device.ip = req.body.ip
+        device.save()
+        sendCommandToWorker('register', 'devices/'+device.id+'/register')
+        res.status(200).send("Device registered")
     } catch (error) {
         res.status(500).send(error.message)
     }
@@ -603,3 +621,4 @@ export const registerDevice = async (uuid) => {
         return false
     }
 }
+
