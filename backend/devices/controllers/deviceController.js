@@ -106,18 +106,8 @@ export const addDevice = async (req, res) => {
 
 export const checkDevices = async () => {
     console.log("Checking devices...")
-    try {
-        let devices = await deviceModel.findAll({})
-        for (let i = 0; i < devices.length; i++) {
-            if (devices[i].Usuario != "00000000A") {
-                publish_msg("devices/" + devices[i].id + "/healthcheck", "1")
-                devices[i].available = 0
-                devices[i].save()
-            }
-        }
-    } catch (error) {
-        return false
-    }
+    publish_msg("devices/healthcheck", "1")
+    return true
 }
 
 /*

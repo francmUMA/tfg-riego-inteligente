@@ -44,7 +44,7 @@ fn main() {
     topics.push(format!("devices/{}/info", device_uuid));
     topics.push(format!("devices/{}/register", device_uuid));
     topics.push(format!("devices/{}/unregister", device_uuid));
-    topics.push(format!("devices/{}/healthcheck", device_uuid));
+    topics.push(format!("devices/healthcheck"));
     topics.push(format!("devices/{}/actuadores/new", device_uuid));
     topics.push(format!("devices/{}/sensors/new", device_uuid));
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));
