@@ -164,7 +164,9 @@ export const deleteDevice = async (req, res) => {
             res.status(404).send("Device not found")
             return
         }
-        device.destroy()
+        device.Usuario = "00000000A"
+        device.save()
+        publish_msg("devices/" + device.id + "/unregister", nif)
         res.status(200).send("Device deleted")
     } catch (error) {
         res.status(500).send(error.message)

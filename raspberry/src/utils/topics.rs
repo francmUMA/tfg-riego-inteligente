@@ -185,6 +185,10 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
             println!("El dispositivo ya está dado de alta");
         }
     } else if topic.contains("unregister"){
+        if payload != device.get_user() {
+            println!("El usuario no coincide");
+            return
+        }
         device.set_usuario("00000000A".to_string());
         println!("Dispositivo dado de baja");
     }
