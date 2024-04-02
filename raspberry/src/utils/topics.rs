@@ -192,7 +192,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
         device.set_usuario("00000000A".to_string());
         println!("Dispositivo dado de baja");
     } else if topic.contains("/healthcheck"){
-        mqtt_client.publish(format!("devices/{}/available", device.get_uuid()).as_str(), "1");
+        mqtt_client.publish(format!("devices/{}/available", device.get_id()).as_str(), "1");
     }
 }
 
