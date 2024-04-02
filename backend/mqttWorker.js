@@ -61,7 +61,7 @@ if (!isMainThread){
             }
 
             for (let sensor of sensors){
-                client.publish(`devices/${device_data.id}/sensors/info`, JSON.stringify(sensor), (err) => {
+                client.publish(`devices/${device_data.id}/sensors/new`, JSON.stringify(sensor), (err) => {
                     if (err) {
                         console.log("No se ha podido enviar la información del sensor: " + sensor.id)
                     }
@@ -74,7 +74,7 @@ if (!isMainThread){
             }
 
             for (let actuador of actuadores){
-                client.publish(`devices/${device_data.id}/actuadores/info`, JSON.stringify(actuador), (err) => {
+                client.publish(`devices/${device_data.id}/actuadores/new`, JSON.stringify(actuador), (err) => {
                     if (err) {
                         console.log("No se ha podido enviar la información del actuador: " + actuador.id)
                     }

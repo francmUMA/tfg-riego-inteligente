@@ -580,14 +580,21 @@ export const registerDevice = async (uuid) => {
             return false
         }
 
-        let device = {
+        // Comprobar que no exista ya
+        let device = await deviceModel.findOne({ where: { id: uuid } })
+        if (device != null) {
+            console.log("Device " + uuid + " already registered")
+            return false
+        }
+
+        let device_new = {
             id: uuid,
             name: "NR-"+uuid,
             Usuario: "00000000A",
             ip: "0.0.0.0",
         }
 
-        await deviceModel.create(device)
+        await deviceModel.create(device_new)
         console.log("Device " + uuid + " registered")
         return true
 
