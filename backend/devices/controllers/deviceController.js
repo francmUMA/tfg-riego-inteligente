@@ -109,11 +109,11 @@ export const checkDevices = async () => {
     try {
         let devices = await deviceModel.findAll({})
         for (let i = 0; i < devices.length; i++) {
-            console.log("Checking device " + devices[i].ip)
-            ping.sys.probe(devices[i].ip, function(isAlive) {
-                isAlive ? devices[i].available = 1 : devices[i].available = 0
+            if (devices[i].Usuario != "00000000A") {
+                publish_msg("devices/" + devices[i].id + "/healthcheck", "1")
+                devices[i].available = 0
                 devices[i].save()
-            })
+            }
         }
     } catch (error) {
         return false

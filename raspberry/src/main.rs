@@ -37,13 +37,14 @@ fn main() {
     let mut topics: Vec<String> = Vec::new();
 
     // Devices topics
-    topics.push(format!("devices/{}/update/lat", device_uuid));
-    topics.push(format!("devices/{}/update/lng", device_uuid));
-    topics.push(format!("devices/{}/update/area", device_uuid));
+    // topics.push(format!("devices/{}/update/lat", device_uuid));
+    // topics.push(format!("devices/{}/update/lng", device_uuid));
+    // topics.push(format!("devices/{}/update/area", device_uuid));
     topics.push(format!("devices/{}/update/name", device_uuid));
     topics.push(format!("devices/{}/info", device_uuid));
     topics.push(format!("devices/{}/register", device_uuid));
     topics.push(format!("devices/{}/unregister", device_uuid));
+    topics.push(format!("devices/{}/healthcheck", device_uuid));
     topics.push(format!("devices/{}/actuadores/new", device_uuid));
     topics.push(format!("devices/{}/sensors/new", device_uuid));
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));

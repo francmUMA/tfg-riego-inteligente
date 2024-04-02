@@ -24,6 +24,15 @@ if (!isMainThread){
                     console.log("No se ha podido suscribir al topic: devices/start")
                 }
             })
+            let devices = await deviceModel.findAll()
+            for (let device of devices){
+                client.subscribe(`devices/${device.id}/available`, (err) => {
+                    if (err) {
+                        console.log("No se ha podido suscribir al topic: devices/" + device.id + "/start")
+                    }
+                })
+            }
+
             let sensors = await sensorsModel.findAll()
             sensors.forEach(sensor => {
                 let topic = `devices/${sensor.device}/sensors/${sensor.id}/value`
@@ -55,6 +64,12 @@ if (!isMainThread){
                     console.log("No se ha podido enviar la información del dispositivo")
                 }
             })
+            client.subscribe(`devices/${device_data.id}/available`, (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: devices/" + device_data.id + "/available")
+                }
+            })
+
             let sensors = await sensorsModel.findAll({where: {device: device_data.id}})
             if (sensors == null) {
                 console.log("No se han encontrado sensores")
@@ -64,6 +79,11 @@ if (!isMainThread){
                 client.publish(`devices/${device_data.id}/sensors/new`, JSON.stringify(sensor), (err) => {
                     if (err) {
                         console.log("No se ha podido enviar la información del sensor: " + sensor.id)
+                    }
+                })
+                client.subscribe(`devices/${device_data.id}/sensors/${sensor.id}/value`, (err) => {
+                    if (err) {
+                        console.log("No se ha podido suscribir al topic: devices/" + device_data.id + "/sensors/" + sensor.id + "/value")
                     }
                 })
             }
@@ -80,6 +100,16 @@ if (!isMainThread){
                     }
                 })
             }
+        } else if (topic.includes('available')){
+            let device_id = topic.split('/')[1]
+            let device_data = await deviceModel.findOne({where: {id: device_id}})
+            if (device_data == null) {
+                console.log("No se ha encontrado el dispositivo")
+                return
+            }
+            device_data.available = 1
+            device_data.save()
+            console.log("Dispositivo "+ device_id + " activo")
         }
         else {
             let data = JSON.parse(message.toString())
