@@ -172,7 +172,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
         device.set_name(device_json["name"].as_str().unwrap().to_string());
         device.set_latitud(device_json["Latitud"].as_f64());
         device.set_longitud(device_json["Longitud"].as_f64());
-        device.set_area(device_json["area"].as_str());
+        device.set_area(device_json["area"]);
         device.set_available(1);
         device.set_usuario(device_json["usuario"].as_str().unwrap().to_string());
         device.set_ip(device_json["ip"].as_str().unwrap().to_string());
