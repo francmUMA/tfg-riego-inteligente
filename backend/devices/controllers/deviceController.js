@@ -33,75 +33,75 @@ export const getDevices = async (req, res) => {
     }
 */
 export const addDevice = async (req, res) => {
-    // Validar token
-    let nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
-    if (nif === undefined) {
-        res.status(401).send("Invalid token")
-        return
-    }
+    // // Validar token
+    // let nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    // if (nif === undefined) {
+    //     res.status(401).send("Invalid token")
+    //     return
+    // }
 
-    // ------------------- POSIBLES ERRORES --------------------
-    if (req.body.name === undefined || req.body.name == "" || req.body.name.length > 50 || req.body.name == null) {
-        res.status(400).send("Missing name")
-        return
-    }
+    // // ------------------- POSIBLES ERRORES --------------------
+    // if (req.body.name === undefined || req.body.name == "" || req.body.name.length > 50 || req.body.name == null) {
+    //     res.status(400).send("Missing name")
+    //     return
+    // }
 
-    if (req.body.ip === undefined) {
-        res.status(400).send("Missing ip")
-        return
-    }
+    // if (req.body.ip === undefined) {
+    //     res.status(400).send("Missing ip")
+    //     return
+    // }
 
-    // Chequeo formato ip
-    // Menor o igual a 15 caracteres
-    if (req.body.ip.length > 15) {
-        res.status(400).send("Invalid ip")
-        return
-    }
+    // // Chequeo formato ip
+    // // Menor o igual a 15 caracteres
+    // if (req.body.ip.length > 15) {
+    //     res.status(400).send("Invalid ip")
+    //     return
+    // }
 
-    // Tres numeros y un punto
-    let numbers_ip = req.body.ip.split(".")
-    if (numbers_ip.length != 4) {
-        res.status(400).send("Invalid ip")
-        return
-    }
+    // // Tres numeros y un punto
+    // let numbers_ip = req.body.ip.split(".")
+    // if (numbers_ip.length != 4) {
+    //     res.status(400).send("Invalid ip")
+    //     return
+    // }
 
-    // Cada numero entre 0 y 255
-    for (let i = 0; i < numbers_ip.length; i++) {
-        if (numbers_ip[i] < 0 || numbers_ip[i] > 255) {
-            res.status(400).send("Invalid ip")
-            return
-        }
-    }
+    // // Cada numero entre 0 y 255
+    // for (let i = 0; i < numbers_ip.length; i++) {
+    //     if (numbers_ip[i] < 0 || numbers_ip[i] > 255) {
+    //         res.status(400).send("Invalid ip")
+    //         return
+    //     }
+    // }
 
-    if (req.body.id === undefined) {
-        res.status(400).send("Missing id")
-        return
-    }
+    // if (req.body.id === undefined) {
+    //     res.status(400).send("Missing id")
+    //     return
+    // }
 
-    if (!validate(req.body.id)) {
-        res.status(400).send("Invalid uuid")
-        return
-    }
+    // if (!validate(req.body.id)) {
+    //     res.status(400).send("Invalid uuid")
+    //     return
+    // }
 
-    try {
-        let device = await deviceModel.findOne({ where: { id: req.body.id } })
-        if (device == null) {
-            res.status(400).send("Device doesnt exists")
-            return
-        }
-        if (device.Usuario != "00000000A") {
-            res.status(400).send("Device already claimed")
-            return
-        }
-        device.Usuario = nif
-        device.name = req.body.name
-        device.ip = req.body.ip
-        device.save()
-        sendCommandToWorker('register', 'devices/'+device.id+'/register')
-        res.status(200).send("Device registered")
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
+    // try {
+    //     let device = await deviceModel.findOne({ where: { id: req.body.id } })
+    //     if (device == null) {
+    //         res.status(400).send("Device doesnt exists")
+    //         return
+    //     }
+    //     if (device.Usuario != "00000000A") {
+    //         res.status(400).send("Device already claimed")
+    //         return
+    //     }
+    //     device.Usuario = nif
+    //     device.name = req.body.name
+    //     device.ip = req.body.ip
+    //     device.save()
+    //     sendCommandToWorker('register', 'devices/'+device.id+'/register')
+    //     res.status(200).send("Device registered")
+    // } catch (error) {
+    //     res.status(500).send(error.message)
+    // }
 }
 
 export const checkDevices = async () => {
