@@ -166,7 +166,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
 }
 
 //------------------------------------- DEVICE -------------------------------------------------------------------------------------------
-fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
+fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_client: &mut MqttClient){
     if topic.contains("info") {
         let device_json: Value = serde_json::from_str(payload).unwrap();
         device.set_name(device_json["name"].as_str().unwrap().to_string());
@@ -197,6 +197,6 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     } else if topic.contains("sensors") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else {
-        manage_topic_device(topic, payload, device);
+        manage_topic_device(topic, payload, device, mqtt_client);
     }
 }

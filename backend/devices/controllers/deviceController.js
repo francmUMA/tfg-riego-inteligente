@@ -97,7 +97,7 @@ export const addDevice = async (req, res) => {
         device.name = req.body.name
         device.ip = req.body.ip
         device.save()
-        publish_msg("devices/" + device.id + "/register", device.id.toString())
+        publish_msg("devices/" + device.id + "/register", nif)
         res.status(200).send("Device registered")
     } catch (error) {
         res.status(500).send(error.message)
