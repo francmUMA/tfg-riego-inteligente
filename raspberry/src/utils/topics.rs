@@ -179,7 +179,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
         println!("Información del dispositivo obtenida -> {}", device.get_name());
     } else if topic.contains("register"){
         if device.get_user() == "00000000A" {
-            device.set_user(payload.to_string());
+            device.set_usuario(payload.to_string());
             println!("Dispositivo dado de alta a usuario {}", payload);
         } else {
             println!("El dispositivo ya está dado de alta");
