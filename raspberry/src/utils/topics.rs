@@ -202,7 +202,10 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
         manage_topic_actuadores(topic, payload, actuadores, mqtt_client);
     } else if topic.contains("sensors") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
-    } else {
+    } else if topic.contains("server/available") {
+        mqtt_client.publish("devices/start", device.get_id().as_str());
+    } 
+    else {
         manage_topic_device(topic, payload, device, mqtt_client);
     }
 }

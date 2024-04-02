@@ -44,6 +44,11 @@ if (!isMainThread){
                 console.log(`Suscrito al topic: ${topic}`)
             })
             console.log("Conexión con el broker MQTT exitosa")
+            client.publish('server/available', '1', (err) => {
+                if (err) {
+                    console.log("No se ha podido enviar el mensaje de servidor listo")
+                }
+            })
         } catch (error) {
             console.log(error)
         }
