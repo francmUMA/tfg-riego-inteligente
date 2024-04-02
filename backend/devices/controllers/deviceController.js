@@ -3,7 +3,7 @@ import areaModel from "../../areas/models/areasModel.js";
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { v4, validate } from 'uuid';
-import { sendCommandToWorker } from "../../index.js";
+// import { sendCommandToWorker } from "../../index.js";
 /*
     @description: Obtiene todos los dispositivos de un usuario
 */
