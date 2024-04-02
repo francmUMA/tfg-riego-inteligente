@@ -45,14 +45,14 @@ impl Device {
         if latitud.is_none() {
             return;
         }
-        self.latitud = latitud;
+        self.latitud = latitud.unwrap();
     }
 
     pub fn set_longitud(&mut self, longitud: Option<f64>) {
         if longitud.is_none() {
             return;
         }
-        self.longitud = longitud;
+        self.longitud = longitud.unwrap();
     }
 
     pub fn set_usuario(&mut self, usuario: String) {
@@ -71,7 +71,7 @@ impl Device {
         if area.is_none() {
             return;
         }
-        self.area = area;
+        self.area = area.unwrap();
     }
 
     pub fn get_name(&self) -> String {
