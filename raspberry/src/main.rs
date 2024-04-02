@@ -43,8 +43,10 @@ fn main() {
     topics.push(format!("devices/{}/update/name", device_uuid));
     topics.push(format!("devices/{}/info", device_uuid));
     topics.push(format!("devices/{}/unregister", device_uuid));
-    topics.push(format!("devices/{}/actuadores/info", device_uuid));
-    topics.push(format!("devices/{}/sensors/info", device_uuid));
+    topics.push(format!("devices/{}/actuadores/new", device_uuid));
+    topics.push(format!("devices/{}/sensors/new", device_uuid));
+    topics.push(format!("devices/{}/actuadores/delete", device_uuid));
+    topics.push(format!("devices/{}/sensors/delete", device_uuid));
 
     // Crear cliente mqtt
     let mut mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
