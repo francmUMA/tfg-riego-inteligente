@@ -177,14 +177,14 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
         device.set_usuario(device_json["Usuario"].as_str().unwrap().to_string());
         device.set_ip(device_json["ip"].as_str().unwrap().to_string());
         println!("Información del dispositivo obtenida -> {}", device.get_name());
-    } else if topic.contains("register"){
+    } else if topic.contains("/register"){
         if device.get_user() == "00000000A" {
             device.set_usuario(payload.to_string());
             println!("Dispositivo dado de alta a usuario {}", payload);
         } else {
             println!("El dispositivo ya está dado de alta");
         }
-    } else if topic.contains("unregister"){
+    } else if topic.contains("/unregister"){
         if payload != device.get_user() {
             println!("El usuario no coincide");
             return
