@@ -2,7 +2,7 @@ import mqtt from "mqtt";
 
 export const publish_msg = (topic, payload) => {
     const protocol = "mqtt";
-    const host = "192.168.1.128";
+    const host = process.env.BROKER_IP;
     const port = 1883;
     const client_id = "server";
     const url = `${protocol}://${host}:${port}`
