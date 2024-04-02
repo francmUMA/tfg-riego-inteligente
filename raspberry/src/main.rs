@@ -105,6 +105,7 @@ fn main() {
 
     let client_publisher = Arc::clone(&client);
     let device_uuid_clone = device_uuid.clone();
+    let device_test = Arc::clone(&device);
     let sensors_publisher = Arc::clone(&sensors);
     let actuadores_publisher = Arc::clone(&actuadores);
 
@@ -115,6 +116,14 @@ fn main() {
         while !client_publisher.lock().unwrap().publish(topic.as_str(), device_uuid_clone.clone().as_str()) {
             println!("Error al publicar el mensaje de inicio");
             sleep(Duration::from_secs(30));
+        }
+        while device_test.lock().unwrap().get_name() == "NC" {
+            println!("Esperando a recibir la información del dispositivo");
+            sleep(Duration::from_secs(10));
+            while !client_publisher.lock().unwrap().publish(topic.as_str(), device_uuid_clone.clone().as_str()) {
+                println!("Error al publicar el mensaje de inicio");
+                sleep(Duration::from_secs(30));
+            }
         }
         loop {
             //let time_now = utils::time::create_unix_timestamp();

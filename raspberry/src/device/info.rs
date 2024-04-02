@@ -89,7 +89,7 @@ impl Device {
     ) -> Device {
         Device {
             id,
-            name: "".to_string(),
+            name: "NC".to_string(),
             latitud: 0.0,
             longitud: 0.0,
             usuario: "00000000A".to_string(),
