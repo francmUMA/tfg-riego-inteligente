@@ -3,7 +3,7 @@ import { getDevices,addDevice,deleteDevice,updatePosition, updateIp, testConnect
 
 const router = express.Router();
 
-router.get("/", getDevices)
+// router.get("/", getDevices)
 router.get("/id/:id", getDevice)
 router.get("/uuid", getDeviceUuid)
 router.get("/uuid/:uuid", getDeviceByUuid)
