@@ -12,7 +12,6 @@ import coordsRoutes from "./coordenadas/routes/coordsRoute.js"
 import cropRoutes from "./crops/routes/cropRoutes.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
-import { publish_msg } from "./mqtt.js";
 import { Worker } from 'worker_threads'
 import sensorsModel from "./sensors/models/sensorsModel.js";
 
