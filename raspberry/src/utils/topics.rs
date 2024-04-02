@@ -185,7 +185,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device){
             println!("El dispositivo ya está dado de alta");
         }
     } else if topic.contains("unregister"){
-        device.set_user("00000000A");
+        device.set_usuario("00000000A".to_string());
         println!("Dispositivo dado de baja");
     }
 }
