@@ -67,11 +67,11 @@ impl Device {
         self.available = available;
     }
 
-    pub fn set_area(&mut self, area: Option<String>) {
+    pub fn set_area(&mut self, area: Option<&str>) {
         if area.is_none() {
             return;
         }
-        self.area = area.unwrap();
+        self.area = area.unwrap().to_string();
     }
 
     pub fn get_name(&self) -> String {
