@@ -108,7 +108,3 @@ fn read_tmp(pin: &mut Option<InputPin>) -> u8{
 fn read_caudal(pin: &mut Option<InputPin>) -> u8{
     return 3;
 }
-
-pub fn get_sensors_device() -> Option<Vec<Sensor>> {
-    None
-}
