@@ -119,7 +119,11 @@ if (!isMainThread){
         } else if (topic.includes('value')){
             let sensor_id = topic.split('/')[3]
             let jsonData = JSON.parse(message.toString())
-            console.log(jsonData)
+            addValue({
+                sensorCode: sensor_id,
+                value: jsonData.value,
+                time: jsonData.time
+            })
         }
         else {
             let data = JSON.parse(message.toString())
