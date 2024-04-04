@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import db from "./database/db.js";
-import Cpu_temp_routes from "./monitors/routes/Cpu_temp_route.js"
+import monitorRoute from "./monitors/routes/monitorRoute.js"
 import userRoutes from "./users/routes/userRoutes.js"
 import tokenRoutes from "./token/routes/tokenRoutes.js"
 import deviceRoutes from "./devices/routes/deviceRoutes.js"
@@ -13,7 +13,6 @@ import cropRoutes from "./crops/routes/cropRoutes.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
 import { Worker } from 'worker_threads'
-import sensorsModel from "./sensors/models/sensorsModel.js";
 
 const app = express();
 
@@ -23,7 +22,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/cpu_temp", Cpu_temp_routes);
+app.use("/api/monitor", monitorRoute);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", tokenRoutes)
 app.use("/api/devices", deviceRoutes)
