@@ -20,7 +20,13 @@ export async function getSensors(device: string, token: string) {
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
     if (request.status === 200) {
-        return await request.json()
+        let sensors = await request.json()
+        for (let sensor of sensors) {
+            let lastValue = await getSensorLastValue(sensor.id, token)
+            sensor.value = lastValue ? lastValue.value : 0
+            console.log(lastValue.id)
+        }
+        return sensors
     } else {
         return []
     }
@@ -112,5 +118,20 @@ export async function updateSensorPosition(id: string, Latitud: number, Longitud
         return true
     } else {
         return false
+    }
+}
+
+export const getSensorLastValue = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return undefined
     }
 }
