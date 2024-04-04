@@ -4,6 +4,7 @@ import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { v4, validate } from 'uuid';
 import { publish_msg } from "../../mqtt.js";
+import sensorsModel from "../../sensors/models/sensorsModel.js";
 /*
     @description: Obtiene todos los dispositivos de un usuario
 */
@@ -106,7 +107,15 @@ export const addDevice = async (req, res) => {
 
 export const checkDevices = async () => {
     console.log("Checking devices...")
+    let devices = await deviceModel.findAll()
+    for (let device of devices) {
+        if (device.Usuario != "00000000A") {
+            device.available = 0
+            device.save()
+        }
+    }
     publish_msg("devices/healthcheck", "1")
+
     return true
 }
 
