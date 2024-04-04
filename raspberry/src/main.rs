@@ -19,7 +19,8 @@ fn main() {
     if config.is_err() {
         while !create_config_file() {
             println!("Error al crear el archivo de configuración");
-            sleep(Duration::from_secs(30));
+            // sleep(Duration::from_secs(30));
+            return;
         }
     }
     drop(config);       // Liberar memoria ya que no es necesaria
