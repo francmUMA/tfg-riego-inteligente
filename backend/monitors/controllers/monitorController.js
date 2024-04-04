@@ -4,6 +4,7 @@ import { validate } from 'uuid';
 import deviceModel from '../../devices/models/deviceModel.js';
 import monitorModel from '../models/monitorModel.js';
 import sensorsModel from '../../sensors/models/sensorsModel.js';
+import { v1 } from 'uuid';
 
 /**
  * 
@@ -15,6 +16,8 @@ import sensorsModel from '../../sensors/models/sensorsModel.js';
  * } data  
  */
 export const addValue = async (data) => {
+    let uuid = v1()
+
     if (data.value === undefined || data.time === undefined) {
         console.log("Faltan datos para añadir el valor")
         return
@@ -38,6 +41,7 @@ export const addValue = async (data) => {
 
             // Añadir el valor
             await monitorModel.create({
+                id: uuid,
                 deviceCode: data.deviceCode,
                 value: data.value,
                 time: data.time
