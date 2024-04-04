@@ -76,7 +76,7 @@ pub fn create_config_file() -> bool {
         "device_uuid": uuid.to_string(),
         "device_name": "-",
         "nif": "00000000A",
-        "mqtt_broker": "192.168.1.128"
+        "mqtt_broker": "192.168.1.148"
     });
 
     let config = serde_json::to_string(&config);
