@@ -18,7 +18,7 @@ fn main() {
     let config = fs::metadata("config.json");
     if config.is_err() {
         while !create_config_file() {
-            println!("Error al crear el archivo de configuración");
+            println!("Error al crear el archivo de configuración t");
             // sleep(Duration::from_secs(30));
             return;
         }
