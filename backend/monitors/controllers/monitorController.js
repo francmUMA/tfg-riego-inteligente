@@ -67,6 +67,7 @@ export const addValue = async (data) => {
 
             // Añadir el valor
             await monitorModel.create({
+                id: uuid,
                 sensorCode: data.sensorCode,
                 value: data.value,
                 time: data.time
