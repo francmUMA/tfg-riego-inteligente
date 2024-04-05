@@ -1,12 +1,13 @@
 'use client'
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { checkToken } from "../lib/token"
 import ClimaInfo from "../ui/dashboard/ClimaInfo"
 import DevicesInfo from "../ui/dashboard/DevicesInfo"
 import ActuadoresInfo from "../ui/dashboard/ActuadoresInfo"
 import SensorsInfo from "../ui/dashboard/SensorsInfo"
+import {SensorChart} from "../ui/dashboard/SensorChart"
 
 
 export default function Page() {
@@ -43,7 +44,7 @@ export default function Page() {
             </section>
             <section className="w-full h-full shadow-md flex items-center justify-center bg-gray-50 rounded-md">
                 <div>
-                    <h1>En obras</h1>
+                    <SensorChart id={"f692dcb3-7a9b-4ce1-a5f8-1c7a62adac58"}/>
                 </div>
             </section>
         </main>
