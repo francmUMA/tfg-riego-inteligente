@@ -5,7 +5,7 @@ import deviceModel from '../../devices/models/deviceModel.js';
 import monitorModel from '../models/monitorModel.js';
 import sensorsModel from '../../sensors/models/sensorsModel.js';
 import { v1 } from 'uuid';
-import sequelize from 'sequelize';
+import {sequelize, Op} from 'sequelize';
 
 /**
  * 
