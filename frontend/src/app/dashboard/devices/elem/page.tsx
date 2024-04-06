@@ -17,11 +17,12 @@ import { FaTemperatureQuarter } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
 import { FaFaucetDrip } from "react-icons/fa6";
 import { FaRobot } from "react-icons/fa";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt, FaChartLine } from "react-icons/fa";
 import { IoIosCellular } from "react-icons/io";
 
 import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
+import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
 
 
 export default function Page() {
@@ -643,11 +644,29 @@ export default function Page() {
         )
     }
 
+    const [chartSensor, setChartSensor] = useState("")
+    const [IsOpenChartDialog, setIsOpenChartDialog] = useState(false)
+
+    const openChartDialog = (sensor: string) => {
+        setChartSensor(sensor)
+        setIsOpenChartDialog(true)
+    }
+
+    const closeChartDialog = () => {
+        setIsOpenChartDialog(false)
+        setChartSensor("")
+    }
+
     // ---------------------------------------------------------------------------------------------
 
     return (
         <main className="h-full w-full">
             <div className="w-full h-full flex flex-col gap-3">
+                {ChartDialog({
+                    id: chartSensor,
+                    onClose: closeChartDialog,
+                    isOpen: IsOpenChartDialog
+                })}
                 {deleteDeviceDialog()}
                 {SensorActuadorDialog()}
                 {updateActuadorPinDialog()}
@@ -849,7 +868,14 @@ export default function Page() {
                                                                         ? "Desconectado"
                                                                         : sensor.device_pin
                                                                 }
-                                                            </div>                                                   
+                                                            </div> 
+                                                            <div className="px-3 w-44 h-full flex flex-row gap-2 items-center">
+                                                                <button
+                                                                    onClick={() => openChartDialog(sensor.id)}
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <FaChartLine size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                </button>
+                                                            </div>                                                  
                                                             <div className="px-2 w-12 h-2/3 flex justify-center items-center">
                                                                 <button onClick={() => handleOpenDeleteElemDialogButton(index, true)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>

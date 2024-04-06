@@ -47,8 +47,8 @@ export const SensorChart = props => {
 					},
 					textColor,
 				},
-				width: 500,
-				height: 250,
+				width: 0,
+				height: 0,
 				autoSize: true,
 				timeScale: {
 					timeVisible: true,

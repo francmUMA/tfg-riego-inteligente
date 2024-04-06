@@ -23,8 +23,10 @@ export async function getSensors(device: string, token: string) {
         let sensors = await request.json()
         for (let sensor of sensors) {
             let lastValue = await getSensorLastValue(sensor.id, token)
-            sensor.value = lastValue ? lastValue.value : 0
-            console.log(lastValue.id)
+            if (lastValue !== undefined) {
+                sensor.value = lastValue ? lastValue.value : 0
+                console.log(lastValue.id)
+            }
         }
         return sensors
     } else {
