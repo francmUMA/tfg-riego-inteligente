@@ -97,14 +97,20 @@ impl Sensor {
     }
 }
 
+use rand::Rng;
+fn generate_random_value() -> u8 {
+    let mut rng = rand::thread_rng();
+    return rng.gen_range(0..100);
+}
+
 fn read_humidity(pin: &mut Option<InputPin>) -> u8{
-    return 1;
+    return generate_random_value();
 }
 
 fn read_tmp(pin: &mut Option<InputPin>) -> u8{
-    return 2;
+    return generate_random_value();
 }
 
 fn read_caudal(pin: &mut Option<InputPin>) -> u8{
-    return 3;
+    return generate_random_value();
 }
