@@ -114,6 +114,16 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             payload_json["name"].as_str().unwrap().to_string(),
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
+        let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": actuador.get_device(),
+                "deviceName": "---",
+                "logcode": 3119,
+                "actuadorCode": actuador.get_id(),
+                "timestamp": timestamp,
+                "description": format!("Se ha añadido el actuador con id {}", actuador.get_id()),
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
         if !suscribe_actuador_topics(actuador.get_id().clone(), actuador.get_device().clone(), mqtt_client){
             return
         }
@@ -177,6 +187,15 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
         device.set_usuario(device_json["Usuario"].as_str().unwrap().to_string());
         device.set_ip(device_json["ip"].as_str().unwrap().to_string());
         println!("Información del dispositivo obtenida -> {}", device.get_name());
+        let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device.get_id(),
+                "deviceName": device.get_name(),
+                "logcode": 3121,
+                "timestamp": timestamp,
+                "description": format!("Se ha obtenido la información del dispositivo")
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
     } else if topic.contains("/register"){
         if device.get_user() == "00000000A" {
             device.set_usuario(payload.to_string());
@@ -191,15 +210,42 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
             });
             mqtt_client.publish("logs", log_data.to_string().as_str());
         } else {
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device.get_id(),
+                "deviceName": device.get_name(),
+                "logcode": 3109,
+                "timestamp": timestamp,
+                "description": format!("El dispositivo ya está dado de alta")
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
             println!("El dispositivo ya está dado de alta");
         }
     } else if topic.contains("/unregister"){
         if payload != device.get_user() {
             println!("El usuario no coincide");
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device.get_id(),
+                "deviceName": device.get_name(),
+                "logcode": 3119,
+                "timestamp": timestamp,
+                "description": format!("El usuario no coincide")
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
             return
         }
         device.set_usuario("00000000A".to_string());
         println!("Dispositivo dado de baja");
+        let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device.get_id(),
+                "deviceName": device.get_name(),
+                "logcode": 3111,
+                "timestamp": timestamp,
+                "description": format!("Dispositivo dado de baja")
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
     } else if topic.contains("/healthcheck"){
         mqtt_client.publish(format!("devices/{}/available", device.get_id()).as_str(), "1");
     }
