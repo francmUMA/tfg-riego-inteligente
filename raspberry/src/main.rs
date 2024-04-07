@@ -86,7 +86,7 @@ fn main() {
                 "timestamp": timestamp,
                 "description": format!("Error al suscribirse a un topic de inicio",),
             });
-            mqtt_client.publish("logs", log_data.to_string().as_str());
+            client.publish("logs", log_data.to_string().as_str());
             sleep(Duration::from_secs(30));
         }
     }
@@ -134,7 +134,7 @@ fn main() {
                 "timestamp": timestamp,
                 "description": format!("Error al publicar el mensaje de inicio",),
             });
-            mqtt_client.publish("logs", log_data.to_string().as_str());
+            client_publisher.publish("logs", log_data.to_string().as_str());
             sleep(Duration::from_secs(30));
         }
         loop {
@@ -153,7 +153,7 @@ fn main() {
                         "timestamp": timestamp,
                         "description": format!("Error de lectura",),
                     });
-                    mqtt_client.publish("logs", log_data.to_string().as_str());
+                    client_publisher.publish("logs", log_data.to_string().as_str());
                     continue;
                 }
                 let value = value.unwrap();
@@ -173,7 +173,7 @@ fn main() {
                         "timestamp": timestamp,
                         "description": format!("Error al publicar el mensaje del valor del sensor",),
                     });
-                    mqtt_client.publish("logs", log_data.to_string().as_str());
+                    client_publisher.publish("logs", log_data.to_string().as_str());
                 }
             }
             std::thread::sleep(std::time::Duration::from_secs(30));
