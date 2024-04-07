@@ -185,7 +185,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
             let log_data = json!({
                 "deviceCode": device.get_id(),
                 "deviceName": device.get_name(),
-                "logCode": 3101,
+                "logcode": 3101,
                 "timestamp": timestamp,
                 "description": format!("Dispositivo dado de alta a usuario {}", payload)
             });
