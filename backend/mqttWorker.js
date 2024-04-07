@@ -5,6 +5,7 @@ import { registerDevice } from './devices/controllers/deviceController.js'
 import deviceModel from './devices/models/deviceModel.js'
 import actuadoresModel from './actuadores/models/actuadoresModel.js'
 import { addValue } from './monitors/controllers/monitorController.js'
+import { addLog } from './logs/controllers/logController.js'
 
 if (!isMainThread){
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
@@ -15,6 +16,11 @@ if (!isMainThread){
     client.on('connect',async () => {
         console.log("Conectando")
         try {
+            client.subscribe('logs', (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: logs")
+                }
+            })
             client.subscribe('devices/new', (err) => {
                 if (err) {
                     console.log("No se ha podido suscribir al topic: devices/new")
@@ -124,11 +130,11 @@ if (!isMainThread){
                 value: jsonData.value,
                 time: jsonData.time
             })
+        } else if (topic.includes('logs')){
+            let logData = JSON.parse(message.toString())
+            addLog(logData)
         }
-        else {
-            let data = JSON.parse(message.toString())
-            console.log(data)
-        }
+        
     })
 
     parentPort.on('message', (data) => {
