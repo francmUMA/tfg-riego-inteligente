@@ -13,7 +13,9 @@ export const addLog = async (logData) => {
     }
 
     // Comprobar si los datos son válidos
-    if (!validate(logData.deviceCode) || (logData.sensorCode && !validate(logData.sensorCode)) || (logData.actuadorCode && !validate(logData.actuadorCode))) {
+    if (!validate(logData.deviceCode) || 
+        (logData.sensorCode !== undefined && !validate(logData.sensorCode)) || 
+        (logData.actuadorCode !== undefined && !validate(logData.actuadorCode))) {
         console.log("Error: Código no válido")
         return
     }
@@ -35,12 +37,12 @@ export const addLog = async (logData) => {
             console.log("Error: Dispositivo no encontrado")
             return
         }
-        if (logData.sensorCode) {
+        if (logData.sensorCode !== undefined) {
             let sensor = await sensorsModel.findOne({ where: { id: logData.sensorCode } })
             if (sensor == null) {
                 console.log("Error: Sensor no encontrado")
             }
-        } else if (logData.actuadorCode) {
+        } else if (logData.actuadorCode !== undefined) {
             let actuador = await actuadoresModel.findOne({ where: { id: logData.actuadorCode } })
             if (actuador == null) {
                 console.log("Error: Actuador no encontrado")
@@ -54,7 +56,7 @@ export const addLog = async (logData) => {
             return
         }
 
-        if (!logData.sensorCode){
+        if (logData.sensorCode !== undefined){
             await logModel.create({
                 id: uuid,
                 deviceCode: logData.deviceCode,
@@ -64,7 +66,7 @@ export const addLog = async (logData) => {
                 description: logData.description,
                 deviceName: logData.deviceName
             })
-        } else if (!logData.actuadorCode){
+        } else if (logData.actuadorCode !== undefined){
             await logModel.create({
                 id: uuid,
                 deviceCode: logData.deviceCode,
