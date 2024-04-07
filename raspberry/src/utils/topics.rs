@@ -2,7 +2,7 @@ use std::borrow::{Borrow, BorrowMut};
 
 use crate::{device::{actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}, utils::time::create_unix_timestamp};
 use mqtt::{client, QOS_0};
-use serde_json::{json,to_string, Value};
+use serde_json::{de, json, to_string, Value};
 use paho_mqtt as mqtt;
 
 use super::mqtt_client::MqttClient;
@@ -99,7 +99,7 @@ fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
     }
 }
 
-fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
+fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
         let actuador = Actuador::new(
@@ -116,8 +116,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
-            "deviceCode": actuador.get_device(),
-            "deviceName": "---",
+            "deviceCode": device.get_id(),
+            "deviceName": device.get_name(),
             "logcode": 3311,
             "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
@@ -139,8 +139,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         println!("Actuador eliminado: {} con id {}", actuador.get_name(), actuador.get_id());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
-            "deviceCode": actuador.get_device(),
-            "deviceName": "---",
+            "deviceCode": device.get_id(),
+            "deviceName": device.get_name(),
             "logcode": 3321,
             "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
@@ -164,8 +164,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                         println!("Abriendo el actuador con id {}", actuador.get_id());
                         let timestamp = create_unix_timestamp();
                         let log_data = json!({
-                            "deviceCode": actuador.get_device(),
-                            "deviceName": "---",
+                            "deviceCode": device.get_id(),
+                            "deviceName": device.get_name(),
                             "logcode": 1101,
                             "actuadorCode": actuador.get_id(),
                             "timestamp": timestamp,
@@ -178,8 +178,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                         println!("Cerrando el actuador con id {}", actuador.get_id());
                         let timestamp = create_unix_timestamp();
                         let log_data = json!({
-                            "deviceCode": actuador.get_device(),
-                            "deviceName": "---",
+                            "deviceCode": device.get_id(),
+                            "deviceName": device.get_name(),
                             "logcode": 1101,
                             "actuadorCode": actuador.get_id(),
                             "timestamp": timestamp,
@@ -191,8 +191,8 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                         println!("Payload no válido");
                         let timestamp = create_unix_timestamp();
                         let log_data = json!({
-                            "deviceCode": actuador.get_device(),
-                            "deviceName": "---",
+                            "deviceCode": device.get_id(),
+                            "deviceName": device.get_name(),
                             "logcode": 1109,
                             "actuadorCode": actuador.get_id(),
                             "timestamp": timestamp,
@@ -210,7 +210,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                     let timestamp = create_unix_timestamp();
                     let log_data = json!({
                         "deviceCode": actuador.get_device(),
-                        "deviceName": "---",
+                        "deviceName": device.get_name(),
                         "logcode": 1201,
                         "actuadorCode": actuador.get_id(),
                         "timestamp": timestamp,
@@ -222,7 +222,7 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                     let timestamp = create_unix_timestamp();
                     let log_data = json!({
                         "deviceCode": actuador.get_device(),
-                        "deviceName": "---",
+                        "deviceName": device.get_name(),
                         "logcode": 1209,
                         "actuadorCode": actuador.get_id(),
                         "timestamp": timestamp,
@@ -236,11 +236,10 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
             let timestamp = create_unix_timestamp();
             let log_data = json!({
                 "deviceCode": actuador.get_device(),
-                "deviceName": "---",
+                "deviceName": device.get_name(),
                 "logcode": 3239,
-                "actuadorCode": actuador.get_id(),
                 "timestamp": timestamp,
-                "description": format!("No se ha encontrado el actuador con id {}", actuador.get_id()),
+                "description": format!("No se ha encontrado el actuador con id {}", actuador_id),
             });
             mqtt_client.publish("logs", log_data.to_string().as_str());
         }
@@ -327,7 +326,7 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
 //------------------------------------- MANAGE MSG ---------------------------------------------------------------------------------------
 pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, sensors: &mut Vec<Sensor>, mqtt_client: &mut MqttClient){
     if topic.contains("actuadores") {
-        manage_topic_actuadores(topic, payload, actuadores, mqtt_client);
+        manage_topic_actuadores(device, topic, payload, actuadores, mqtt_client);
     } else if topic.contains("sensors") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else if topic.contains("server/available") {
