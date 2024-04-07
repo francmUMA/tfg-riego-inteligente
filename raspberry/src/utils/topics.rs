@@ -51,9 +51,8 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             "deviceCode": sensor.get_device(),
             "deviceName": "---",
             "logcode": 3321,
-            "sensorCode": sensor.get_id(),
             "timestamp": timestamp,
-            "description": format!("Sensor eliminado",),
+            "description": format!("Sensor eliminado con id {}", sensor.get_id()),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         unsubscribe_sensor_topics(sensor, mqtt_client);
@@ -101,9 +100,8 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
                 "deviceCode": topic_split[1],
                 "deviceName": "---",
                 "logcode": 3239,
-                "sensorCode": sensor_id,
                 "timestamp": timestamp,
-                "description": format!("No se ha encontrado el sensor",),
+                "description": format!("No se ha encontrado el sensor con id {}", sensor_id),
             });
             mqtt_client.publish("logs", log_data.to_string().as_str());
         }
@@ -118,7 +116,6 @@ fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mu
             "deviceCode": device_id,
             "deviceName": "---",
             "logcode": 3419,
-            "sensorCode": sensor_id,
             "timestamp": timestamp,
             "description": format!("No se ha podido suscribir al topic de device_pin del sensor",),
         });
@@ -136,7 +133,6 @@ fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
             "deviceCode": sensor.get_device(),
             "deviceName": "---",
             "logcode": 3419,
-            "sensorCode": sensor.get_id(),
             "timestamp": timestamp,
             "description": format!("No se ha podido desuscribir al topic de device_pin",),
         });
@@ -187,7 +183,6 @@ fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
             "deviceCode": actuador.get_device(),
             "deviceName": "---",
             "logcode": 3419,
-            "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
             "description": format!("No se ha podido desuscribir de un topic",),
         });
@@ -201,7 +196,6 @@ fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
             "deviceCode": actuador.get_device(),
             "deviceName": "---",
             "logcode": 3419,
-            "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
             "description": format!("No se ha podido desuscribir de un topic",),
         });
@@ -252,7 +246,6 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             "deviceCode": device.get_id(),
             "deviceName": device.get_name(),
             "logcode": 3321,
-            "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
             "description": format!("Se ha eliminado el actuador con id {}", actuador.get_id()),
         });
