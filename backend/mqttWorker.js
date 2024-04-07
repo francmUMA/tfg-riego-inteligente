@@ -136,26 +136,4 @@ if (!isMainThread){
         }
         
     })
-
-    parentPort.on('message', (data) => {
-        if (data.command === 'suscribe'){
-            client.subscribe(data.topic, (err) => {
-                if (err) {
-                    console.log("No se ha podido suscribir al topic: " + data.topic)
-                }
-            })
-        } else if (data.command === 'unsuscribe'){
-            client.unsubscribe(data.topic, (err) => {
-                if (err) {
-                    console.log("No se ha podido desuscribir al topic: " + data.topic)
-                }
-            })
-        } else if (data.command === 'register'){
-            client.publish(data.topic, data.payload, (err) => {
-                if (err) {
-                    console.log("No se ha podido registrar el dispositivo")
-                }
-            })
-        }
-    })
 }
