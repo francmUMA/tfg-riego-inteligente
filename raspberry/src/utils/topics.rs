@@ -115,15 +115,15 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
         let timestamp = create_unix_timestamp();
-            let log_data = json!({
-                "deviceCode": actuador.get_device(),
-                "deviceName": "---",
-                "logcode": 3119,
-                "actuadorCode": actuador.get_id(),
-                "timestamp": timestamp,
-                "description": format!("Se ha añadido el actuador con id {}", actuador.get_id()),
-            });
-            mqtt_client.publish("logs", log_data.to_string().as_str());
+        let log_data = json!({
+            "deviceCode": actuador.get_device(),
+            "deviceName": "---",
+            "logcode": 3311,
+            "actuadorCode": actuador.get_id(),
+            "timestamp": timestamp,
+            "description": format!("Se ha añadido el actuador con id {}", actuador.get_id()),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         if !suscribe_actuador_topics(actuador.get_id().clone(), actuador.get_device().clone(), mqtt_client){
             return
         }
@@ -137,6 +137,16 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
         let index = actuadores.iter().position(|actuador| actuador.get_id() == payload).unwrap();
         let actuador = actuadores.remove(index);
         println!("Actuador eliminado: {} con id {}", actuador.get_name(), actuador.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": actuador.get_device(),
+            "deviceName": "---",
+            "logcode": 3321,
+            "actuadorCode": actuador.get_id(),
+            "timestamp": timestamp,
+            "description": format!("Se ha eliminado el actuador con id {}", actuador.get_id()),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         unsuscribe_actuador_topics(actuador, mqtt_client);
     }else {
         // Se obtiene el id del actuador
@@ -152,24 +162,87 @@ fn manage_topic_actuadores(topic: &str, payload: &str, actuadores: &mut Vec<Actu
                     "1" => {
                         actuador.open();
                         println!("Abriendo el actuador con id {}", actuador.get_id());
+                        let timestamp = create_unix_timestamp();
+                        let log_data = json!({
+                            "deviceCode": actuador.get_device(),
+                            "deviceName": "---",
+                            "logcode": 1101,
+                            "actuadorCode": actuador.get_id(),
+                            "timestamp": timestamp,
+                            "description": format!("Se ha abierto el actuador con id {}", actuador.get_id()),
+                        });
+                        mqtt_client.publish("logs", log_data.to_string().as_str());
                     }
                     "0" => {
                         actuador.close();
                         println!("Cerrando el actuador con id {}", actuador.get_id());
+                        let timestamp = create_unix_timestamp();
+                        let log_data = json!({
+                            "deviceCode": actuador.get_device(),
+                            "deviceName": "---",
+                            "logcode": 1101,
+                            "actuadorCode": actuador.get_id(),
+                            "timestamp": timestamp,
+                            "description": format!("Se ha cerrado el actuador con id {}", actuador.get_id()),
+                        });
+                        mqtt_client.publish("logs", log_data.to_string().as_str());
                     }
-                    _ => println!("Payload no reconocido"),
+                    _ => {
+                        println!("Payload no válido");
+                        let timestamp = create_unix_timestamp();
+                        let log_data = json!({
+                            "deviceCode": actuador.get_device(),
+                            "deviceName": "---",
+                            "logcode": 1109,
+                            "actuadorCode": actuador.get_id(),
+                            "timestamp": timestamp,
+                            "description": format!("No se ha podido actuar sobre el actuador con id {}", actuador.get_id()),
+                        });
+                        mqtt_client.publish("logs", log_data.to_string().as_str());
+                    }
+                        
                 }
             } else if topic.contains("update") && topic.contains("device_pin"){
                 let pin = payload.parse::<u8>().unwrap();
                 if pin > 0 && pin < 28 {
                     actuador.change_pin(pin);
                     println!("Cambiando el pin del actuador con id {} a {}", actuador.get_id(), pin);
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": actuador.get_device(),
+                        "deviceName": "---",
+                        "logcode": 1201,
+                        "actuadorCode": actuador.get_id(),
+                        "timestamp": timestamp,
+                        "description": format!("Se ha cambiado el pin del actuador con id {}", actuador.get_id()),
+                    });
+                    mqtt_client.publish("logs", log_data.to_string().as_str());
                 } else {
                     println!("Pin no válido");
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": actuador.get_device(),
+                        "deviceName": "---",
+                        "logcode": 1209,
+                        "actuadorCode": actuador.get_id(),
+                        "timestamp": timestamp,
+                        "description": format!("No se ha podido cambiar el pin del actuador con id {}", actuador.get_id()),
+                    });
+                    mqtt_client.publish("logs", log_data.to_string().as_str());
                 }
             }
         } else {
             println!("No se ha encontrado el actuador");
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": actuador.get_device(),
+                "deviceName": "---",
+                "logcode": 3239,
+                "actuadorCode": actuador.get_id(),
+                "timestamp": timestamp,
+                "description": format!("No se ha encontrado el actuador con id {}", actuador.get_id()),
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
         }
     }
     
