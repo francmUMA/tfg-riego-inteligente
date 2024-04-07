@@ -153,7 +153,7 @@ fn main() {
                         "timestamp": timestamp,
                         "description": format!("Error de lectura",),
                     });
-                    client_publisher.publish("logs", log_data.to_string().as_str());
+                    client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
                     continue;
                 }
                 let value = value.unwrap();
@@ -173,7 +173,7 @@ fn main() {
                         "timestamp": timestamp,
                         "description": format!("Error al publicar el mensaje del valor del sensor",),
                     });
-                    client_publisher.publish("logs", log_data.to_string().as_str());
+                    client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
                 }
             }
             std::thread::sleep(std::time::Duration::from_secs(30));
