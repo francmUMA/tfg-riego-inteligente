@@ -1,8 +1,8 @@
 use std::borrow::{Borrow, BorrowMut};
 
-use crate::{device::{actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}};
+use crate::{device::{actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}, utils::time::create_unix_timestamp};
 use mqtt::{client, QOS_0};
-use serde_json::{to_string, Value};
+use serde_json::{json,to_string, Value};
 use paho_mqtt as mqtt;
 
 use super::mqtt_client::MqttClient;
@@ -181,6 +181,15 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
         if device.get_user() == "00000000A" {
             device.set_usuario(payload.to_string());
             println!("Dispositivo dado de alta a usuario {}", payload);
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device.get_id(),
+                "deviceName": device.get_name(),
+                "logCode": 3101,
+                "timestamp": timestamp,
+                "description": format!("Dispositivo dado de alta a usuario {}", payload)
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
         } else {
             println!("El dispositivo ya está dado de alta");
         }

@@ -104,9 +104,6 @@ impl Device {
     }
 }
 
-pub fn get_device(device_json: Value) -> Option<Device>{
-    None
-}
 
 pub fn register_device(uuid: String, mqtt_client: MutexGuard<'_,MqttClient>) -> bool{
     if !mqtt_client.publish("devices/new", uuid.as_str()){
