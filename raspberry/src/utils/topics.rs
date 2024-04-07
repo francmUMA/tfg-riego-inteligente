@@ -235,7 +235,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             println!("No se ha encontrado el actuador");
             let timestamp = create_unix_timestamp();
             let log_data = json!({
-                "deviceCode": actuador.get_device(),
+                "deviceCode": device.get_id(),
                 "deviceName": device.get_name(),
                 "logcode": 3239,
                 "timestamp": timestamp,
