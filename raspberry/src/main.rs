@@ -1,6 +1,7 @@
 use std::{fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
+use crate::utils::time::create_unix_timestamp;
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
 use paho_mqtt as mqtt;
@@ -77,6 +78,15 @@ fn main() {
     for topic in topics {
         while !client.lock().unwrap().subscribe(topic.as_str()) {
             println!("Error al suscribirse al topic: {}", topic);
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device_uuid,
+                "deviceName": "NC",
+                "logcode": 3419,
+                "timestamp": timestamp,
+                "description": format!("Error al suscribirse a un topic de inicio",),
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
             sleep(Duration::from_secs(30));
         }
     }
@@ -116,6 +126,15 @@ fn main() {
         let topic = format!("devices/start");
         while !client_publisher.lock().unwrap().publish(topic.as_str(), device_uuid_clone.clone().as_str()) {
             println!("Error al publicar el mensaje de inicio");
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": device_uuid_clone,
+                "deviceName": "NC",
+                "logcode": 3429,
+                "timestamp": timestamp,
+                "description": format!("Error al publicar el mensaje de inicio",),
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
             sleep(Duration::from_secs(30));
         }
         loop {
@@ -125,6 +144,16 @@ fn main() {
                 let value = sensor.read();
                 if value.is_none() {
                     println!("Error al leer el sensor: {}", sensor.get_id());
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": sensor.get_device(),
+                        "deviceName": "NC",
+                        "sensorCode": sensor.get_id(),
+                        "logcode": 2109,
+                        "timestamp": timestamp,
+                        "description": format!("Error de lectura",),
+                    });
+                    mqtt_client.publish("logs", log_data.to_string().as_str());
                     continue;
                 }
                 let value = value.unwrap();
@@ -135,6 +164,16 @@ fn main() {
                 let topic = format!("devices/{}/sensors/{}/value", device_uuid_clone, sensor.get_id());
                 if !client_publisher.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
                     println!("Error al publicar el mensaje");
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": device_uuid_clone,
+                        "deviceName": "NC",
+                        "sensorCode": sensor.get_id(),
+                        "logcode": 3429,
+                        "timestamp": timestamp,
+                        "description": format!("Error al publicar el mensaje del valor del sensor",),
+                    });
+                    mqtt_client.publish("logs", log_data.to_string().as_str());
                 }
             }
             std::thread::sleep(std::time::Duration::from_secs(30));

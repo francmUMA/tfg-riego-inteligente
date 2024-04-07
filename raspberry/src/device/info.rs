@@ -1,6 +1,6 @@
 use std::sync::MutexGuard;
 
-use crate::utils::{config::update_config_file, mqtt_client::MqttClient};
+use crate::utils::{config::update_config_file, mqtt_client::MqttClient, time::create_unix_timestamp};
 use serde_json::Value;
 
 pub struct Device {

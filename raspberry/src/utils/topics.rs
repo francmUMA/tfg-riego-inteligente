@@ -1,6 +1,6 @@
 use std::borrow::{Borrow, BorrowMut};
 
-use crate::{device::{actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}, utils::time::create_unix_timestamp};
+use crate::{device::{self, actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}, utils::time::create_unix_timestamp};
 use mqtt::{client, QOS_0};
 use serde_json::{de, json, to_string, Value};
 use paho_mqtt as mqtt;
@@ -24,6 +24,16 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             payload_json["available"].as_u64().unwrap() as u8
         );
         println!("Sensor añadido: {} con id {}", sensor.get_name(), sensor.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": sensor.get_device(),
+            "deviceName": "---",
+            "logcode": 3311,
+            "sensorCode": sensor.get_id(),
+            "timestamp": timestamp,
+            "description": format!("Sensor añadido",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         if !suscribe_sensor_topics(sensor.get_id().clone(), sensor.get_device().clone(), mqtt_client){
             return
         }
@@ -36,6 +46,16 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         let index = sensors.iter().position(|sensor| sensor.get_id() == payload).unwrap();
         let sensor = sensors.remove(index);
         println!("Sensor eliminado: {} con id {}", sensor.get_name(), sensor.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": sensor.get_device(),
+            "deviceName": "---",
+            "logcode": 3321,
+            "sensorCode": sensor.get_id(),
+            "timestamp": timestamp,
+            "description": format!("Sensor eliminado",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         unsubscribe_sensor_topics(sensor, mqtt_client);
     } else {
         // Se obtiene el id del sensor
@@ -50,12 +70,42 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
                 if pin > 0 && pin < 28 {
                     sensor.change_pin(pin);
                     println!("Cambiando el pin del sensor con id {} a {}", sensor.get_id(), pin);
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": sensor.get_device(),
+                        "deviceName": "---",
+                        "logcode": 2201,
+                        "sensorCode": sensor.get_id(),
+                        "timestamp": timestamp,
+                        "description": format!("Pin cambiado",),
+                    });
+                    mqtt_client.publish("logs", log_data.to_string().as_str());
                 } else {
                     println!("Pin no válido");
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": sensor.get_device(),
+                        "deviceName": "---",
+                        "logcode": 2209,
+                        "sensorCode": sensor.get_id(),
+                        "timestamp": timestamp,
+                        "description": format!("Pin no válido",),
+                    });
+                    mqtt_client.publish("logs", log_data.to_string().as_str());
                 }
             }
         } else {
             println!("No se ha encontrado el sensor");
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": topic_split[1],
+                "deviceName": "---",
+                "logcode": 3239,
+                "sensorCode": sensor_id,
+                "timestamp": timestamp,
+                "description": format!("No se ha encontrado el sensor",),
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
         }
     }
 }
@@ -63,6 +113,16 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
 fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
     if !mqtt_client.subscribe(format!("devices/{}/sensores/{}/update/device_pin", device_id, sensor_id).as_str()){
         println!("No se ha podido suscribir al topic de device_pin del sensor con id {}", sensor_id);
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "---",
+            "logcode": 3419,
+            "sensorCode": sensor_id,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido suscribir al topic de device_pin del sensor",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         return false;
     }
     true
@@ -71,6 +131,16 @@ fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mu
 fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
     if !mqtt_client.unsubscribe(format!("devices/{}/sensores/{}/update/device_pin", sensor.get_device().clone(), sensor.get_id()).as_str()){
         println!("No se ha podido desuscribir al topic de device_pin del sensor con id {}", sensor.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": sensor.get_device(),
+            "deviceName": "---",
+            "logcode": 3419,
+            "sensorCode": sensor.get_id(),
+            "timestamp": timestamp,
+            "description": format!("No se ha podido desuscribir al topic de device_pin",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
     }
 }
 
@@ -78,11 +148,31 @@ fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
 fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
     if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/status", device_id, actuador_id).as_str()){
         println!("No se ha podido suscribir al topic de status del actuador con id {}", actuador_id);
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "---",
+            "logcode": 3419,
+            "actuadorCode": actuador_id,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido suscribir al topic de status del actuador",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         return false;
     }
 
     if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/device_pin", device_id, actuador_id).as_str()){
         println!("No se ha podido suscribir al topic de device_pin del actuador con id {}", actuador_id);
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "---",
+            "logcode": 3419,
+            "actuadorCode": actuador_id,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido suscribir al topic de device_pin del actuador",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
         return false;
     }
 
@@ -92,10 +182,30 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
 fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
     if !mqtt_client.unsubscribe(format!("devices/{}/actuadores/{}/update/status", actuador.get_device(), actuador.get_id()).as_str()){
         println!("No se ha podido desuscribir al topic de status del actuador con id {}", actuador.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": actuador.get_device(),
+            "deviceName": "---",
+            "logcode": 3419,
+            "actuadorCode": actuador.get_id(),
+            "timestamp": timestamp,
+            "description": format!("No se ha podido desuscribir de un topic",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
     }
 
     if !mqtt_client.unsubscribe(format!("devices/{}/actuadores/{}/update/device_pin", actuador.get_device(), actuador.get_id()).as_str()){
         println!("No se ha podido desuscribir al topic de device_pin del actuador con id {}", actuador.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": actuador.get_device(),
+            "deviceName": "---",
+            "logcode": 3419,
+            "actuadorCode": actuador.get_id(),
+            "timestamp": timestamp,
+            "description": format!("No se ha podido desuscribir de un topic",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
     }
 }
 
