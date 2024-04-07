@@ -86,7 +86,7 @@ fn main() {
                 "timestamp": timestamp,
                 "description": format!("Error al suscribirse a un topic de inicio",),
             });
-            client.publish("logs", log_data.to_string().as_str());
+            client.lock().unwrap().publish("logs", log_data.to_string().as_str());
             sleep(Duration::from_secs(30));
         }
     }
@@ -134,7 +134,7 @@ fn main() {
                 "timestamp": timestamp,
                 "description": format!("Error al publicar el mensaje de inicio",),
             });
-            client_publisher.publish("logs", log_data.to_string().as_str());
+            client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
             sleep(Duration::from_secs(30));
         }
         loop {
