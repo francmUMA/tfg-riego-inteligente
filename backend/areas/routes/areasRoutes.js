@@ -1,8 +1,9 @@
 import express from "express";
-import { get_areas, add_area, delete_area, updateColor, updateAreaName } from "../controllers/areasController.js"
+import { get_areas, add_area, delete_area, updateColor, updateAreaName, get_area } from "../controllers/areasController.js"
 
 const router = express.Router();
 router.get("/", get_areas)
+router.get("/:id", get_area)
 router.post("/", add_area)
 router.delete("/:id", delete_area)
 router.put("/color/:id", updateColor)

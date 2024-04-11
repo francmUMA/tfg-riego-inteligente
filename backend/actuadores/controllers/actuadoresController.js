@@ -4,6 +4,7 @@ import areasModel from "../../areas/models/areasModel.js"
 import sensorModel from "../../sensors/models/sensorsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import { v4, validate } from "uuid"
+import { publish_msg } from "../../mqtt.js"
 
 /*
     @description: Devuelve los actuadores de un dispositivo
@@ -100,8 +101,9 @@ export const addActuador = async (req, res) => {
     }
 
     // Comprobar si el dispositivo existe y si es de este usuario
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -134,6 +136,9 @@ export const addActuador = async (req, res) => {
             name: req.body.name, 
             device: req.params.device 
         })
+        let topic = `devices/${device.id}/actuadores/new`
+        let actuador = await actuadoresModel.findOne({ where: { id: uuid } })
+        publish_msg(topic, JSON.stringify(actuador))
         res.status(200).send("Actuator added")
     } catch (error) {
         res.status(500).send(error.message)
@@ -178,8 +183,9 @@ export const deleteActuador = async (req, res) => {
     }
 
     // Comprobar si el dispositivo existe y si es de este usuario
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -213,6 +219,9 @@ export const deleteActuador = async (req, res) => {
     // ----------------------------------------------------------
     try {
         await actuadoresModel.destroy({ where: { id: req.body.id, device: req.params.device } })
+        let topic = `devices/${device.id}/actuadores/delete`
+        let payload = req.body.id
+        publish_msg(topic, payload)
         res.status(200).send("Actuator deleted")
     } catch (error) {
         res.status(500).send(error.message)
@@ -419,8 +428,9 @@ export const updateActuadorDevicePin = async (req, res) => {
         res.status(500).send(error.message)
     }
     // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -449,7 +459,12 @@ export const updateActuadorDevicePin = async (req, res) => {
     }
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
+        let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/device_pin`
+        let payload = req.body.device_pin
+        if (typeof payload !== "string") payload = payload.toString()
+        publish_msg(topic, payload)
         actuador.device_pin = req.body.device_pin
+        actuador.status = 0
         actuador.save()
         res.status(200).send("Device pin updated")
     } catch (error) {
@@ -666,8 +681,9 @@ export const updateActuadorStatus = async (req, res) => {
         res.status(500).send(error.message)
     }
     // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    let device
     try {
-        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
         if (device === null) {
             res.status(404).send("Device not found")
             return
@@ -677,6 +693,9 @@ export const updateActuadorStatus = async (req, res) => {
     }
     // ------------------------------------ Actualizar Status ---------------------------------------------------------
     try {
+        let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/status`
+        let payload = req.body.status == true || req.body.status == 1 ? "1" : "0"
+        publish_msg(topic, payload)
         actuador.status = req.body.status
         actuador.save()
         res.status(200).send("Status updated")

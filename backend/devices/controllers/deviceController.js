@@ -3,6 +3,8 @@ import areaModel from "../../areas/models/areasModel.js";
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { v4, validate } from 'uuid';
+import { publish_msg } from "../../mqtt.js";
+import sensorsModel from "../../sensors/models/sensorsModel.js";
 /*
     @description: Obtiene todos los dispositivos de un usuario
 */
@@ -26,8 +28,9 @@ export const getDevices = async (req, res) => {
 /*
     @description: Añade un dispositivo a un usuario
     @body: {
-        name: string,     // Nombre del dispositivo
-        ip: string      // Direccion ip del dispositivo
+        id: string,         // Identificador del dispositivo
+        name: string,       // Nombre del dispositivo
+        ip: string          // Direccion ip del dispositivo
     }
 */
 export const addDevice = async (req, res) => {
@@ -70,17 +73,33 @@ export const addDevice = async (req, res) => {
             return
         }
     }
-    let uuid = v4()
+
+    if (req.body.id === undefined) {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid uuid")
+        return
+    }
+
     try {
-        let device = {
-            id: uuid,
-            name: req.body.name,
-            Usuario: nif,
-            ip: req.body.ip,
-            available: 0
+        let device = await deviceModel.findOne({ where: { id: req.body.id } })
+        if (device == null) {
+            res.status(400).send("Device doesnt exists")
+            return
         }
-        await deviceModel.create(device)
-        res.status(200).send("Device added") 
+        if (device.Usuario != "00000000A") {
+            res.status(400).send("Device already claimed")
+            return
+        }
+        device.Usuario = nif
+        device.name = req.body.name
+        device.ip = req.body.ip
+        device.save()
+        publish_msg("devices/" + device.id + "/register", nif)
+        res.status(200).send("Device registered")
     } catch (error) {
         res.status(500).send(error.message)
     }
@@ -88,18 +107,16 @@ export const addDevice = async (req, res) => {
 
 export const checkDevices = async () => {
     console.log("Checking devices...")
-    try {
-        let devices = await deviceModel.findAll({})
-        for (let i = 0; i < devices.length; i++) {
-            console.log("Checking device " + devices[i].ip)
-            ping.sys.probe(devices[i].ip, function(isAlive) {
-                isAlive ? devices[i].available = 1 : devices[i].available = 0
-                devices[i].save()
-            })
+    let devices = await deviceModel.findAll()
+    for (let device of devices) {
+        if (device.Usuario != "00000000A") {
+            device.available = 0
+            device.save()
         }
-    } catch (error) {
-        return false
     }
+    publish_msg("devices/healthcheck", "1")
+
+    return true
 }
 
 /*
@@ -146,7 +163,9 @@ export const deleteDevice = async (req, res) => {
             res.status(404).send("Device not found")
             return
         }
-        device.destroy()
+        device.Usuario = "00000000A"
+        device.save()
+        publish_msg("devices/" + device.id + "/unregister", nif)
         res.status(200).send("Device deleted")
     } catch (error) {
         res.status(500).send(error.message)
@@ -530,3 +549,77 @@ export const updateDeviceName = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * @description: Obtiene el uuid de un dispositivo a partir de su ip
+ * @returns uuid
+ */
+export const getDeviceUuid = async (req, res) => {
+    let req_ip = req.socket.remoteAddress
+    let ip_split = req_ip.split(":")
+    let ip = ip_split[ip_split.length - 1]
+    try {
+        let device = await deviceModel.findOne({ where: { ip: ip } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        res.status(200).json(device.id)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/**
+ * @description: Obtiene el la información de un dispositivo en base a su uuid
+ * @param {
+ *     uuid: string
+ * } params
+ * @returns device
+ */
+
+export const getDeviceByUuid = async (req, res) => {
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.params.uuid } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        res.status(200).json(device)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+export const registerDevice = async (uuid) => {
+    // El dispositivo tendrá como usuario 00000000A (default) hasta que algún usuario lo reclame
+    try {
+        if (!validate(uuid)) {
+            console.log("Invalid uuid: ", uuid)
+            return false
+        }
+
+        // Comprobar que no exista ya
+        let device = await deviceModel.findOne({ where: { id: uuid } })
+        if (device != null) {
+            console.log("Device " + uuid + " already registered")
+            return false
+        }
+
+        let device_new = {
+            id: uuid,
+            name: "NR-"+uuid,
+            Usuario: "00000000A",
+            ip: "0.0.0.0",
+        }
+
+        await deviceModel.create(device_new)
+        console.log("Device " + uuid + " registered")
+        return true
+
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
