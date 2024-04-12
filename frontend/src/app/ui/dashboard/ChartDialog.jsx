@@ -1,5 +1,5 @@
 import { SensorChart } from "./SensorChart";
-import { Dialog, DialogTitle } from "@mui/material";
+import { Dialog } from "@mui/material";
 
 const ChartDialog = ({id, isOpen, onClose }) => {
     return (

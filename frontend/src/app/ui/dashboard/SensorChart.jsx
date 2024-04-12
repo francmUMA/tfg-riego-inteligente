@@ -21,13 +21,14 @@ export const SensorChart = props => {
     
     const [data, setData] = useState([])
     const fetchSensorData = async (id, token) => {
-        let data = await getSensorLast24hValues(id, token);
-        if (data !== undefined) {
+        let newData = await getSensorLast24hValues(id, token);
+		console.log("newData: ", newData)
+        if (newData !== undefined) {
             //Ordenar los datos por fecha
-            data = data.sort((a, b) => {
+            newData = newData.sort((a, b) => {
                 return a.time - b.time
             })
-            setData(data)
+            setData(newData)
         }
     }
 
@@ -38,6 +39,7 @@ export const SensorChart = props => {
 
 	useEffect(
 		() => {
+			if (data.length == 0) return
 			const chart = createChart(chartContainerRef.current, {
 				layout: {
 					background: {
@@ -84,7 +86,7 @@ export const SensorChart = props => {
 				lineType: 2
 			});
 
-            console.log(data)
+            console.log("data: ", data)
 			newSeries.setData(data);
 
 			return () => {
@@ -95,8 +97,11 @@ export const SensorChart = props => {
 	);
 
 	return (
-		<div className={className}
-			ref={chartContainerRef}
-		/>
-	);
+		<div className={className} ref={chartContainerRef}>
+			{
+				data.length == 0 &&
+				<p className="text-center">No se han podido obtener datos del sensor</p>
+			}
+		</div>
+	)		
 };

@@ -66,7 +66,7 @@ export default function SensorsInfo({  }) {
             <header className="h-1/5 w-full flex items-center justify-center">
                 <h1 className="font-bold text-lg">Sensores</h1>
             </header>
-            <main id="sensores-list" className="h-full w-full rounded-md flex justify-center items-center overflow-y-auto">
+            <main id="sensores-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
                 {
                     sensores.length > 0 ?
                     sensores.map((sensor, index) => {
@@ -78,7 +78,7 @@ export default function SensorsInfo({  }) {
                             </div>
                         )
                     })
-                    : <p className="text-center">No hay sensores disponibles</p>
+                    : <p className="w-full h-full flex justify-center items-center">No hay sensores disponibles</p>
                 }
             </main>
         </div>
