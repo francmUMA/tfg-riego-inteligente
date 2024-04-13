@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react"
 import { checkToken } from "../../lib/token"
 import { useRouter } from "next/navigation"
 import { fetchUserInfo, updateNameSurname } from "../../lib/userInfo"
+import Checkbox from "../../ui/Checkbox"
 
 export default function Page() {
     const [eventos, setEventos] = useState([
@@ -151,9 +152,6 @@ export default function Page() {
                     w-full mt-2 px-3 py-2 bg-transparent text-gray-500/50 outline-none border shadow-sm rounded-lg `}/>
                 </div>
                 </form>
-                <div className="w-full border mr-10">
-
-                </div>
                 <section className="w-full h-full p-20 flex gap-y-3 items-center justify-center flex-col">
                     <div className="w-full h-full flex items-center justify-start">
                         <h1 className="text-2xl"> Mis eventos </h1>
@@ -163,13 +161,13 @@ export default function Page() {
                             return(
                                 <div key={index} className="w-full h-full">
                                     <label className="w-full h-full flex justify-start items-center gap-2">
-                                        <input checked={evento.active} type="checkbox" onChange={() => setEventos(eventos.map( (e, i) => {
+                                        <Checkbox active={evento.active} onChange={() => setEventos(eventos.map( (e, i) => {
                                             if (i === index) {
                                                 e.active = !e.active
                                             }
                                             return e
                                         }))}/>
-                                        <p>{evento.name}</p>
+                                        <p className="px-5">{evento.name}</p>
                                     </label>
                                 
                                 </div>
