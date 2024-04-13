@@ -42,7 +42,7 @@ export default function Page() {
                     <SensorsInfo />
                 </div>
             </section>
-            <section className="w-full h-full border shadow-md flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
+            <section className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center overflow-hidden">
                     <SensorChart className="w-full h-full flex items-center justify-center" id={"f692dcb3-7a9b-4ce1-a5f8-1c7a62adac58"}/>
             </section>
         </main>
