@@ -151,7 +151,7 @@ export default function Page() {
                     w-full mt-2 px-3 py-2 bg-transparent text-gray-500/50 outline-none border shadow-sm rounded-lg `}/>
                 </div>
                 </form>
-                <div className="w-full border mr-10 ">
+                <div className="w-full border mr-10">
 
                 </div>
                 <section className="w-full h-full p-20 flex gap-y-3 items-center justify-center flex-col">
