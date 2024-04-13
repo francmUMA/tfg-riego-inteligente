@@ -8,19 +8,19 @@ import { fetchUserInfo, updateNameSurname } from "../../lib/userInfo"
 export default function Page() {
     const [eventos, setEventos] = useState([
         { 
-            "name": "Evento 1",
+            "name": "Apertura o Cierre de actuadores",
             "active": true,
         },
         {
-            "name": "Evento 2",
+            "name": "Fallo en la apertura o en el cierre de los actuadores",
             "active": true,
         },
         {
-            "name": "Evento 3",
+            "name": "Fallo en la lectura de los sensores",
             "active": true,
         },
         {
-            "name": "Evento 4",
+            "name": "Error al añadir o eliminar algún dispositivo, sensor, actuador, cultivo o área",
             "active": false,
         }
     ])
@@ -85,8 +85,8 @@ export default function Page() {
     }, [])
 
     return (
-        <main className="w-full h-full flex justify-center items-center">
-            <div className="w-5/6 h-full flex flex-col border rounded-md shadow-md bg-gray-50">
+        <main className="px-10 w-full h-full flex justify-center items-center">
+            <div className="w-full h-full flex flex-col border rounded-md shadow-md bg-gray-50 overflow-auto">
                 <div className="mx-20 my-12 flex flex-row justify-between">
                     <h1 className="text-2xl">
                         Información de la cuenta
@@ -151,6 +151,9 @@ export default function Page() {
                     w-full mt-2 px-3 py-2 bg-transparent text-gray-500/50 outline-none border shadow-sm rounded-lg `}/>
                 </div>
                 </form>
+                <div className="w-full border mr-10 ">
+
+                </div>
                 <section className="w-full h-full p-20 flex gap-y-3 items-center justify-center flex-col">
                     <div className="w-full h-full flex items-center justify-start">
                         <h1 className="text-2xl"> Mis eventos </h1>
