@@ -1,3 +1,5 @@
+import { notify } from "./notify"
+
 export async function getDevices (token: string) {
     let options = {
         method: 'GET',
@@ -41,8 +43,10 @@ export async function createDevice (id: string, name: string, ip: string, token:
     console.log(options)
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/", options)
     if (response.status == 200) {
+        notify("Dispositivo creado", "success")
         return true
     } else {
+        notify("Error al crear dispositivo", "error")
         return false
     }
 }
@@ -56,8 +60,10 @@ export async function deleteDevice (id: string, token: string) {
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/" + id, options)
     if (response.status == 200) {
+        notify("Dispositivo eliminado", "success")
         return true
     } else {
+        notify("Error al eliminar dispositivo", "error")
         return false
     }
 }

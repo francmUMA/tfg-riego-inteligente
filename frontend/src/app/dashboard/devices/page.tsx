@@ -7,9 +7,10 @@ import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
 import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { Dialog, DialogTitle } from "@mui/material"
-import { MdAddLocationAlt } from "react-icons/md";
-import { Area, addArea, getAreas } from "../../lib/areasUtils"
+import { Area, getAreas } from "../../lib/areasUtils"
 import { IoIosAddCircleOutline } from "react-icons/io"
+import { ToastContainer } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
     const [devices, setDevices] = useState([])
@@ -212,11 +213,8 @@ export default function Page() {
             const token = getCookie("token")
             let addDevice = await createDevice(id, name, ip, token as string)
             if (addDevice) {
-                alert("Dispositivo añadido correctamente")
                 fetchDevices(token as string)
                 setIsOpenAddDeviceDialog(false)
-            } else {
-                alert("No se ha podido añadir el dispositivo")
             }
         }
     }
@@ -225,11 +223,8 @@ export default function Page() {
         const token = getCookie("token")
         let res = await deleteDevice(id, token as string)
         if (res) {
-            alert("Dispositivo eliminado correctamente")
             fetchDevices(token as string)
-        } else {
-            alert("No se ha podido eliminar el dispositivo")
-        }
+        } 
     }
     // ----------------------------- Update IP -----------------------------------------------------
     const [newIp, setNewIp] = useState("")
@@ -403,53 +398,56 @@ export default function Page() {
     // ---------------------------------------------------------------------------------------------
 
     return (
-        <main className="flex flex-col gap-y-2">
-            {AddDeviceDialog()}
-            {UpdateDeviceAreaDialog()}
-            {UpdateIpDialog()}
-            <div className="">
-                <div className="flex gap-3 justify-end flex-grow">
-                    <button 
-                        onClick={handleAddDeviceButton} 
-                        className="w-12 h-12 flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                            <IoIosAddCircleOutline size={24} className="w-6"/>
-                    </button>
-                    <button
-                        onClick={updateDevicesButton}
-                        className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}
-                        >
-                        <ArrowPathIcon
-                            className={`w-6`} 
-                            style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
-                    </button>
+        <main className="h-full">
+            <ToastContainer />
+            <div className="flex flex-col gap-y-2">
+                {AddDeviceDialog()}
+                {UpdateDeviceAreaDialog()}
+                {UpdateIpDialog()}
+                <div className="">
+                    <div className="flex gap-3 justify-end flex-grow">
+                        <button 
+                            onClick={handleAddDeviceButton} 
+                            className="w-12 h-12 flex justify-center items-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
+                                <IoIosAddCircleOutline size={24} className="w-6"/>
+                        </button>
+                        <button
+                            onClick={updateDevicesButton}
+                            className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}
+                            >
+                            <ArrowPathIcon
+                                className={`w-6`} 
+                                style={{ transition: 'transform 0.7s ease', transform: `rotate(${rotation}deg)`}}/>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-            {
-                devices.map((devices, index) => {
-                    return (
-                        <div key={index} className="w-full h-72 border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
-                            <div className="w-full h-full row-span-3">
-                                <Link
-                                    key={devices}
-                                    href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
-                                    className=""
-                                >
-                                    {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
-                                </Link>
+                <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                {
+                    devices.map((devices, index) => {
+                        return (
+                            <div key={index} className="w-full h-72 border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
+                                <div className="w-full h-full row-span-3">
+                                    <Link
+                                        key={devices}
+                                        href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
+                                        className=""
+                                    >
+                                        {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
+                                    </Link>
+                                </div>
+                                <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
+                                    <h1 className="col-span-4 p-5 text-2xl">{devices.name}</h1>
+                                    <button
+                                        onClick={() => handleDeviceInfoButton(index)}
+                                        className="border-l flex justify-center items-center rounded-md hover:bg-gray-50">
+                                        <EllipsisVerticalIcon className="w-1/2 h-1/2"/>
+                                    </button>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
-                                <h1 className="col-span-4 p-5 text-2xl">{devices.name}</h1>
-                                <button
-                                    onClick={() => handleDeviceInfoButton(index)}
-                                    className="border-l flex justify-center items-center rounded-md hover:bg-gray-50">
-                                    <EllipsisVerticalIcon className="w-1/2 h-1/2"/>
-                                </button>
-                            </div>
-                        </div>
-                    )
-                })
-            }
+                        )
+                    })
+                }
+                </div>
             </div>
         </main>
     )
