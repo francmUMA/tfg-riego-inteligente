@@ -22,5 +22,29 @@ export default db.define("Usuario", {
     },
     Longitud: {
         type: DataTypes.FLOAT
-    }
+    },
+    event1: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    event2: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    event3: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    event4: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    event5: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    event6: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
 })
