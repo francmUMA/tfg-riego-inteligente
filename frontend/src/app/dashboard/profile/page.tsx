@@ -9,7 +9,7 @@ import Checkbox from "../../ui/Checkbox"
 export default function Page() {
     const [eventos, setEventos] = useState([
         { 
-            "name": "Apertura o Cierre de actuadores",
+            "name": "Apertura o cierre de actuadores correctamente",
             "active": true,
         },
         {
@@ -22,6 +22,14 @@ export default function Page() {
         },
         {
             "name": "Error al añadir o eliminar algún dispositivo, sensor, actuador, cultivo o área",
+            "active": false,
+        },
+        {
+            "name": "Error de modificación de algún dispositivo, sensor, actuador, cultivo o área",
+            "active": false,
+        },
+        {
+            "name": "Pérdida de conexión con algún dispositivo",
             "active": false,
         }
     ])
