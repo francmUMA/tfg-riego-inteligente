@@ -1,3 +1,4 @@
+import e from "cors";
 import { getTokenInfo } from "../../token/controllers/tokenController.js";
 import userModel  from "../models/userModel.js";
 import bcrypt from "bcrypt";
@@ -256,6 +257,102 @@ export const updateUserPosition = async (req, res) => {
         }
         await userModel.update({ Latitud: req.body.Latitud, Longitud: req.body.Longitud }, { where: { NIF: nif } })
         res.status(200).send("Position updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/**
+ * 
+ * @param {
+ *  * event: int
+ *  * value: int
+ * } req 
+ *
+ */
+export const updateEvent = async (req, res) => {
+    //------------------------------------- Validar token ---------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------------------------------------------------------
+    //------------------------------------- Validar datos ---------------------------------------------------------
+    if (req.params.event === undefined || req.params.event === null) {
+        res.status(400).send("Missing event")
+        return
+    }
+    if (req.body.value === undefined || req.body.value === null) {
+        res.status(400).send("Missing value")
+        return
+    }
+    // ------------------------------------ Actualizar evento ---------------------------------------------------------
+    try {
+        let user = await userModel.findOne({ where: { NIF: nif } })
+        if (user === null) {
+            res.status(404).send("User not found")
+            return
+        }
+        if (req.params.event == 1) {
+            user.event1 = req.body.value
+        } else if (req.params.event == 2) {
+            user.event2 = req.body.value
+        } else if (req.params.event == 3) {
+            user.event3 = req.body.value
+        } else if (req.params.event == 4) {
+            user.event4 = req.body.value
+        } else if (req.params.event == 5) {
+            user.event5 = req.body.value
+        } else if (req.params.event == 6) {
+            user.event6 = req.body.value
+        } else {
+            res.status(400).send("Invalid event")
+            return
+        }
+        user.save() 
+        res.status(200).send("Event updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+export const getEventsValue = async (req, res) => {
+    //------------------------------------- Validar token ---------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------------------------------------------------------
+    try {
+        let user = await userModel.findOne({ where: { NIF: nif } })
+        if (user === null) {
+            res.status(404).send("User not found")
+            return
+        }
+        res.status(200).json({
+            event1: user.event1,
+            event2: user.event2,
+            event3: user.event3,
+            event4: user.event4,
+            event5: user.event5,
+            event6: user.event6
+        })
     } catch (error) {
         res.status(500).send(error.message)
     }
