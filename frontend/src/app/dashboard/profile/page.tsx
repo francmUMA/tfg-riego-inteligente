@@ -3,7 +3,7 @@ import { getCookie } from "cookies-next"
 import { Suspense, useEffect, useState } from "react"
 import { checkToken } from "../../lib/token"
 import { useRouter } from "next/navigation"
-import { fetchUserInfo, getEvents, updateNameSurname } from "../../lib/userInfo"
+import { fetchUserInfo, getEvents, updateEvent, updateNameSurname } from "../../lib/userInfo"
 import Checkbox from "../../ui/Checkbox"
 
 export default function Page() {
@@ -88,7 +88,10 @@ export default function Page() {
         const fetchEvents = async (token: string) => {
             let data = await getEvents(token)
             if (data != undefined) {
-                setEventos(data)
+                setEventos(eventos.map((evento, index) => {
+                    evento.active = data[index]
+                    return evento 
+                }))
             }
         }
 
@@ -181,6 +184,7 @@ export default function Page() {
                                         <Checkbox active={evento.active} onChange={() => setEventos(eventos.map( (e, i) => {
                                             if (i === index) {
                                                 e.active = !e.active
+                                                updateEvent(index + 1, e.active ? 1 : 0)
                                             }
                                             return e
                                         }))}/>

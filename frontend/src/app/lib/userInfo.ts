@@ -1,3 +1,5 @@
+import { getCookie } from "cookies-next"
+
 export const fetchUserInfo = async (token: string) => {
     let options = {
         method: 'GET',
@@ -45,12 +47,34 @@ export const getEvents = async (token: string) => {
     if (request.status === 200) {
         let response = await request.json()
         let data = []
-        for (let event of response) {
-            data.push(event)
-        }
-        console.log(data)
+        data.push(response.event1)
+        data.push(response.event2)
+        data.push(response.event3)
+        data.push(response.event4)
+        data.push(response.event5)
+        data.push(response.event6)
         return data
     } else {
         return undefined
     }
 }
+
+export const updateEvent = async (event: number, value: number) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            value: value
+        })
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/users/events/" + event, options)
+    if (request.status === 200) {
+        return true
+    } else {
+        return false
+    }
+} 
