@@ -1,4 +1,5 @@
 import { getCookie } from "cookies-next"
+import { notify } from "./notify"
 
 export const fetchUserInfo = async (token: string) => {
     let options = {
@@ -12,6 +13,7 @@ export const fetchUserInfo = async (token: string) => {
         let response = await request.json()
         return response
     } else {
+        notify("Error al obtener la información del usuario", "error")
         return undefined
     }
 }
@@ -30,8 +32,10 @@ export const updateNameSurname = async (name: string, surname: string, token: st
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/users/", options)
     if (request.status === 200) {
+        notify("Usuario actualizado", "success")
         return true
     } else {
+        notify("Error al actualizar el usuario", "error")
         return false
     }
 }
@@ -55,6 +59,7 @@ export const getEvents = async (token: string) => {
         data.push(response.event6)
         return data
     } else {
+        notify("Error al obtener los eventos", "error")
         return undefined
     }
 }
@@ -75,6 +80,7 @@ export const updateEvent = async (event: number, value: number) => {
     if (request.status === 200) {
         return true
     } else {
+        notify("Error al actualizar el evento", "error")
         return false
     }
 } 

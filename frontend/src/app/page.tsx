@@ -24,7 +24,6 @@ export default function Page() {
                     <Image className="rounded-xl shadow-xl border" src={"/landing_image.png"} alt="" width="450" height="0"></Image>
                 </div>
             </div>
-            
             <div className="bg-white">
                 <Footer />
             </div>

@@ -78,6 +78,7 @@ export default function RegisterForm() {
                         </div>
                         <div className="mt-5 space-y-2">
                             <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Inicia Sesion</h3>
+                            <p className="">No tienes cuenta? <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">Regístrate</a></p>
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-x-3">
@@ -122,6 +123,7 @@ export default function RegisterForm() {
                         </button>
                     </div>
                     <div className="relative">
+                        
                         <span className="block w-full h-px bg-gray-300"></span>
                         <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto">O continúa con</p>
                     </div>

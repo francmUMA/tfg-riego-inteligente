@@ -61,7 +61,7 @@ export default function DevicesInfo({  }) {
                                 </div>
                             )
                         })
-                    : <p className="text-center">No hay dispositivos</p>
+                    : <p className="w-full h-full flex justify-center items-center">No hay dispositivos</p>
                 }
             </main>
         </div>

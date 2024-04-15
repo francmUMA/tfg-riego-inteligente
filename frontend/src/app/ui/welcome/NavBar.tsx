@@ -1,26 +1,71 @@
 'use client'
 import { useState } from 'react'
 import Image from 'next/image'
+import { IoReorderThree } from "react-icons/io5"
+
+const navigation = [
+    { title: "Tecnología", path: "" },
+    { title: "Sobre nosotros", path: "" },
+    { title: "Contacto", path: "" },
+]
+
+const DropdownMenu = () => {
+    // Estado para controlar si el menú está abierto o cerrado
+    const [isOpen, setIsOpen] = useState(false);
+  
+    // Función para alternar el estado del menú
+    const toggleMenu = () => {
+      setIsOpen(!isOpen);
+    };
+  
+    return (
+      <div className='h-full w-full'>
+        {/* Botón para abrir/cerrar el menú */}
+        <button onClick={toggleMenu} className='mr-4 flex justify-center items-center'>
+            <IoReorderThree size={33} />
+        </button>
+        {/* El contenido del menú, que aparecerá cuando isOpen sea true */}
+        {isOpen && (
+          <ul className="w-32 rounded-md shadow-md overflow-hidden" style={{
+            backgroundColor: 'white',
+            right: '0',
+            top: '50px',
+            position: 'absolute',
+          }}>
+            {
+                navigation.map((item
+                    
+                ) => {
+                    return (
+                        <a href={item.path} className='h-10 w-full flex justify-center items-center hover:bg-gray-100 duration-100 transition ease-in-out rounded-md'>
+                            { item.title }
+                        </a>
+                    )
+                })
+            }
+            <a href='/register' className='h-10 w-full flex justify-center items-center bg-indigo-600 text-white hover:bg-indigo-400 duration-100 transition ease-in-out'>
+                Regístrate
+            </a>
+          </ul>
+        )}
+      </div>
+    );
+  }
 
 export default () => {
 
     const [state, setState] = useState(false)
 
     // Replace javascript:void(0) path with your path
-    const navigation = [
-        { title: "Tecnología", path: "" },
-        { title: "Sobre nosotros", path: "" },
-        { title: "Contacto", path: "" },
-    ]
 
     return (
-        <nav className="w-full border-b md:border-0 md:static">
-            <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
-                <div className="flex items-center justify-center md:py-5">
+        <nav className="w-full border-b md:border-0 max-h-20">
+            <div className="items-center  max-h-20 max-w-screen-xl mx-auto flex flex-row md:px-8">
+                <div className="flex w-full max-h-20 items-center justify-start md:py-5">
                     <Image src="/logo.png" alt="" width="80" height="0" />
-                    <h1 className="font-sans text-xl">AquaMind</h1>
+                    <h1 className="font-sans text-xl">Anukis II</h1>
                 </div>
-                <div className={`flex-1 justify-self-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${ state ? 'block' : 'hidden'}`}>
+                <div className={`flex flex-row w-full items-center justify-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${ state ? 'block' : 'hidden'}`}>
                     <ul className="justify-center items-center space-y-8 md:flex md:space-x-6 md:space-y-0">
                         {
                             navigation.map((item, idx) => {
@@ -35,10 +80,13 @@ export default () => {
                         }
                     </ul>
                 </div>
-                <div className="hidden md:inline-block">
+                <div className="hidden md:w-full md:flex md:items-center md:justify-end">
                     <a href="/register" className="py-3 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow">
                         Regístrate
                     </a>
+                </div>
+                <div className='md:hidden h-full'>
+                    <DropdownMenu />
                 </div>
             </div>
       </nav>
