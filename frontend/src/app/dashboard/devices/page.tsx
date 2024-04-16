@@ -400,7 +400,7 @@ export default function Page() {
     return (
         <main className="h-full">
             <ToastContainer />
-            <div className="flex flex-col gap-y-2">
+            <div className="w-full h-full flex flex-col gap-y-2">
                 {AddDeviceDialog()}
                 {UpdateDeviceAreaDialog()}
                 {UpdateIpDialog()}
@@ -421,12 +421,18 @@ export default function Page() {
                         </button>
                     </div>
                 </div>
-                <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div className="w-full h-full flex flex-none">
                 {
                     devices.map((devices, index) => {
                         return (
-                            <div key={index} className="w-full h-72 border rounded-md bg-gray-50 flex justify-center items-center grid grid-rows-4 hover:bg-gray-100">
-                                <div className="w-full h-full row-span-3">
+                            <div
+                            style={
+                                {
+                                    background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
+                                }
+                            }
+                             key={index} className="w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
+                                <div className="w-full h-full ">
                                     <Link
                                         key={devices}
                                         href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
@@ -435,18 +441,54 @@ export default function Page() {
                                         {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
                                     </Link>
                                 </div>
-                                <div className="grid grid-cols-5 flex justify-between bg-white w-full h-full border-t rounded-md">
-                                    <h1 className="col-span-4 p-5 text-2xl">{devices.name}</h1>
+                                <div className="w-full h-14 flex flex-row bg-white border-t">
+                                    <h1 className="w-full h-full flex px-4 font-medium text-lg justify-start items-center">{devices.name}</h1>
                                     <button
                                         onClick={() => handleDeviceInfoButton(index)}
-                                        className="border-l flex justify-center items-center rounded-md hover:bg-gray-50">
-                                        <EllipsisVerticalIcon className="w-1/2 h-1/2"/>
+                                        className="h-full flex justify-end items-center px-4 border-l rounded-md hover:bg-gray-100 transition ease-in-out duration-150">
+                                        <EllipsisVerticalIcon className="w-8" />
                                     </button>
                                 </div>
                             </div>
                         )
                     })
                 }
+                    <div style={
+                                {
+                                    background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
+                                }
+                            }
+                             className="w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
+                                
+                                
+                    </div>
+                    <div
+                            style={
+                                {
+                                    background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
+                                }
+                            }
+                             className="w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
+                            
+                    </div>
+                    <div style={
+                                {
+                                    background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
+                                }
+                            }
+                             className="w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
+                                
+                                
+                    </div>
+                    <div
+                            style={
+                                {
+                                    background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
+                                }
+                            }
+                             className="w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
+                            
+                    </div>
                 </div>
             </div>
         </main>
