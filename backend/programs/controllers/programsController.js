@@ -1,3 +1,5 @@
+import { v4 } from "uuid"
+import programsModel from "../models/programsModel"
 
 /**
  * 
@@ -15,6 +17,7 @@
  * @param {
  *  name: string,
  *  days: number,
+ *  duration: number,
  *  startTime: unix timestamp,
  * } req 
  */
@@ -58,6 +61,22 @@ export const addProgram = async (req, res) => {
 
     if (req.body.duration < 0) {
         res.status(400).send("Invalid duration")
+        return
+    }
+
+    //-------------------- Crear programa -------------------------
+    let uuid = v4()
+    try {
+        await programsModel.create({
+            id: uuid,
+            name: req.body.name,
+            days: req.body.days,
+            startTime: req.body.startTime,
+            duration: req.body.duration
+        })
+        res.status(200).send(uuid)
+    } catch (error) {
+        res.status(500).send("Internal error")
         return
     }
 }

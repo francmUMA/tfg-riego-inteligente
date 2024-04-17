@@ -1,7 +1,7 @@
 import db from "../../database/db.js"
 import { DataTypes } from "sequelize"
 
-const monitorModel = db.define("Programs", {
+const programsModel = db.define("Programs", {
     id: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -21,9 +21,9 @@ const monitorModel = db.define("Programs", {
         allowNull: false
     },
     duration: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
         allowNull: false
     }
 })
 
-export default monitorModel
+export default programsModel
