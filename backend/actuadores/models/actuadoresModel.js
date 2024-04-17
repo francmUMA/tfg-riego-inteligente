@@ -34,5 +34,8 @@ export default db.define("Actuadores", {
     name: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    activeProgram: {
+        type: DataTypes.STRING
     }
 })
