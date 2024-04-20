@@ -6,6 +6,41 @@ import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import { v4, validate } from "uuid"
 import { publish_msg } from "../../mqtt.js"
 
+/**
+ * 
+ * @description: Devuelve los actuadores de un usuario. Solamente necesita el token de autenticación
+ * 
+ */
+export const getUserActuadores = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // Buscar los actuadores de este usuario
+    try {
+        let allActuadores = await actuadoresModel.findAll()
+        let actuadores = []
+        // Filtrar los que tenga un device que pertenezca al usuario
+        for (let i = 0; i < allActuadores.length; i++) {
+            let device = await deviceModel.findOne({ where: { id: allActuadores[i].device, Usuario: nif } })
+            if (device !== null) {
+                actuadores.push(allActuadores[i])
+            }
+        }
+        res.status(200).send(actuadores)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
 /*
     @description: Devuelve los actuadores de un dispositivo
     @params: {

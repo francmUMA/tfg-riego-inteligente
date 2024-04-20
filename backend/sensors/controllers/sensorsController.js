@@ -765,3 +765,39 @@ export const updateSensorAvailability = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/** 
+    @description: Devuelve todos los sensores de un usuario
+*/
+
+export const getUserSensors = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    // Buscar los sensores de este usuario
+    try {
+        let sensors = []
+        let allSensors = await sensorsModel.findAll()
+        for (let i = 0; i < allSensors.length; i++) {
+            let device = await deviceModel.findOne({ where: { id: allSensors[i].device, Usuario: nif } })
+            if (device !== null) {
+                sensors.push(allSensors[i])
+            }
+        }
+        res.status(200).send(sensors)
+    
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
