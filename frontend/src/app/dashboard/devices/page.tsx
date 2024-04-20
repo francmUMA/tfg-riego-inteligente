@@ -421,9 +421,7 @@ export default function Page() {
                         </button>
                     </div>
                 </div>
-                <div className="w-full h-full p-4 justify-center items-center md:items-start grid md:grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-4 overflow-y-auto"
-                    
-                >
+                <div className="w-full h-full p-4 justify-center items-center md:items-start grid md:grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-4 overflow-y-auto">
                 {
                     devices.map((devices, index) => {
                         return (

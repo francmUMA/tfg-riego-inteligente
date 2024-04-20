@@ -4,6 +4,8 @@ import { MdMoreTime } from "react-icons/md"
 import { ElemSelector } from "../../ui/dashboard/info/ElemSelector";
 import { useEffect, useState } from "react";
 import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
+import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
+import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
 
 export default function Page (){
 
@@ -22,14 +24,15 @@ export default function Page (){
                     <div id="selector" className="w-full flex justify-start items-center">
                         <ElemSelector setElem={setElem} setType={setType}/>
                     </div>
-                    <div id="info" className="border w-full h-full shadow-md rounded-md">
+                    <div id="info" className="w-full">
                         {
                             type == 0 ? <DeviceInfo  device={elem}/>
-                            : type == 1 ? <p>Sensor</p> 
-                            : type == 2 ? <p>Actuador</p>
+                            : type == 1 ? <SensorInfo sensor={elem}/>
+                            : type == 2 ? <ActuadorInfo actuador={elem} />
                             : <p>No hay info</p>
                         }
                     </div>
+                    <div id="map" className="border w-full h-full shadow-md rounded-md"></div>
                     <div id="chart" className="border w-full h-full shadow-md rounded-md"></div>
                 </div>
                 <div id="programs-logs" className="w-full lg:w-3/4 h-full flex flex-col gap-y-3 justify-center items-center">
