@@ -94,7 +94,7 @@ pub fn create_config_file() -> bool {
     }
 
     // Registrar el device en el server
-    let aux_client = MqttClient::new("192.168.1.148".to_string(), uuid.to_string().clone());
+    let aux_client = MqttClient::new("172.16.52.142".to_string(), uuid.to_string().clone());
     if aux_client.is_none() {
         println!("Error al crear el cliente mqtt");
         return false;
