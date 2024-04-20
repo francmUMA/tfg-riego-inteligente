@@ -29,7 +29,7 @@ export default function Page (){
                             type == 0 ? <DeviceInfo  device={elem}/>
                             : type == 1 ? <SensorInfo sensor={elem}/>
                             : type == 2 ? <ActuadorInfo actuador={elem} />
-                            : <p>No hay info</p>
+                            : <p className="w-full text-center">Selecciona un elemento</p>
                         }
                     </div>
                     <div id="map" className="border w-full h-full shadow-md rounded-md"></div>
