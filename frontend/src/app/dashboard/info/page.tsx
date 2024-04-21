@@ -2,7 +2,7 @@
 import { ToastContainer } from "react-toastify";
 import { MdMoreTime } from "react-icons/md"
 import { ElemSelector } from "../../ui/dashboard/info/ElemSelector";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
@@ -11,10 +11,6 @@ export default function Page (){
 
     const [elem, setElem] = useState(undefined)
     const [type, setType] = useState(undefined)
-
-    useEffect(() => {
-        console.log("Tipo: ", type)
-    }, [type])
     
     return (
         <main className="w-full h-full">
@@ -25,12 +21,15 @@ export default function Page (){
                         <ElemSelector setElem={setElem} setType={setType}/>
                     </div>
                     <div id="info" className="w-full">
-                        {
-                            type == 0 ? <DeviceInfo  device={elem}/>
-                            : type == 1 ? <SensorInfo sensor={elem}/>
-                            : type == 2 ? <ActuadorInfo actuador={elem} />
-                            : <p className="w-full text-center">Selecciona un elemento</p>
-                        }
+                        <Suspense>
+                            {
+                                type == 0 ? <DeviceInfo  device={elem}/>
+                                : type == 1 ? <SensorInfo sensor={elem}/>
+                                : type == 2 ? <ActuadorInfo actuador={elem} />
+                                : <p className="w-full text-center">Selecciona un elemento</p>
+                            }
+                        </Suspense>
+                        
                     </div>
                     <div id="map" className="border w-full h-full shadow-md rounded-md"></div>
                     <div id="chart" className="border w-full h-full shadow-md rounded-md"></div>

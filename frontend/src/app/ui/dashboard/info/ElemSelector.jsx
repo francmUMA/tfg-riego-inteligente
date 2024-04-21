@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import Select from "react-select"
 import { getCookie } from "cookies-next"
-import { getDevices } from "@/src/app/lib/devicesUtils"
+import { getDeviceInfo, getDevices } from "@/src/app/lib/devicesUtils"
+import { getUserActuadores } from "@/src/app/lib/actuadorUtils"
 
 export const ElemSelector = ({setElem, setType}) => {
     const [options, setOptions] = useState([])
@@ -10,7 +11,12 @@ export const ElemSelector = ({setElem, setType}) => {
         const getAllElems = async () => {
             const token = getCookie("token")
             let devices = await getDevices(token)
-            setOptions(devices.map(device => ({type: 0, value: device.id, label: device.name})))
+            let actuadores = await getUserActuadores()
+            console.log("Actuadores: ", actuadores)
+            let elems = devices.concat(actuadores)
+            elems = devices.map(device => ({type: 0, value: device, label: device.name}))
+            elems = elems.concat(actuadores.map(actuador => ({type: 2, value: actuador, label: actuador.name})))
+            setOptions(elems)
         }
         getAllElems()
     }, [])
@@ -22,10 +28,15 @@ export const ElemSelector = ({setElem, setType}) => {
     // ]
     
     const handleOnChange = (selectedOption) => {
-        selectedOption == null 
-            ? setType(undefined) 
-            : setType(selectedOption.type)
+        if (selectedOption == null ){
+            setType(undefined)
+            setElem(undefined)
+        } else {
+            setType(selectedOption.type)
+            setElem(selectedOption.value)
+        } 
     }
+
     return (
         <Select
             onChange={handleOnChange}

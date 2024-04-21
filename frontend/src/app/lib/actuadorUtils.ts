@@ -1,3 +1,5 @@
+import { getCookie } from "cookies-next"
+
 export interface Actuador {
     id: string,
     mode: number,
@@ -21,6 +23,23 @@ export async function getActuadores(device: string, token: string) {
         }
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/" + device, options)
+    if (response.status === 200) {
+        return await response.json()
+    } else {
+        return []
+    }
+}
+
+export async function getUserActuadores() {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'  
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/all", options)
     if (response.status === 200) {
         return await response.json()
     } else {
