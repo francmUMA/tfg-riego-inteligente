@@ -13,6 +13,7 @@ import { publish_msg } from "../../mqtt.js"
  */
 export const getUserActuadores = async (req, res) => {
     // Validar token
+    console.log("All")
     let nif
     try {
         nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))

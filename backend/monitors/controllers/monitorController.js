@@ -79,7 +79,6 @@ export const addValue = async (data) => {
             console.log(error)
         }
     }
-    console.log("No se ha podido añadir el valor")
 }
 
 /**

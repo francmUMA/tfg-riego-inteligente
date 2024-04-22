@@ -3,6 +3,7 @@ import { getSensors, addSensor, deleteSensor, updateSensorArea, updateSensorDevi
 
 const router = express.Router();
 
+router.get("/all", getUserSensors)
 router.get("/:device", getSensors)
 router.post("/:device", addSensor)
 router.delete("/:device", deleteSensor)
@@ -13,6 +14,5 @@ router.put("/position", updateSensorPosition)
 router.put("/name", updateSensorName)
 router.put("/availability", updateSensorAvailability)
 router.put("/value", updateSensorValue)
-router.get("/all", getUserSensors)
 
 export default router;
