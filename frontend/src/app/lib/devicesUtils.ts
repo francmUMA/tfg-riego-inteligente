@@ -1,3 +1,4 @@
+import { getCookie } from "cookies-next"
 import { notify } from "./notify"
 
 export async function getDevices (token: string) {
@@ -166,4 +167,13 @@ export async function updateDeviceArea (id: string, area: string, token: string)
     } else {
         return false
     }
+}
+
+export const getDeviceName = async (device: string) => {
+    const token = getCookie("token")
+    let info = await getDeviceInfo(device, token as string)
+    if (info !== undefined) {
+        return info.name
+    }
+    return "Sin device"
 }

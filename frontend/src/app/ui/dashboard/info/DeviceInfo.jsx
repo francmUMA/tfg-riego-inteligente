@@ -38,7 +38,7 @@ const Connect = ({connect}) => {
     )
 }
 
-const getCropName = async (area) => {
+export const getCropName = async (area) => {
     if (area === undefined) return "Sin cultivo"
     const crop = await getCropByArea(area)
     if (crop === undefined) return "Sin cultivo"

@@ -2,7 +2,7 @@
 import { ToastContainer } from "react-toastify";
 import { MdMoreTime } from "react-icons/md"
 import { ElemSelector } from "../../ui/dashboard/info/ElemSelector";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";

@@ -1,3 +1,5 @@
+import { getCookie } from "cookies-next"
+
 export interface Sensor {
     id: string,
     type: string,
@@ -9,6 +11,23 @@ export interface Sensor {
     name: string,
     value: number,
     available: number
+}
+
+export async function getUserSensors() {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'  
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/all", options)
+    if (response.status === 200) {
+        return await response.json()
+    } else {
+        return []
+    }
 }
 
 export async function getSensors(device: string, token: string) {
