@@ -145,7 +145,6 @@ export const getCropByArea = async (areaId: string) => {
     let area = await getArea(areaId, token as string)
     if (area !== undefined) {
         let crop = await getCrop(area.crop)
-        console.log("Crop by area", crop)
         return crop
     } 
     return undefined

@@ -44,7 +44,6 @@ export const ElemSelector = ({setElem, setType}) => {
             let devices = await getDevices(token)
             let actuadores = await getUserActuadores()
             let sensors = await getUserSensors()
-            console.log("Actuadores: ", actuadores)
             let elems = devices.concat(actuadores)
             elems = devices.map(device => ({type: 0, value: device, label: Label({type: 0, value: device})}))
             elems = elems.concat(actuadores.map(actuador => ({type: 2, value: actuador, label: Label({type: 2, value: actuador})})))

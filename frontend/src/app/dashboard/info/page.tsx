@@ -6,6 +6,9 @@ import { Suspense, useState } from "react";
 import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
+import { SensorChart } from "../../ui/dashboard/SensorChart";
+import { RotateIconUpdateButton } from "../../ui/dashboard/RotateIconUpdateButton";
+import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 
 export default function Page (){
 
@@ -13,12 +16,14 @@ export default function Page (){
     const [type, setType] = useState(undefined)
     
     return (
-        <main className="w-full h-full">
+        <main className="w-full h-full overflow-auto">
             <ToastContainer />
             <section className="w-full h-full flex flex-col lg:flex-row gap-3">
                 <div id="elems-info" className="w-full h-full flex flex-col gap-y-3 justify-center items-center">
                     <div id="selector" className="w-full flex justify-start items-center">
-                        <ElemSelector setElem={setElem} setType={setType}/>
+                        <Suspense>
+                            <ElemSelector setElem={setElem} setType={setType}/>
+                        </Suspense>
                     </div>
                     <div id="info" className="w-full">
                         <Suspense>
@@ -29,16 +34,27 @@ export default function Page (){
                                 : <p className="w-full text-center">Selecciona un elemento</p>
                             }
                         </Suspense>
-                        
                     </div>
-                    <div id="map" className="border w-full h-full shadow-md rounded-md"></div>
-                    <div id="chart" className="border w-full h-full shadow-md rounded-md"></div>
+                    <div id="map" className="border w-full h-full min-h-52 shadow-md rounded-md overflow-hidden">
+                       {
+                            elem !== undefined 
+                                ? <ElemMap elem={elem}/>
+                                : <p className="w-full text-center">Selecciona un elemento</p>
+                       } 
+                    </div>
+                    <div id="chart" className="border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden">
+                        {
+                            type == 1 && elem !== undefined &&
+                            <SensorChart id={elem.id} className="w-full h-full"/>
+                        }
+                    </div>
                 </div>
                 <div id="programs-logs" className="w-full lg:w-3/4 h-full flex flex-col gap-y-3 justify-center items-center">
-                    <div id="buttons" className="w-full h-1/6 min-h-10 flex justify-end items-center">
-                        <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
+                    <div id="buttons" className="w-full h-1/6 min-h-10 flex flex-row gap-x-2 justify-end items-center">
+                        <button className={`shadow-md rounded-md h-12 w-12 flex  justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
                             <MdMoreTime size={24} className="text-white"/>
                         </button>
+                        <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/>
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md"></div>
                     <div id="logs" className="border w-full h-full shadow-md rounded-md"></div>
