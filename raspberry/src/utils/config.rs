@@ -76,6 +76,8 @@ pub fn create_config_file() -> bool {
         return false;
     }
 
+    println!("CONFIGURACIÓN DEL BROKER: {}", broker_config.unwrap());
+
     let broker_config = broker_config.unwrap();
     let broker_config: Result<Value, _> = serde_json::from_str(broker_config.as_str());
 
