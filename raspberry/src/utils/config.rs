@@ -1,4 +1,5 @@
 use std::fs;
+use std::io::Read;
 use serde_json::Value;
 use serde_json::json;
 
@@ -69,6 +70,31 @@ pub fn create_config_file() -> bool {
         return false;
     }
 
+    let broker_config = fs::read_to_string("broker.config");
+    if broker_config.is_err() {
+        println!("Error al leer el archivo de configuración del broker");
+        return false;
+    }
+
+    let broker_config = broker_config.unwrap();
+    let broker_config: Result<Value, _> = serde_json::from_str(broker_config.as_str());
+
+    if broker_config.is_err() {
+        println!("Error al parsear el archivo de configuración del broker");
+        return false;
+    }
+
+    let broker_config = broker_config.unwrap();
+    let broker_ip = broker_config["ip"].as_str();
+
+    if broker_ip.is_none() {
+        println!("No se ha podido obtener la dirección ip del broker");
+        return false;
+    }
+
+    let broker_ip = broker_ip.unwrap();
+
+
     use uuid::Uuid;
     let uuid = Uuid::new_v4();
 
@@ -76,7 +102,7 @@ pub fn create_config_file() -> bool {
         "device_uuid": uuid.to_string(),
         "device_name": "-",
         "nif": "00000000A",
-        "mqtt_broker": "172.16.52.142"
+        "mqtt_broker": broker_ip
     });
 
     let config = serde_json::to_string(&config);
@@ -94,7 +120,7 @@ pub fn create_config_file() -> bool {
     }
 
     // Registrar el device en el server
-    let aux_client = MqttClient::new("172.16.52.142".to_string(), uuid.to_string().clone());
+    let aux_client = MqttClient::new(broker_ip.to_string(), uuid.to_string().clone());
     if aux_client.is_none() {
         println!("Error al crear el cliente mqtt");
         return false;
