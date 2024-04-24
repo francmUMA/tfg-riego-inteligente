@@ -1,6 +1,5 @@
 import { getDeviceName } from "@/src/app/lib/devicesUtils";
 import { NormalInfo, getCropName } from "./DeviceInfo";
-import { IoIosAddCircleOutline } from "react-icons/io"
 import { FaFaucetDrip, FaRobot } from "react-icons/fa6";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { PiPlantDuotone } from "react-icons/pi"

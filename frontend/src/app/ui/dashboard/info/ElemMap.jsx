@@ -20,7 +20,6 @@ export const ElemMap = ({elem}) => {
         orderCoords.map(coord => {
             res_coords.push({lat: coord.Latitud, lng: coord.Longitud})
         })
-        console.log(res_coords)
         return res_coords
     }
 
@@ -45,10 +44,10 @@ export const ElemMap = ({elem}) => {
 
     useEffect(() => {
         fetchAreas()
-    }, [])
+    }, [elem])
 
     return (
-            elem !== undefined 
+            elem !== undefined && elem.Latitud !== undefined && elem.Longitud !== undefined
             ?
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
                 <Map 
@@ -62,23 +61,25 @@ export const ElemMap = ({elem}) => {
                    />
                     {
                         areas !== undefined && areas.map(area => {
-                            <Polygon
-                                key={area.id}
-                                paths={filterOrderCoords(area)}
-                                options={{
-                                    fillColor: '#' + area.color,
-                                    fillOpacity: 0.2,
-                                    strokeColor: '#' + area.color,
-                                    strokeOpacity: 0.4,
-                                    strokeWeight: 2
-                                }}
-                            />
+                            return (
+                                <Polygon
+                                    key={area.id}
+                                    paths={filterOrderCoords(area)}
+                                    options={{
+                                        fillColor: '#' + area.color,
+                                        fillOpacity: 0.2,
+                                        strokeColor: '#' + area.color,
+                                        strokeOpacity: 0.4,
+                                        strokeWeight: 2
+                                    }}
+                                />
+                            )
                         })
                     }
                    
                 </Map>
             </APIProvider>
-            : <p className="w-full h-full flex justify-center items-center">No se ha encontrado el elemento seleccionado</p>
+            : <p className="w-full h-full flex justify-center items-center">No se ha encontrado la posición del elemento</p>
         
     )
 }

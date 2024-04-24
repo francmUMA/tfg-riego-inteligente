@@ -9,6 +9,7 @@ import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
 import { SensorChart } from "../../ui/dashboard/SensorChart";
 import { RotateIconUpdateButton } from "../../ui/dashboard/RotateIconUpdateButton";
 import { ElemMap } from "../../ui/dashboard/info/ElemMap";
+import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 
 export default function Page (){
 
@@ -31,15 +32,15 @@ export default function Page (){
                                 type == 0 ? <DeviceInfo  device={elem}/>
                                 : type == 1 ? <SensorInfo sensor={elem}/>
                                 : type == 2 ? <ActuadorInfo actuador={elem} />
-                                : <p className="w-full text-center">Selecciona un elemento</p>
+                                : <></>
                             }
                         </Suspense>
                     </div>
-                    <div id="map" className="border w-full h-full min-h-52 shadow-md rounded-md overflow-hidden">
+                    <div id="map" className="border w-full h-full flex justify-center items-center min-h-52 shadow-md rounded-md overflow-hidden">
                        {
                             elem !== undefined 
                                 ? <ElemMap elem={elem}/>
-                                : <p className="w-full text-center">Selecciona un elemento</p>
+                                : <p className="w-full text-center">No se ha seleccionado ningún elemento</p>
                        } 
                     </div>
                     <div id="chart" className="border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden">
@@ -57,7 +58,9 @@ export default function Page (){
                         <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/>
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md"></div>
-                    <div id="logs" className="border w-full h-full shadow-md rounded-md"></div>
+                    <div id="logs" className="border w-full h-full shadow-md rounded-md">
+                        <LogInfo elemId={elem !== undefined ? elem.id : undefined} type={type} />
+                    </div>
                 </div>
             </section>
         </main>

@@ -86,7 +86,6 @@ export const SensorChart = props => {
 				lineType: 2
 			});
 
-            console.log("data: ", data)
 			newSeries.setData(data);
 
 			return () => {
