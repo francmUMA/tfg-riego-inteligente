@@ -1,5 +1,5 @@
 import Cpu_temp_Model from '../models/monitorModel.js';
-import { get_nif_by_token } from '../../users/controllers/UserController.js';
+import { get_nif_by_token } from '../../users/controllers/userController.js';
 import { validate } from 'uuid';
 import deviceModel from '../../devices/models/deviceModel.js';
 import monitorModel from '../models/monitorModel.js';

@@ -10,6 +10,7 @@ import sensorsRoutes from "./sensors/routes/sensorsRoutes.js"
 import areasRoutes from "./areas/routes/areasRoutes.js"
 import coordsRoutes from "./coordenadas/routes/coordsRoute.js"
 import cropRoutes from "./crops/routes/cropRoutes.js"
+import logRoutes from "./logs/routes/logRoutes.js"
 import schedule from "node-schedule"
 import { checkDevices } from "./devices/controllers/deviceController.js";
 import { Worker } from 'worker_threads'
@@ -31,6 +32,7 @@ app.use("/api/sensores", sensorsRoutes)
 app.use("/api/areas", areasRoutes)
 app.use("/api/coords", coordsRoutes)
 app.use("/api/crops", cropRoutes)
+app.use("/api/logs", logRoutes)
 
 // Conexion a la base de datos
 try {

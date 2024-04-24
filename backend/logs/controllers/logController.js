@@ -2,6 +2,7 @@ import { v1, validate } from "uuid"
 import deviceModel from "../../devices/models/deviceModel.js"
 import sensorsModel from "../../sensors/models/sensorsModel.js"
 import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
+import { get_nif_by_token } from "../../users/controllers/userController.js"
 import logModel from "../models/logModel.js"
 
 export const addLog = async (logData) => {
@@ -92,3 +93,56 @@ export const addLog = async (logData) => {
         return
     }
 }
+
+/**
+ * @description Obtiene los logs de un dispositivo
+ * @param  deviceId -> identificador del dispositivo
+ * @returns logs -> logs del dispositivo
+ */
+export const getDeviceLogs = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // Comprobar que hay datos
+    if (!req.params.deviceId) {
+        res.status(400).send("Falta el id del dispositivo")
+        return
+    }
+
+    // Comprobar que el id es válido
+    if (!validate(req.params.deviceId)) {
+        res.status(400).send("Id de dispositivo no válido")
+        return
+    }
+
+    // Comprobar que el dispositivo existe
+    try{
+        let device = await deviceModel.findOne({ where: { id: req.params.deviceId } })
+        if (device == null) {
+            res.status(404).send("El dispositivo no existe")
+            return
+        }
+
+        // Obtener los logs
+        let logs = await logModel.findAll({ where: { deviceCode: req.params.deviceId } })
+        if (logs == null) {
+            res.status(404).send("No hay logs")
+            return
+        }
+        res.status(200).send(logs)
+    } catch (error) {
+        res.send(500).send("Error al obtener los logs")
+        return
+    }
+
+} 
