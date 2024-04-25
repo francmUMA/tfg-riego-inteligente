@@ -141,6 +141,14 @@ if (!isMainThread){
         } else if (topic.includes('logs')){
             let logData = JSON.parse(message.toString())
             addLog(logData)
+        } else if (topic.includes('temperature')){
+            let device_id = topic.split('/')[1]
+            let jsonData = JSON.parse(message.toString())
+            addValue({
+                deviceCode: device_id,
+                value: jsonData.value,
+                time: jsonData.time
+            })
         }
         
     })
