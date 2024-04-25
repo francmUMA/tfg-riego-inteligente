@@ -10,6 +10,7 @@ import { SensorChart } from "../../ui/dashboard/SensorChart";
 import { RotateIconUpdateButton } from "../../ui/dashboard/RotateIconUpdateButton";
 import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 import { LogInfo } from "../../ui/dashboard/info/LogInfo";
+import { ChartComponent } from "../../ui/dashboard/devicesCharts";
 
 export default function Page (){
 
@@ -44,9 +45,12 @@ export default function Page (){
                        } 
                     </div>
                     <div id="chart" className="border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden">
-                        {
-                            type == 1 && elem !== undefined &&
-                            <SensorChart id={elem.id} className="w-full h-full"/>
+                        {   
+                            type == 0 && elem !== undefined
+                            ? <ChartComponent id={elem.id}  className="w-full h-full"/>
+                            : type == 1 && elem !== undefined 
+                            ? <SensorChart id={elem.id} className="w-full h-full"/>
+                            : <p className="w-full text-center">No se ha seleccionado ningún elemento</p>
                         }
                     </div>
                 </div>
@@ -58,7 +62,7 @@ export default function Page (){
                         <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/>
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md"></div>
-                    <div id="logs" className="border w-full h-full shadow-md rounded-md">
+                    <div id="logs" className="border w-full h-full max-h-[420px] shadow-md rounded-md">
                         <LogInfo elemId={elem !== undefined ? elem.id : undefined} type={type} />
                     </div>
                 </div>

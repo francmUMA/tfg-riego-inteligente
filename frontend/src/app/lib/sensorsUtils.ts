@@ -171,3 +171,22 @@ export const getSensorLast24hValues = async (id: string, token: string) => {
         return undefined
     }
 }
+
+export const getSensorLogs = async (sensor: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/logs/sensor/" + sensor, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        console.log("logs", data)
+        return data
+    } else {
+        return []
+    }
+}

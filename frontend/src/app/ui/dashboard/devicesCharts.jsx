@@ -1,9 +1,10 @@
 import { createChart, ColorType } from 'lightweight-charts';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState} from 'react';
+import { getTemperatureValues } from '../../lib/devicesUtils';
 
 export const ChartComponent = props => {
 	const {
-		data,
+		id,
         className,
 		colors: {
 			backgroundColor = 'white',
@@ -16,6 +17,22 @@ export const ChartComponent = props => {
 
 	const chartContainerRef = useRef();
 
+	const [data, setData] = useState([])
+    const fetchDeviceData = async (id) => {
+		let newData = await getTemperatureValues(id)
+        if (newData !== undefined) {
+            //Ordenar los datos por fecha
+            newData = newData.sort((a, b) => {
+                return a.time - b.time
+            })
+            setData(newData)
+        }
+    }
+
+	useEffect(() => {
+		fetchDeviceData(id)
+	}, [id])
+
 	useEffect(
 		() => {
 			const chart = createChart(chartContainerRef.current, {
@@ -27,8 +44,8 @@ export const ChartComponent = props => {
 					},
 					textColor,
 				},
-				width: 500,
-				height: 250,
+				width: 0,
+				height: 0,
 				autoSize: true,
 				timeScale: {
 					timeVisible: true,

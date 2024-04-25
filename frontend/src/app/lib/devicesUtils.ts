@@ -190,10 +190,26 @@ export const getDeviceLogs = async (device: string) => {
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/logs/device/" + device, options)
     if (response.status == 200) {
         let data = await response.json()
-        console.log("logs", data)
         return data
     } else {
         return []
     }
+}
 
+export const getTemperatureValues = async (device: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/temperature/all/" + device, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
+    }
 }

@@ -165,3 +165,22 @@ export async function updateActuadorStatus(id: string, status: number, token: st
         return false
     }
 }
+
+export const getActuadorLogs = async (actuador: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/logs/actuador/" + actuador, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        console.log("logs", data)
+        return data
+    } else {
+        return []
+    }
+}

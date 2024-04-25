@@ -22,7 +22,6 @@ export const SensorChart = props => {
     const [data, setData] = useState([])
     const fetchSensorData = async (id, token) => {
         let newData = await getSensorLast24hValues(id, token);
-		console.log("newData: ", newData)
         if (newData !== undefined) {
             //Ordenar los datos por fecha
             newData = newData.sort((a, b) => {
