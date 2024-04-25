@@ -178,12 +178,25 @@ fn main() {
                 }
             }
             let temp_val = get_temperature();
-            let timestamp = create_unix_timestamp();
-            let payload = json!({
-                "time": timestamp,
-                "value": temp_val
-            });
-            client_publisher.lock().unwrap().publish(format!("devices/{}/temperature", device_uuid_clone).as_str(), payload.to_string().as_str());
+            if (temp_val > -1) {
+                let timestamp = create_unix_timestamp();
+                let payload = json!({
+                    "time": timestamp,
+                    "value": temp_val
+                });
+                client_publisher.lock().unwrap().publish(format!("devices/{}/temperature", device_uuid_clone).as_str(), payload.to_string().as_str());
+            } else {
+                println!("Error al obtener la temperatura");
+                let timestamp = create_unix_timestamp();
+                let log_data = json!({
+                    "deviceCode": device_uuid_clone,
+                    "deviceName": "NC",
+                    "logcode": 3429,
+                    "timestamp": timestamp,
+                    "description": format!("Error al obtener la temperatura",),
+                });
+                client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
+            }
             std::thread::sleep(std::time::Duration::from_secs(30));
         }
     });
