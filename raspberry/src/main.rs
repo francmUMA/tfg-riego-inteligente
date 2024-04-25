@@ -1,12 +1,14 @@
 use std::{fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
+use crate::device::temperature::get_temperature;
 use crate::utils::time::create_unix_timestamp;
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
 use paho_mqtt as mqtt;
 use serde_json::{de, json};
 use utils::{config::{create_config_file, read_config_file}, topics::manage_msg};
+use uuid::timestamp;
 use std::time::Duration;
 
 // Definir módulos
@@ -138,7 +140,6 @@ fn main() {
             sleep(Duration::from_secs(30));
         }
         loop {
-            //let time_now = utils::time::create_unix_timestamp();
             for sensor in sensors_publisher.lock().unwrap().iter_mut() {
                 let time_now = utils::time::create_unix_timestamp();
                 let value = sensor.read();
@@ -176,6 +177,13 @@ fn main() {
                     client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
                 }
             }
+            let temp_val = get_temperature();
+            let timestamp = create_unix_timestamp();
+            let payload = json!({
+                "time": timestamp,
+                "value": temp_val
+            });
+            client_publisher.lock().unwrap().publish(format!("devices/{}/temperature", device_uuid_clone).as_str(), payload.to_string().as_str());
             std::thread::sleep(std::time::Duration::from_secs(30));
         }
     });

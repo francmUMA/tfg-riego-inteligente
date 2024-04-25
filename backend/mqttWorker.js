@@ -71,12 +71,20 @@ if (!isMainThread){
                 console.log("No se ha encontrado el dispositivo")
                 return
             }
+
             client.publish(`devices/${device_data.id}/info`, JSON.stringify(device_data), (err) => {
                 if (err) {
                     console.log("No se ha podido enviar la información del dispositivo")
                 }
             })
+
             client.subscribe(`devices/${device_data.id}/available`, (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: devices/" + device_data.id + "/available")
+                }
+            })
+
+            client.subscribe(`devices/${device_data.id}/temperature`, (err) => {
                 if (err) {
                     console.log("No se ha podido suscribir al topic: devices/" + device_data.id + "/available")
                 }

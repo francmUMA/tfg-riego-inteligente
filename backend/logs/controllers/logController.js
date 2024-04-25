@@ -141,8 +141,111 @@ export const getDeviceLogs = async (req, res) => {
         }
         res.status(200).send(logs)
     } catch (error) {
-        res.send(500).send("Error al obtener los logs")
+        res.status(500).send("Error al obtener los logs")
+        return
+    }
+} 
+
+/**
+ * @description Obtiene los logs de un sensor
+ * @param  sensorId -> identificador del sensor
+ * @returns logs -> logs del sensor
+ */
+export const getSensorLogs = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
         return
     }
 
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // Comprobar que hay datos
+    if (!req.params.sensorId) {
+        res.status(400).send("Falta el id del sensor")
+        return
+    }
+
+    // Comprobar que el id es válido
+    if (!validate(req.params.sensorId)) {
+        res.status(400).send("Id de sensor no válido")
+        return
+    }
+
+    // Comprobar que el sensor existe
+    try{
+        let sensor = await sensorsModel.findOne({ where: { id: req.params.sensorId } })
+        if (sensor == null) {
+            res.status(404).send("El sensor no existe")
+            return
+        }
+
+        // Obtener los logs
+        let logs = await logModel.findAll({ where: { sensorCode: req.params.sensorId } })
+        if (logs == null) {
+            res.status(404).send("No hay logs")
+            return
+        }
+        res.status(200).send(logs)
+    } catch (error) {
+        res.status(500).send("Error al obtener los logs")
+        return
+    }
+} 
+
+/**
+ * @description Obtiene los logs de un actuador
+ * @param  actuadorId -> identificador del actuador
+ * @returns logs -> logs del actuador
+ */
+export const getActuadorLogs = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // Comprobar que hay datos
+    if (!req.params.actuadorId) {
+        res.status(400).send("Falta el id del actuador")
+        return
+    }
+
+    // Comprobar que el id es válido
+    if (!validate(req.params.actuadorId)) {
+        res.status(400).send("Id de actuador no válido")
+        return
+    }
+
+    // Comprobar que el dispositivo existe
+    try{
+        let actuador = await actuadoresModel.findOne({ where: { id: req.params.actuadorId } })
+        if (actuador == null) {
+            res.status(404).send("El actuador no existe")
+            return
+        }
+
+        // Obtener los logs
+        let logs = await logModel.findAll({ where: { actuadorCode: req.params.actuadorId } })
+        if (logs == null) {
+            res.status(404).send("No hay logs")
+            return
+        }
+        res.status(200).send(logs)
+    } catch (error) {
+        res.status(500).send("Error al obtener los logs")
+        return
+    }
 } 
