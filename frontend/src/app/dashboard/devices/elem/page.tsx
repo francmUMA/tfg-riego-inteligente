@@ -1,6 +1,6 @@
 'use client'
 import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
-import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorPin } from "@/src/app/lib/sensorsUtils";
+import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, getUnassignedCAUSensors, updateSensorPin } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
@@ -23,6 +23,7 @@ import { IoIosCellular } from "react-icons/io";
 import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
 import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
+import { AddFlowmeterDialog } from "@/src/app/ui/dashboard/elem/AddFlowmeterDialog";
 
 
 export default function Page() {
@@ -657,6 +658,17 @@ export default function Page() {
         setChartSensor("")
     }
 
+    const [openSetFlowmeter, setOpenSetFlowmeter] = useState(false)
+
+    const closeSetFlowmeterDialog = () => {
+        setOpenSetFlowmeter(false)
+        setActuadorIndex(0)
+    }
+
+    const openSetFlowmeterDialog = (index: number) => {
+        setActuadorIndex(index)
+        setOpenSetFlowmeter(true)
+    }
     // ---------------------------------------------------------------------------------------------
 
     return (
@@ -675,6 +687,7 @@ export default function Page() {
                 {updateSensorPinDialog()}
                 {DeleteElemDialog()}
                 {UpdateDeviceAreaDialog()}
+                <AddFlowmeterDialog elem={deviceActuadores[actuadorIndex]} onClose={closeSetFlowmeterDialog} open={openSetFlowmeter} setElems={setDeviceActuadores}/>
                 <div id="botones" className="w-full h-12 flex flex-row gap-3">
                     <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
@@ -794,6 +807,17 @@ export default function Page() {
                                                                     actuador.device_pin == null
                                                                         ? "Desconectado"
                                                                         : actuador.device_pin
+                                                                }
+                                                            </div>
+                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
+                                                                <button onClick={() => openSetFlowmeterDialog(index)} 
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <IoWaterOutline size={24} className="w-9 px-2 text-indigo-600"></IoWaterOutline>
+                                                                </button>
+                                                                {
+                                                                    actuador.flowmeter == null
+                                                                        ? "Sin caudalímetro"
+                                                                        : actuador.flowmeter
                                                                 }
                                                             </div>
                                                             <button onClick={() => handleActuadorMode(index)} className="w-16 h-5 flex items-center">

@@ -184,7 +184,22 @@ export const getSensorLogs = async (sensor: string) => {
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/logs/sensor/" + sensor, options)
     if (response.status == 200) {
         let data = await response.json()
-        console.log("logs", data)
+        return data
+    } else {
+        return []
+    }
+}
+
+export const getUnassignedCAUSensors = async (token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/unassignedCauSensors", options)
+    if (request.status === 200) {
+        let data = await request.json()
         return data
     } else {
         return []
