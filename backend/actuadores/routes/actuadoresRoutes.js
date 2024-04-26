@@ -27,6 +27,6 @@ router.put("/device", updateActuadorDevice)
 router.put("/position", updateActuadorPosition)
 router.put("/status", updateActuadorStatus)
 router.put("/name", updateActuadorName)
-router.get('/flowmeter', updateActuadorFlowmeter)
+router.put('/flowmeter', updateActuadorFlowmeter)
 
 export default router;

@@ -1,9 +1,10 @@
 import express from "express";
-import { getSensors, addSensor, deleteSensor, updateSensorArea, updateSensorDevicePin, updateSensorDevice, updateSensorPosition, updateSensorName, updateSensorAvailability, updateSensorValue, getUserSensors } from "../controllers/sensorsController.js"
+import { getSensors, addSensor, deleteSensor, updateSensorArea, updateSensorDevicePin, updateSensorDevice, updateSensorPosition, updateSensorName, updateSensorAvailability, updateSensorValue, getUserSensors, getUnassignedSensors } from "../controllers/sensorsController.js"
 
 const router = express.Router();
 
 router.get("/all", getUserSensors)
+router.get("/unassignedCauSensors", getUnassignedSensors)
 router.get("/:device", getSensors)
 router.post("/:device", addSensor)
 router.delete("/:device", deleteSensor)

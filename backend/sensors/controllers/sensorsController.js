@@ -801,3 +801,56 @@ export const getUserSensors = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * @description Devuelve los caudalímetros que no están asociados a un actuador
+ */
+
+export const getUnassignedSensors = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    try {
+        // Buscar los caudalímetros del usuario
+        let userSensors = []
+        let cauSensors = await sensorsModel.findAll({ where: { type: "CAU" } })
+        for (let i = 0; i < cauSensors.length; i++) {
+            let device = await deviceModel.findOne({ where: { id: cauSensors[i].device, Usuario: nif } })
+            if (device !== null) {
+                userSensors.push(cauSensors[i])
+            }
+        }
+        
+        // Buscar los actuadores del usuario que tengan un caudalímetro asociado
+        let assignedSensors = []
+        
+        let actuadores = await actuadoresModel.findAll()
+        for (let i = 0; i < actuadores.length; i++) {
+            let device = await deviceModel.findOne({ where: { id: actuadores[i].device, Usuario: nif } })
+            if (device !== null) {
+                assignedSensors.push(actuadores[i].flowmeter)
+            }
+        }
+        
+        let sensors = []
+        for (let i = 0; i < userSensors.length; i++) {
+            if (!assignedSensors.includes(userSensors[i].id)) {
+                sensors.push(userSensors[i])
+            }
+        }
+        res.status(200).send(sensors)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
