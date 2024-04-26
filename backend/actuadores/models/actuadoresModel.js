@@ -37,5 +37,9 @@ export default db.define("Actuadores", {
     },
     activeProgram: {
         type: DataTypes.STRING
-    }
+    },
+    flowmeter: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
 })

@@ -10,7 +10,8 @@ import {
     updateActuadorPosition, 
     updateActuadorStatus, 
     updateActuadorName, 
-    getUserActuadores
+    getUserActuadores,
+    updateActuadorFlowmeter
 } from "../controllers/actuadoresController.js"
 
 const router = express.Router();
@@ -26,5 +27,6 @@ router.put("/device", updateActuadorDevice)
 router.put("/position", updateActuadorPosition)
 router.put("/status", updateActuadorStatus)
 router.put("/name", updateActuadorName)
+router.get('/flowmeter', updateActuadorFlowmeter)
 
 export default router;
