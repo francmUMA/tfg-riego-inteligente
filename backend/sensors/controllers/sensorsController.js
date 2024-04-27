@@ -854,3 +854,55 @@ export const getUnassignedSensors = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * 
+ * @description Devuelve la informaciónd de un sensor
+ * @param sensorId Identificador del sensor
+ * @returns Información del sensor
+ * 
+*/
+
+export const getSensor = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ------------------- POSIBLES ERRORES --------------------
+    if (req.params.sensorId === undefined || req.params.sensorId === null || req.params.sensoId == "") {
+        res.status(400).send("Missing sensor")
+        return
+    }
+
+    if (!validate(req.params.sensorId)) {
+        res.status(400).send("Invalid sensor")
+        return
+    }
+    // ----------------------------------------------------------
+    try {
+        let sensor = await sensorsModel.findOne({ where: { id: req.params.sensorId } })
+        if (sensor === null) {
+            res.status(404).send("Sensor not found")
+            return
+        }
+        let device = await deviceModel.findOne({ where: { id: sensor.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+        res.status(200).send(sensor)
+        return
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+}

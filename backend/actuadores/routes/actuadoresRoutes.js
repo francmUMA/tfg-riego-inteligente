@@ -11,7 +11,8 @@ import {
     updateActuadorStatus, 
     updateActuadorName, 
     getUserActuadores,
-    updateActuadorFlowmeter
+    updateActuadorFlowmeter,
+    deleteActuadorFlowmeter
 } from "../controllers/actuadoresController.js"
 
 const router = express.Router();
@@ -19,6 +20,7 @@ const router = express.Router();
 router.get("/all", getUserActuadores)
 router.get("/:device", getActuadores)
 router.post("/:device", addActuador)
+router.delete("/flowmeter", deleteActuadorFlowmeter)
 router.delete("/:device", deleteActuador)
 router.put("/area", updateActuadorArea)
 router.put("/mode", updateMode)
