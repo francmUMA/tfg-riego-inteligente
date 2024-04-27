@@ -7,7 +7,7 @@ import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
 import { SensorChart } from "../../ui/dashboard/SensorChart";
-import { RotateIconUpdateButton } from "../../ui/dashboard/RotateIconUpdateButton";
+// import { RotateIconUpdateButton } from "../../ui/dashboard/RotateIconUpdateButton";
 import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 import { ChartComponent } from "../../ui/dashboard/devicesCharts";
@@ -38,20 +38,30 @@ export default function Page (){
                         </Suspense>
                     </div>
                     <div id="map" className="border w-full h-full flex justify-center items-center min-h-52 shadow-md rounded-md overflow-hidden">
-                       {
-                            elem !== undefined 
-                                ? <ElemMap elem={elem}/>
-                                : <p className="w-full text-center">No se ha seleccionado ningún elemento</p>
-                       } 
+                       <Suspense>
+                            {
+                                elem !== undefined 
+                                    ? elem.Latitud != null && elem.Longitud != null
+                                        ? <ElemMap elem={elem}/>
+                                        : <p className="w-full text-center">No se ha asignado una ubicación</p>
+                                    : <p className="w-full text-center">No se ha seleccionado ningún elemento</p>
+                            }
+                        </Suspense>
                     </div>
                     <div id="chart" className="border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden">
-                        {   
-                            type == 0 && elem !== undefined
-                            ? <ChartComponent id={elem.id}  className="w-full h-full"/>
-                            : type == 1 && elem !== undefined 
-                            ? <SensorChart id={elem.id} className="w-full h-full"/>
-                            : <p className="w-full text-center">No se ha seleccionado ningún elemento</p>
-                        }
+                        <Suspense>
+                            {   
+                                type == 0 && elem !== undefined
+                                ? <ChartComponent id={elem.id}  className="w-full h-full"/>
+                                : type == 1 && elem !== undefined 
+                                ? <SensorChart id={elem.id} className="w-full h-full"/>
+                                : type == 2 && elem !== undefined
+                                ? elem.flowmeter != null 
+                                    ? <SensorChart id={elem.flowmeter} className="w-full h-full"/>
+                                    : <p className="w-full h-full flex justify-center items-center text-center">No se ha asociado un caudalímetro</p>
+                                : <p className="w-full h-full flex justify-center items-center text-center">No se ha seleccionado ningún elemento</p>
+                            }
+                        </Suspense>
                     </div>
                 </div>
                 <div id="programs-logs" className="w-full lg:w-3/4 h-full flex flex-col gap-y-3 justify-center items-center">
@@ -59,11 +69,13 @@ export default function Page (){
                         <button className={`shadow-md rounded-md h-12 w-12 flex  justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
                             <MdMoreTime size={24} className="text-white"/>
                         </button>
-                        <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/>
+                        {/* <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/> */}
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md"></div>
                     <div id="logs" className="border w-full h-full max-h-[420px] shadow-md rounded-md">
-                        <LogInfo elemId={elem !== undefined ? elem.id : undefined} type={type} />
+                        <Suspense>
+                            <LogInfo elemId={elem !== undefined ? elem.id : undefined} type={type} />
+                        </Suspense>
                     </div>
                 </div>
             </section>

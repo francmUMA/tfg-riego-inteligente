@@ -1,6 +1,6 @@
 'use client'
 import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
-import { Sensor, addSensor, checkSensorId, deleteSensor, getSensorInfo, getSensors, getUnassignedCAUSensors, updateSensorPin } from "@/src/app/lib/sensorsUtils";
+import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorPin } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
@@ -25,12 +25,12 @@ import { Area, getAreas } from "@/src/app/lib/areasUtils";
 import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
 import { AddFlowmeterDialog } from "@/src/app/ui/dashboard/elem/AddFlowmeterDialog";
 import { FlowmeterInfo } from "@/src/app/ui/dashboard/elem/FlowmeterInfo";
+import { LogInfo } from "@/src/app/ui/dashboard/info/LogInfo";
 
 
 export default function Page() {
     const [deviceId, setDeviceId] = useState<string | null>(null);
     const [device, setDevice] = useState({});
-    const [deviceCpuTemp, setDeviceCpuTemp] = useState([]);
     
     const router = useRouter();
 
@@ -64,12 +64,6 @@ export default function Page() {
         }
         fetchDeviceInfo(id as string, token as string)
 
-        // Obtener los datos de la temperatura del CPU
-        const fetchDeviceCpuTemp = async (id: string, token: string) => {
-            let deviceCpuTemp = await getDeviceCpuTemperature(id, token)
-            setDeviceCpuTemp(deviceCpuTemp)
-        }
-        fetchDeviceCpuTemp(id as string, token as string)
         fetchDeviceSensors(id as string, token as string)
         fetchDeviceActuadores(id as string, token as string)
         fetchAreas()
@@ -930,21 +924,15 @@ export default function Page() {
                             }
                         </div>
                     </div>
-                    <div id="graficas" className="w-full h-full flex flex-col md:flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-full flex flex-col justify-center items-center border shadow-md rounded-md">
-                            <div className="p-3 flex justify-center items-center">
-                                <p className="text-slate-400">Temperatura de la CPU</p>
-                            </div>
-                            <Suspense fallback={fallback_component()}>
-                            {
-                                deviceCpuTemp.length > 0
-                                    ? <ChartComponent className="w-full h-full flex justify-center items-center p-2" data={deviceCpuTemp}></ChartComponent>
-                                    : <p className="flex w-full h-full justify-center items-center p-3">No hay datos para mostrar</p>
-                            }
+                    <div id="graficas" className="w-full h-full max-h-64 flex flex-col md:flex-row gap-3 items-center justify-center">
+                        <div className="w-full h-full flex flex-col justify-center items-center border rounded-md shadow-md">
+                            <h1 className="w-full h-12 text-lg text-center text-slate-400">Temperatura</h1>
+                            <Suspense>
+                                <ChartComponent className="w-full h-full" id={deviceId}/>
                             </Suspense>
                         </div>
                         <div className="w-full h-full flex justify-center items-center border shadow-md rounded-md">
-                            <p>En obras</p>
+                            <LogInfo elemId={deviceId} type={0}/>
                         </div>
                     </div>
                 </div>

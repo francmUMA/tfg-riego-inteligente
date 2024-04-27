@@ -90,6 +90,11 @@ export const ChartComponent = props => {
 	return (
 		<div className={className}
 			ref={chartContainerRef}
-		/>
+		>
+			{
+				data.length == 0 &&
+				<p className="w-full h-full flex justify-center items-center">No hay datos de la temperatura</p>
+			}
+		</div>
 	);
 };

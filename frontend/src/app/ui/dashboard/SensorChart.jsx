@@ -98,7 +98,7 @@ export const SensorChart = props => {
 		<div className={className} ref={chartContainerRef}>
 			{
 				data.length == 0 &&
-				<p className="text-center">No se han podido obtener datos del sensor</p>
+				<p className="w-full h-full flex justify-center items-center">No se han podido obtener datos del sensor</p>
 			}
 		</div>
 	)		
