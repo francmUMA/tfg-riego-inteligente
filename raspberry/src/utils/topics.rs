@@ -433,6 +433,14 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
     } else if topic.contains("sensors") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else if topic.contains("server/available") {
+        for actuador in actuadores.iter() {
+            actuador.clean_pin();
+        }
+        actuadores.clear();
+        for sensor in sensors.iter() {
+            sensor.clean_pin();
+        }
+        sensors.clear();
         mqtt_client.publish("devices/start", device.get_id().as_str());
     } 
     else {

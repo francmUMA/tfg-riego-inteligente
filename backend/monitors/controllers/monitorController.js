@@ -41,6 +41,13 @@ export const addValue = async (data) => {
                 return
             }
 
+            // Comprobar que no haya un valor en la misma fecha
+            let last_value = await monitorModel.findOne({ where: { deviceCode: data.deviceCode, time: data.time } })
+            if (last_value !== null) {
+                console.log("Ya existe un valor en la misma fecha")
+                return
+            }
+
             // Añadir el valor
             await monitorModel.create({
                 id: uuid,
@@ -64,6 +71,13 @@ export const addValue = async (data) => {
             let sensor = await sensorsModel.findOne({ where: { id: data.sensorCode } })
             if (sensor == null) {
                 console.log("El dispositivo no existe")
+                return
+            }
+
+            // Comprobar que no haya un valor en la misma fecha
+            let last_value = await monitorModel.findOne({ where: { sensorCode: data.sensorCode, time: data.time } })
+            if (last_value !== null) {
+                console.log("Ya existe un valor en la misma fecha")
                 return
             }
 
