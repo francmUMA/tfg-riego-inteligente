@@ -1,4 +1,4 @@
-import { getActuadores, getUserActuadores, updateActuadorFlowmeter } from "@/src/app/lib/actuadorUtils";
+import { getUserActuadores, updateActuadorFlowmeter } from "@/src/app/lib/actuadorUtils";
 import { getUnassignedCAUSensors } from "@/src/app/lib/sensorsUtils";
 import { Dialog, DialogTitle } from "@mui/material";
 import { getCookie } from "cookies-next";
@@ -7,7 +7,7 @@ import Select from "react-select"
 
 export const AddFlowmeterDialog = ({ open, onClose, setElems, elem }) => {
 
-    const  [flowmeters, setFlowmeters] = useState([])
+    const [flowmeters, setFlowmeters] = useState([])
     const [selectedFlowmeter, setSelectedFlowmeter] = useState(null)
 
     const handleUpdateFlowmeter = async () => {
@@ -43,7 +43,7 @@ export const AddFlowmeterDialog = ({ open, onClose, setElems, elem }) => {
         if(elem !== undefined && open){
             fetchUnassignedFlowmeters()
         }
-    }, [elem, open])
+    }, [open])
 
     return (
         <Dialog open={open} onClose={onClose}>

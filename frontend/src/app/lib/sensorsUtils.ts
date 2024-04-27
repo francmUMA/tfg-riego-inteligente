@@ -205,3 +205,19 @@ export const getUnassignedCAUSensors = async (token: string) => {
         return []
     }
 }
+
+export const getSensorInfo = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/sensor/" + id, options)
+    if (request.status === 200) {
+        let data = await request.json()
+        return data
+    } else {
+        return undefined
+    }
+}
