@@ -1,6 +1,6 @@
 import deviceModel from "../models/deviceModel.js";
 import areaModel from "../../areas/models/areasModel.js";
-import { get_nif_by_token } from "../../users/controllers/userController.js";
+import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { v4, validate } from 'uuid';
 import { publish_msg } from "../../mqtt.js";
