@@ -77,8 +77,6 @@ export default function Page() {
         const token = getCookie("token");
         let deviceInfo = await getDeviceInfo(deviceId as string, token as string)
         setDevice(deviceInfo)
-        let deviceCpuTemp = await getDeviceCpuTemperature(deviceId as string, token as string)
-        setDeviceCpuTemp(deviceCpuTemp)
         let deviceSensors = await getSensors(deviceId as string, token as string)
         setDeviceSensors(deviceSensors)
         let deviceActuadores = await getActuadores(deviceId as string, token as string)

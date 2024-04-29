@@ -11,15 +11,21 @@ import { SensorChart } from "../../ui/dashboard/SensorChart";
 import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 import { ChartComponent } from "../../ui/dashboard/devicesCharts";
+import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
 
 export default function Page (){
 
     const [elem, setElem] = useState(undefined)
     const [type, setType] = useState(undefined)
+
+    const [IsOpenAddProgramDialog, setOpenAddProgramDialog] = useState(false)
+    const closeAddProgramDialog = () => setOpenAddProgramDialog(false)
+    const openAddProgramDialog = () => setOpenAddProgramDialog(true)
     
     return (
         <main className="w-full h-full overflow-auto">
             <ToastContainer />
+            <AddProgramDialog open={IsOpenAddProgramDialog} onClose={closeAddProgramDialog}/>
             <section className="w-full h-full flex flex-col lg:flex-row gap-3">
                 <div id="elems-info" className="w-full h-full flex flex-col gap-y-3 justify-center items-center">
                     <div id="selector" className="w-full flex justify-start items-center">
@@ -66,7 +72,7 @@ export default function Page (){
                 </div>
                 <div id="programs-logs" className="w-full lg:w-3/4 h-full flex flex-col gap-y-3 justify-center items-center">
                     <div id="buttons" className="w-full h-1/6 min-h-10 flex flex-row gap-x-2 justify-end items-center">
-                        <button className={`shadow-md rounded-md h-12 w-12 flex  justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
+                        <button onClick={openAddProgramDialog} className={`shadow-md rounded-md h-12 w-12 flex  justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
                             <MdMoreTime size={24} className="text-white"/>
                         </button>
                         {/* <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/> */}
