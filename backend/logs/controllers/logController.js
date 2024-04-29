@@ -2,7 +2,7 @@ import { v1, validate } from "uuid"
 import deviceModel from "../../devices/models/deviceModel.js"
 import sensorsModel from "../../sensors/models/sensorsModel.js"
 import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
-import { get_nif_by_token } from "../../users/controllers/userController.js"
+import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import logModel from "../models/logModel.js"
 
 export const addLog = async (logData) => {
