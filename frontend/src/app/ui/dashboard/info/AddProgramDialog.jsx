@@ -1,11 +1,21 @@
 import { Dialog, DialogTitle } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export const AddProgramDialog = ({ open, onClose }) => {
 
     const [emptyName, setEmptyName] = useState(true)
     const [validName, setValidName] = useState(false)
     const [name, setName] = useState("")
+
+    const [selectedDays, setSelectedDays] = useState([])
+
+    const handleButtonDayClick = (day) => {
+        if(selectedDays.includes(day)){
+            setSelectedDays(selectedDays.filter(d => d !== day))
+        } else {
+            setSelectedDays([...selectedDays, day])
+        }
+    }
 
     const handleNameChange = (e) => {
         
@@ -32,13 +42,56 @@ export const AddProgramDialog = ({ open, onClose }) => {
                 <div id='dias' className="h-full flex flex-col">
                     <label>Selecciona los días</label>
                     <div className='border rounded-md shadow-md overflow-hidden'>
-                        <button className='w-10 h-10 border-r hover:bg-gray-100 duration-150'>L</button>
-                        <button className='w-10 h-10 border-r hover:bg-gray-100 duration-150'>M</button>
-                        <button className='w-10 h-10 border-r hover:bg-gray-100 duration-150'>X</button>
-                        <button className='w-10 h-10 border-r hover:bg-gray-100 duration-150'>J</button>
-                        <button className='w-10 h-10 border-r hover:bg-gray-100 duration-150'>V</button>
-                        <button className='w-10 h-10 border-r hover:bg-gray-100 duration-150'>S</button>
-                        <button className='w-10 h-1hover:bg-gray-100 duration-150'>D</button>
+                    <button onClick={() => handleButtonDayClick(1)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(1) ? 'bg-indigo-500' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(1) ? 'bg-indigo-600' : 'bg-white'
+                        }transition ease-in-out duration-150 `}>
+                            L
+                        </button>
+                        <button onClick={() => handleButtonDayClick(2)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(2) ? 'bg-indigo-500 text-white' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(2) && 'bg-indigo-600'
+                        }transition ease-in-out duration-150 `}>
+                            M
+                        </button>
+                        <button onClick={() => handleButtonDayClick(3)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(3) ? 'bg-indigo-500' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(3) && 'bg-indigo-600 text-white'
+                        }transition ease-in-out duration-150 `}>
+                            X
+                        </button>
+                        <button onClick={() => handleButtonDayClick(4)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(4) ? 'bg-indigo-500' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(4) && 'bg-indigo-600 text-white'
+                        }transition ease-in-out duration-150 `}>
+                            J
+                        </button>
+                        <button onClick={() => handleButtonDayClick(5)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(5) ? 'bg-indigo-500' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(5) && 'bg-indigo-600 text-white'
+                        }transition ease-in-out duration-150 `}>
+                            V
+                        </button>
+                        <button onClick={() => handleButtonDayClick(6)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(6) ? 'bg-indigo-500' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(6) && 'bg-indigo-600 text-white'
+                        }transition ease-in-out duration-150 `}>
+                            S
+                        </button>
+                        <button onClick={() => handleButtonDayClick(7)} className={`w-10 h-10 hover:${
+                            selectedDays.includes(7) ? 'bg-indigo-500' : 'bg-gray-100'
+                        } border-r ${
+                            selectedDays.includes(7) && 'bg-indigo-600 text-white'
+                        }transition ease-in-out duration-150 `}>
+                            D
+                        </button>
+                        
                     </div>
                 </div>
                 <div id='hora' className="w-full h-full flex flex-col">
