@@ -4,9 +4,9 @@ import { HiMiniCpuChip } from "react-icons/hi2";
 import { PiPlantDuotone } from "react-icons/pi"
 import { BsClipboard2Data } from "react-icons/bs"
 import { getDeviceName } from "@/src/app/lib/devicesUtils";
-import { getSensorLastValue } from "@/src/app/lib/sensorsUtils";
-import { getCookie } from "cookies-next";
-import { useEffect, useState } from "react";
+// import { getSensorLastValue } from "@/src/app/lib/sensorsUtils";
+// import { getCookie } from "cookies-next";
+// import { useEffect, useState } from "react";
 
 export const SensorInfo =  ({sensor}) => {
 
