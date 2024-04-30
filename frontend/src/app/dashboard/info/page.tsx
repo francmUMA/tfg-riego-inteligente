@@ -12,6 +12,7 @@ import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 import { ChartComponent } from "../../ui/dashboard/devicesCharts";
 import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page (){
 
