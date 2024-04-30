@@ -1,6 +1,6 @@
 import { v4 } from "uuid"
-import { get_nif_by_token } from "../../auth/controllers/authController"
-import programsModel from "../models/programsModel"
+import { get_nif_by_token } from "../../users/controllers/UserController.js"
+import programsModel from "../models/programsModel.js"
 
 /**
  * 
