@@ -13,6 +13,7 @@ import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 import { ChartComponent } from "../../ui/dashboard/devicesCharts";
 import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
 import 'react-toastify/dist/ReactToastify.css';
+import { ProgramsInfo } from "../../ui/dashboard/info/ProgramsInfo";
 
 export default function Page (){
 
@@ -78,7 +79,11 @@ export default function Page (){
                         </button>
                         {/* <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/> */}
                     </div>
-                    <div id="programs" className="border w-full h-full shadow-md rounded-md"></div>
+                    <div id="programs" className="border w-full h-full shadow-md rounded-md">
+                        <Suspense>
+                            <ProgramsInfo />
+                        </Suspense>
+                    </div>
                     <div id="logs" className="border w-full h-full max-h-[420px] shadow-md rounded-md">
                         <Suspense>
                             <LogInfo elemId={elem !== undefined ? elem.id : undefined} type={type} />

@@ -1,7 +1,7 @@
 import { notify } from '@/src/app/lib/notify'
 import { Dialog, DialogTitle } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { timestampToTime } from '@/src/app/lib/programUtils'
+import { addProgram, timestampToTime } from '@/src/app/lib/programUtils'
 
 export const AddProgramDialog = ({ open, onClose }) => {
 
@@ -18,13 +18,9 @@ export const AddProgramDialog = ({ open, onClose }) => {
     const [validDuration, setValidDuration] = useState(false)
 
     const handleButtonDayClick = (day) => {
-        setSelectedDays(selectedDays.map((d,index) => 
-            index == day 
-                ? d == 1 
-                    ? 0 
-                    : 1
-                : d
-                ))
+        let newDays = [...selectedDays]
+        newDays[day] = newDays[day] ? 0 : 1
+        setSelectedDays(newDays)
     }
 
     const handleDurationChange = (e) => {
@@ -60,14 +56,20 @@ export const AddProgramDialog = ({ open, onClose }) => {
         if (value != null && value > 0 ) setStartTime(value)
     }
 
-    const handleAddProgram = () => {
+    const handleAddProgram = async () => {
         if (validName && validDuration && selectedDays.length > 0) {
-            console.log({
-                name,
-                selectedDays,
-                startTime,
-                duration
+            let res = await addProgram({
+                name: name,
+                days: selectedDays,
+                startTime: startTime,
+                duration: duration
             })
+            if (res) {
+                notify('Programa creado', 'success')
+                onClose()
+            } else {
+                notify('Error al crear el programa', 'error')
+            }
         } else {
             notify('Hay campos vacios o incorrectos', 'error')
         }
@@ -80,6 +82,7 @@ export const AddProgramDialog = ({ open, onClose }) => {
         setValidName(false)
         setStartTime(0)
         setDuration(0)
+        setSelectedDays([0,0,0,0,0,0,0])
     }, [open])
 
     return (

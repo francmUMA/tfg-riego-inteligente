@@ -7,6 +7,7 @@
  * 
  */
 
+import { duration } from "@mui/material"
 import { getCookie } from "cookies-next"
 import { get } from "http"
 
@@ -31,18 +32,22 @@ export const addProgram = async (data: any) => {
         days += data.days[i] ? Math.pow(2, i) : 0
     }
 
-    const response = await fetch('/api/programs', {
+    const options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token as string,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(data)
-    })
+        body: JSON.stringify({
+            name: data.name,
+            startTime: data.startTime,
+            duration: data.duration,
+            days: days
+        })
+    }
 
-    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/')
-
-    if (response.ok) {
+    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/', options)
+    if (res.status == 200) {
         return true
     } else {
         return false
