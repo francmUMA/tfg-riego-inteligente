@@ -1,4 +1,5 @@
 
+import { getCookie } from "cookies-next"
 /**
  * 
  * @description Convierte un timestamp a una hora en formato HH:MM:SS
@@ -7,13 +8,13 @@
  * 
  */
 
-import { duration } from "@mui/material"
-import { getCookie } from "cookies-next"
-import { get } from "http"
-
 export const timestampToTime = (timestamp: number) => {
     const date = new Date(timestamp)
-    return date.toLocaleTimeString()
+    let currentTime = date.toLocaleTimeString()
+    
+    // Eliminamos los segundos
+    currentTime = currentTime.slice(0, currentTime.length - 3)
+    return currentTime
 }
 
 /**
@@ -51,5 +52,30 @@ export const addProgram = async (data: any) => {
         return true
     } else {
         return false
+    }
+}
+
+/**
+ * @description Obtiene los programas correspondientes a un usuario
+ * @returns Array con los programas del usuario
+ */
+
+export const getPrograms = async () => {
+    const token = getCookie('token')
+
+    const options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+
+    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/user', options)
+    if (res.status == 200) {
+        let data = await res.json()
+        return data
+    } else {
+        return []
     }
 }

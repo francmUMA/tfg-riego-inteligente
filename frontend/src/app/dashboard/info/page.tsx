@@ -14,6 +14,7 @@ import { ChartComponent } from "../../ui/dashboard/devicesCharts";
 import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
 import 'react-toastify/dist/ReactToastify.css';
 import { ProgramsInfo } from "../../ui/dashboard/info/ProgramsInfo";
+import { FaLink } from "react-icons/fa6"
 
 export default function Page (){
 
@@ -72,10 +73,18 @@ export default function Page (){
                         </Suspense>
                     </div>
                 </div>
-                <div id="programs-logs" className="w-full lg:w-3/4 h-full flex flex-col gap-y-3 justify-center items-center">
+                <div id="programs-logs" className="w-full lg:w-4/5 h-full flex flex-col gap-y-3 justify-center items-center">
                     <div id="buttons" className="w-full h-1/6 min-h-10 flex flex-row gap-x-2 justify-end items-center">
-                        <button onClick={openAddProgramDialog} className={`shadow-md rounded-md h-12 w-12 flex  justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
-                            <MdMoreTime size={24} className="text-white"/>
+                        <button disabled={
+                            elem === undefined || (elem !== undefined && elem.program != null)
+                        }
+                                className={`shadow-md rounded-md h-10 border flex disabled:text-slate-400 justify-center items-center gap-x-1 border hover:bg-gray-50 duration-150 px-1`}>
+                            <FaLink size={22} className="text-indigo-600"/>
+                            Asociar programa
+                        </button>
+                        <button onClick={openAddProgramDialog}
+                                className={`shadow-md rounded-md h-10 w-10 flex justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
+                            <MdMoreTime size={22} className="text-white"/>
                         </button>
                         {/* <RotateIconUpdateButton buttonClickFunction={() => console.log('click')}/> */}
                     </div>
