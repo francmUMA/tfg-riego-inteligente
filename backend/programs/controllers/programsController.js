@@ -16,8 +16,8 @@ import programsModel from "../models/programsModel.js"
  *  - 16: Viernes
  *  - 32: Sabado
  *  - 64: Domingo
- *  @example -> Lunes, Martes y Miercoles: 1 + 2 + 4 = 7
- *  @example -> Todos los dias: 1 + 2 + 4 + 8 + 16 + 32 + 64 = 127
+ * @example -> Lunes, Martes y Miercoles: 1 + 2 + 4 = 7
+ * @example -> Todos los dias: 1 + 2 + 4 + 8 + 16 + 32 + 64 = 127
  * @param duration: number,
  * @param startTime: unix timestamp
  * 
@@ -79,7 +79,7 @@ export const addProgram = async (req, res) => {
         })
         res.status(200).send(uuid)
     } catch (error) {
-        res.status(500).send("Internal error")
+        res.status(500).send(error.message)
         return
     }
 }

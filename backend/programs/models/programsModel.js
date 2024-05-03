@@ -23,6 +23,10 @@ const programsModel = db.define("Programs", {
     duration: {
         type: DataTypes.FLOAT,
         allowNull: false
+    },
+    user: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 })
 
