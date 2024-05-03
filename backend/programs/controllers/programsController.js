@@ -1,4 +1,4 @@
-import { v4 } from "uuid"
+import { v4, validate } from "uuid"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import programsModel from "../models/programsModel.js"
 
@@ -117,6 +117,94 @@ export const getUserPrograms = async (req, res) => {
         res.status(200).send(programs)
     } catch (error) {
         res.status(500).send("Internal error")
+        return
+    }
+}
+
+/**
+ * @description Asocia un programa a un actuador
+ * @param programId: string
+ * @param actuatorId: string
+ * @returns 200 si se ha asociado correctamente
+ * @returns 400 si el programa o el actuador no existen
+ * @returns 401 si el token es inválido
+ * @returns 500 si ha habido un error interno
+ */
+
+export const associateProgramToActuator = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------
+    if (req.body.programId === undefined || req.body.actuatorId === undefined) {
+        res.status(400).send("Missing fields")
+        return
+    }
+
+    // Validar los identificadores
+    if (validate(req.body.programId)){
+        res.status(400).send("Invalid programId")
+        return
+    }
+
+    if (validate(req.body.actuatorId)){
+        res.status(400).send("Invalid actuatorId")
+        return
+    }
+
+    try {
+
+        let actuador = await actuatorsModel.findOne({
+            where: {
+                id: req.body.actuatorId
+            }
+        })
+
+        if (actuador == null) {
+            res.status(400).send("Actuator not found")
+            return
+        }
+
+        // Comprobar que el dispositivo pertenece al usuario
+        let device = await devicesModel.findOne({
+            where: {
+                id: actuador.device,
+                Usuario: nif
+            }
+        })
+        
+        if (device == null) {
+            res.status(400).send("Device not found")
+            return
+        }
+
+        let program = await programsModel.findOne({
+            where: {
+                id: req.body.programId,
+                user: nif
+            }
+        })
+
+        if (program == null) {
+            res.status(400).send("Program not found")
+            return
+        }
+
+        actuador.activeProgram = req.body.programId
+        actuador.save()
+        res.status(200).send("Program associated")
+    } catch (error) {
+        res.status(500).send(error.message)
         return
     }
 }
