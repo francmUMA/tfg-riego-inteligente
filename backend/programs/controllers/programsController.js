@@ -202,6 +202,7 @@ export const associateProgramToActuator = async (req, res) => {
 
         actuador.activeProgram = req.body.programId
         actuador.save()
+
         res.status(200).send("Program associated")
     } catch (error) {
         res.status(500).send(error.message)
