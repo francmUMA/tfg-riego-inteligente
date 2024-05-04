@@ -1,9 +1,10 @@
-import { getPrograms, timestampToTime } from "@/src/app/lib/programUtils"
+import { associateProgram, getPrograms, timestampToTime } from "@/src/app/lib/programUtils"
 import { useEffect, useState } from "react"
 import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa"
 import { FiClock } from "react-icons/fi"
+import { CiSquarePlus } from "react-icons/ci"
 
-export const ProgramsInfo = () => {
+export const ProgramsInfo = ({elemId, associate}) => {
 
     const [programs, setPrograms] = useState([])
 
@@ -12,9 +13,15 @@ export const ProgramsInfo = () => {
         setPrograms(data)
     }
 
+    const updateAssociateProgram = async (index) => {
+        if (elemId !== undefined){
+            let _ = await associateProgram(elemId, programs[index].id)
+        }   
+    }
+
     useEffect(() => {
         fetchPrograms()
-    }, [])
+    }, [elemId])
     return (
         <main className="w-full h-full flex flex-col items-center">
             <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">
@@ -60,7 +67,12 @@ export const ProgramsInfo = () => {
                             }`}>D</p>
                         </div>
                         <button className="min-w-8 h-8 flex items-center justify-center rounded-md border bg-white hover:bg-gray-100 transition ease-in-out duration-150 shadow-md">
-                            <FaRegEdit className="text-indigo-600" size={16} />
+                            {
+                                associate !== undefined && associate == true
+                                    ? <CiSquarePlus className="text-indigo-600" size={16}></CiSquarePlus>
+                                    : <FaRegEdit className="text-indigo-600" size={16} />
+                            }
+                            
                         </button>
                         <button className="min-w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-400 transition ease-in-out duration-150 rounded-md shadow-md">
                             <FaRegTrashAlt className="text-white" size={16} />

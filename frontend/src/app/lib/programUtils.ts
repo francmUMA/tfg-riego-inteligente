@@ -1,5 +1,6 @@
 
 import { getCookie } from "cookies-next"
+import { notify } from "./notify"
 /**
  * 
  * @description Convierte un timestamp a una hora en formato HH:MM:SS
@@ -77,5 +78,37 @@ export const getPrograms = async () => {
         return data
     } else {
         return []
+    }
+}
+
+/**
+ * @description Asocia un programa a un actuador
+ * @param programId ID del programa
+ * @param actuadorId ID del actuador
+ * @returns True si se ha asociado correctamente, False si ha habido algún error
+ */
+
+export const associateProgram = async (programId: string, actuadorId: string) => {
+    const token = getCookie('token')
+
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            programId: programId,
+            actuadorId: actuadorId
+        })
+    }
+
+    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/', options)
+    if (res.status == 200) {
+        notify('Programa asociado correctamente', 'success')
+        return true
+    } else {
+        notify('Error al asociar el programa', 'error')
+        return false
     }
 }
