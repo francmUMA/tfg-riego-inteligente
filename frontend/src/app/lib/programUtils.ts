@@ -138,3 +138,33 @@ export const getProgramName = async (programId: string) => {
         return "Desconocido"
     }
 }
+
+/**
+ * @description Elimina un programa de la base de datos
+ * @param programId ID del programa
+ * @returns True si se ha eliminado correctamente, False si ha habido algún error
+ */
+
+export const deleteProgram = async (programId: string) => {
+    const token = getCookie('token')
+
+    const options = {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            programId: programId
+        })
+    }
+
+    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/', options)
+    if (res.status == 200) {
+        notify('Programa eliminado correctamente', 'success')
+        return true
+    } else {
+        notify('Error al eliminar el programa', 'error')
+        return false
+    }
+}
