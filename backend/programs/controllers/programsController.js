@@ -294,7 +294,7 @@ export const getProgram = async (req, res) => {
         return
     }
 
-    console.log(req.param)
+    console.log(req.param.programId)
 
     // -----------------------------------------------------------
     if (req.param.programId === undefined) {
