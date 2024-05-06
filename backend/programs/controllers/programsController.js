@@ -293,6 +293,9 @@ export const getProgram = async (req, res) => {
         res.status(401).send("Invalid token")
         return
     }
+
+    console.log(req.param)
+
     // -----------------------------------------------------------
     if (req.param.programId === undefined) {
         res.status(400).send("Missing fields")
