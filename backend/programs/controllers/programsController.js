@@ -212,3 +212,204 @@ export const associateProgramToActuator = async (req, res) => {
         return
     }
 }
+
+/**
+ * @description Elimina un programa
+ * @param programId: string
+ * @returns 200 si se ha eliminado correctamente
+ * @returns 400 si el programa no existe
+ * @returns 401 si el token es inválido
+ * @returns 500 si ha habido un error interno
+ */
+
+export const deleteProgram = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------
+    if (req.body.programId === undefined) {
+        res.status(400).send("Missing fields")
+        return
+    }
+
+    // Validar los identificadores
+    if (!validate(req.body.programId)){
+        res.status(400).send("Invalid programId")
+        return
+    }
+
+    try {
+        let program = await programsModel.findOne({
+            where: {
+                id: req.body.programId,
+                user: nif
+            }
+        })
+
+        if (program == null) {
+            res.status(400).send("Program not found")
+            return
+        }
+
+        program.destroy()
+
+        res.status(200).send("Program deleted")
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+}
+
+/**
+ * @description Devuelve la información de un programa
+ * @param programId: string
+ * @returns 200 si se ha recuperado correctamente
+ * @returns 400 si el programa no existe
+ * @returns 401 si el token es inválido
+ * @returns 500 si ha habido un error interno
+ */
+
+export const getProgram = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------
+    if (req.body.programId === undefined) {
+        res.status(400).send("Missing fields")
+        return
+    }
+
+    // Validar los identificadores
+    if (!validate(req.body.programId)){
+        res.status(400).send("Invalid programId")
+        return
+    }
+
+    try {
+        let program = await programsModel.findOne({
+            where: {
+                id: req.body.programId,
+                user: nif
+            }
+        })
+
+        if (program == null) {
+            res.status(400).send("Program not found")
+            return
+        }
+
+        res.status(200).send(program)
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+}
+
+/**
+ * @description Desasocia un programa de un actuador
+ * @param actuatorId: string
+ * @param programId: string
+ * @returns 200 si se ha desasociado correctamente
+ * @returns 400 si el actuador no existe o el programa no existe
+ * @returns 401 si el token es inválido
+ * @returns 500 si ha habido un error interno
+ */
+
+export const disassociateProgramFromActuator = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------
+    if (req.body.programId === undefined || req.body.actuatorId === undefined) {
+        res.status(400).send("Missing fields")
+        return
+    }
+
+    // Validar los identificadores
+    if (!validate(req.body.programId)){
+        res.status(400).send("Invalid programId")
+        return
+    }
+
+    if (!validate(req.body.actuatorId)){
+        res.status(400).send("Invalid actuatorId")
+        return
+    }
+
+    try {
+
+        let actuador = await actuadoresModel.findOne({
+            where: {
+                id: req.body.actuatorId
+            }
+        })
+
+        if (actuador == null) {
+            res.status(400).send("Actuator not found")
+            return
+        }
+
+        // Comprobar que el dispositivo pertenece al usuario
+        let device = await deviceModel.findOne({
+            where: {
+                id: actuador.device,
+                Usuario: nif
+            }
+        })
+        
+        if (device == null) {
+            res.status(400).send("Device not found")
+            return
+        }
+
+        let program = await programsModel.findOne({
+            where: {
+                id: req.body.programId,
+                user: nif
+            }
+        })
+
+        if (program == null) {
+            res.status(400).send("Program not found")
+            return
+        }
+
+        actuador.activeProgram = null
+        actuador.save()
+
+        res.status(200).send("Program disassociated")
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+}
