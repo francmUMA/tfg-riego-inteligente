@@ -4,7 +4,7 @@ import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa"
 import { FiClock } from "react-icons/fi"
 import { CiSquarePlus } from "react-icons/ci"
 
-export const ProgramsInfo = ({elemId, associate}) => {
+export const ProgramsInfo = ({elemId, associate, setAssociate}) => {
 
     const [programs, setPrograms] = useState([])
 
@@ -15,7 +15,10 @@ export const ProgramsInfo = ({elemId, associate}) => {
 
     const updateAssociateProgram = async (index) => {
         if (elemId !== undefined){
-            let _ = await associateProgram(programs[index].id, elemId)
+            let res = await associateProgram(programs[index].id, elemId)
+            if (res) {
+                setAssociate(false)
+            }
         }   
     }
 
