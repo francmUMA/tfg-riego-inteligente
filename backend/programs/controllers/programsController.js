@@ -294,16 +294,14 @@ export const getProgram = async (req, res) => {
         return
     }
 
-    console.log(req.param.programId)
-
     // -----------------------------------------------------------
-    if (req.param.programId === undefined) {
+    if (req.params.programId === undefined) {
         res.status(400).send("Missing fields")
         return
     }
 
     // Validar los identificadores
-    if (!validate(req.param.programId)){
+    if (!validate(req.params.programId)){
         res.status(400).send("Invalid programId")
         return
     }
@@ -311,7 +309,7 @@ export const getProgram = async (req, res) => {
     try {
         let program = await programsModel.findOne({
             where: {
-                id: req.param.programId,
+                id: req.params.programId,
                 user: nif
             }
         })
