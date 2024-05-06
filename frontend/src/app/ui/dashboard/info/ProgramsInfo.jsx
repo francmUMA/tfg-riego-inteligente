@@ -15,7 +15,7 @@ export const ProgramsInfo = ({elemId, associate}) => {
 
     const updateAssociateProgram = async (index) => {
         if (elemId !== undefined){
-            let _ = await associateProgram(elemId, programs[index].id)
+            let _ = await associateProgram(programs[index].id, elemId)
         }   
     }
 
@@ -66,7 +66,14 @@ export const ProgramsInfo = ({elemId, associate}) => {
                                 (program.days & 0x01) && 'bg-indigo-500 text-white'
                             }`}>D</p>
                         </div>
-                        <button className="min-w-8 h-8 flex items-center justify-center rounded-md border bg-white hover:bg-gray-100 transition ease-in-out duration-150 shadow-md">
+                        <button onClick={
+                            () => {
+                                associate 
+                                    ? updateAssociateProgram(index)
+                                    : console.log("Edit program")
+                            }
+                        }
+                        className="min-w-8 h-8 flex items-center justify-center rounded-md border bg-white hover:bg-gray-100 transition ease-in-out duration-150 shadow-md">
                             {
                                 associate !== undefined && associate == true
                                     ? <CiSquarePlus className="text-indigo-600" size={16}></CiSquarePlus>

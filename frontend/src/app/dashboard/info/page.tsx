@@ -1,8 +1,8 @@
 'use client'
 import { ToastContainer } from "react-toastify";
-import { MdMoreTime, MdCancel } from "react-icons/md"
+import { MdMoreTime } from "react-icons/md"
 import { ElemSelector } from "../../ui/dashboard/info/ElemSelector";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
@@ -14,21 +14,19 @@ import { ChartComponent } from "../../ui/dashboard/devicesCharts";
 import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
 import 'react-toastify/dist/ReactToastify.css';
 import { ProgramsInfo } from "../../ui/dashboard/info/ProgramsInfo";
-import { FaLink } from "react-icons/fa6"
+import { AssociateButton } from "../../ui/dashboard/info/AssociateButton";
+
+
 
 export default function Page (){
 
     const [elem, setElem] = useState(undefined)
     const [type, setType] = useState(undefined)
-    const [assocProgram, setAssocProgram] = useState(false)
+    const [associate, setAssociate] = useState(false)
 
     const [IsOpenAddProgramDialog, setOpenAddProgramDialog] = useState(false)
     const closeAddProgramDialog = () => setOpenAddProgramDialog(false)
     const openAddProgramDialog = () => setOpenAddProgramDialog(true)
-
-    useEffect(() => {
-        setAssocProgram(false)
-    }, [elem])
     
     return (
         <main className="w-full h-full overflow-auto">
@@ -80,22 +78,7 @@ export default function Page (){
                 </div>
                 <div id="programs-logs" className="w-full lg:w-4/5 h-full flex flex-col gap-y-3 justify-center items-center">
                     <div id="buttons" className="w-full h-1/6 min-h-10 flex flex-row gap-x-2 justify-end items-center">
-                        <button disabled={
-                            elem === undefined || (elem !== undefined && type != 2) || (elem !== undefined && type == 2 && elem.activeProgram != null)
-                        }       onClick={() => setAssocProgram(!assocProgram)}
-                                className={`shadow-md rounded-md h-10 border flex disabled:text-slate-400 justify-center items-center gap-x-1 border hover:bg-gray-50 duration-150 px-1`}>
-                            {
-                                assocProgram == false
-                                    ? <FaLink size={22} className="text-indigo-600"/>
-                                    : <MdCancel size={22} className="text-red-600"/>
-                            }
-                            {
-                                assocProgram == false
-                                    ? 'Asociar Programa'
-                                    : 'Cancelar'
-                            }
-                            
-                        </button>
+                        <AssociateButton assocProgram={associate} setAssocProgram={setAssociate}  elem={elem} type={type}/>
                         <button onClick={openAddProgramDialog}
                                 className={`shadow-md rounded-md h-10 w-10 flex justify-center items-center border bg-indigo-600 hover:bg-indigo-400 duration-150`}>
                             <MdMoreTime size={22} className="text-white"/>
@@ -104,7 +87,7 @@ export default function Page (){
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md">
                         <Suspense>
-                            <ProgramsInfo associate={assocProgram} elemId={elem !== undefined ? elem.id : undefined}/>
+                            <ProgramsInfo associate={associate} elemId={elem !== undefined ? elem.id : undefined}/>
                         </Suspense>
                     </div>
                     <div id="logs" className="border w-full h-full max-h-[420px] shadow-md rounded-md">

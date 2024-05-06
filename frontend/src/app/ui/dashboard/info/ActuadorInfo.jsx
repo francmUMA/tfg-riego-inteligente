@@ -7,6 +7,7 @@ import { GiPlantWatering } from "react-icons/gi"
 import { IoTimeOutline } from "react-icons/io5"
 
 export const ActuadorInfo =  ({actuador}) => {
+
     return(
         <div className="w-full h-full justify-center items-center grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 overflow-y-auto">
             <NormalInfo description={"Nombre"} Icon={FaFaucetDrip} info={

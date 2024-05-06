@@ -99,7 +99,7 @@ export const associateProgram = async (programId: string, actuadorId: string) =>
         },
         body: JSON.stringify({
             programId: programId,
-            actuadorId: actuadorId
+            actuatorId: actuadorId
         })
     }
 
