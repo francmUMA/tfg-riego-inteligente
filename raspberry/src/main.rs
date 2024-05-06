@@ -201,6 +201,9 @@ fn main() {
         }
     });
 
+    // Gestion de programas
+    
+
     loop {
         sleep(Duration::from_secs(1));
     }
