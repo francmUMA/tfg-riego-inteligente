@@ -5,6 +5,7 @@ import { HiMiniCpuChip } from "react-icons/hi2";
 import { PiPlantDuotone } from "react-icons/pi"
 import { GiPlantWatering } from "react-icons/gi"
 import { IoTimeOutline } from "react-icons/io5"
+import { getProgramName } from "@/src/app/lib/programUtils";
 
 export const ActuadorInfo =  ({actuador}) => {
 
@@ -21,7 +22,7 @@ export const ActuadorInfo =  ({actuador}) => {
                     : "Sin dispositivo"
             } />
             <NormalInfo description={"Cultivo"} Icon={PiPlantDuotone} info={
-                actuador !== undefined 
+                actuador !== undefined && actuador.area != null
                     ? getCropName(actuador.area)
                     : "Sin cultivo"
                 } />
@@ -44,7 +45,11 @@ export const ActuadorInfo =  ({actuador}) => {
                         : "Parado"
                     : "Sin estado"
             } />
-            <NormalInfo description={"Programa"} Icon={IoTimeOutline} info={"No hay programa"} />
+            <NormalInfo description={"Programa"} Icon={IoTimeOutline} info={
+                actuador !== undefined && actuador.activeProgram != null
+                    ? getProgramName(actuador.activeProgram)
+                    : "Sin programa"
+            } />
         </div>
     )
 }

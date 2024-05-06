@@ -120,5 +120,21 @@ export const associateProgram = async (programId: string, actuadorId: string) =>
  */
 
 export const getProgramName = async (programId: string) => {
-    
+    const token = getCookie('token')
+
+    const options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+
+    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/id/' + programId, options)
+    if (res.status == 200) {
+        let data = await res.json()
+        return data.name
+    } else {
+        return "Desconocido"
+    }
 }
