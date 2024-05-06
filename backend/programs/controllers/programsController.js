@@ -1,6 +1,9 @@
 import { v4, validate } from "uuid"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import programsModel from "../models/programsModel.js"
+import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
+import deviceModel from "../../devices/models/deviceModel.js"
+
 
 /**
  * 
@@ -164,7 +167,7 @@ export const associateProgramToActuator = async (req, res) => {
 
     try {
 
-        let actuador = await actuatorsModel.findOne({
+        let actuador = await actuadoresModel.findOne({
             where: {
                 id: req.body.actuatorId
             }
@@ -176,7 +179,7 @@ export const associateProgramToActuator = async (req, res) => {
         }
 
         // Comprobar que el dispositivo pertenece al usuario
-        let device = await devicesModel.findOne({
+        let device = await deviceModel.findOne({
             where: {
                 id: actuador.device,
                 Usuario: nif
