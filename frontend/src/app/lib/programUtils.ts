@@ -112,3 +112,13 @@ export const associateProgram = async (programId: string, actuadorId: string) =>
         return false
     }
 }
+
+/**
+ * @description Recupera el nombre de un programa
+ * @param programId ID del programa
+ * @returns Nombre del programa
+ */
+
+export const getProgramName = async (programId: string) => {
+    
+}
