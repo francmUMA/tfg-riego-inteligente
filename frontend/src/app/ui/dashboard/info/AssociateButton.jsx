@@ -1,6 +1,6 @@
 import { FaLink } from "react-icons/fa6"
 import { MdCancel } from "react-icons/md"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 export const AssociateButton = ({elem, type, setAssocProgram, assocProgram}) => {
 
@@ -11,7 +11,7 @@ export const AssociateButton = ({elem, type, setAssocProgram, assocProgram}) => 
 
     return (
         <button disabled={
-            elem === undefined || (elem !== undefined && type != 2) || (elem !== undefined && type == 2 && elem.activeProgram != null)
+            elem === undefined || (elem !== undefined && type != 2) || (elem !== undefined && type == 2 && (elem.activeProgram != null || elem.mode == 1))
         }       onClick={() => setAssocProgram(!assocProgram)}
                 className={`shadow-md rounded-md h-10 flex disabled:text-slate-400 justify-center items-center gap-x-1 border hover:bg-gray-50 duration-150 px-1`}>
             {
