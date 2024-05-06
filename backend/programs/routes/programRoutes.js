@@ -4,7 +4,7 @@ import { addProgram, associateProgramToActuator, deleteProgram, disassociateProg
 const router = express.Router()
 router.post('/', addProgram)
 router.get('/user', getUserPrograms)
-router.get('/one', getProgram)
+router.get('/id/:programId', getProgram)
 router.put('/', associateProgramToActuator)
 router.put('/disassociate', disassociateProgramFromActuator)
 router.delete('/', deleteProgram)
