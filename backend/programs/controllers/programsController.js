@@ -152,12 +152,12 @@ export const associateProgramToActuator = async (req, res) => {
     }
 
     // Validar los identificadores
-    if (validate(req.body.programId)){
+    if (!validate(req.body.programId)){
         res.status(400).send("Invalid programId")
         return
     }
 
-    if (validate(req.body.actuatorId)){
+    if (!validate(req.body.actuatorId)){
         res.status(400).send("Invalid actuatorId")
         return
     }
