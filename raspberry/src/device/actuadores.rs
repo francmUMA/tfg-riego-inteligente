@@ -10,6 +10,7 @@ pub struct Actuador {
     longitud: Option<f64>,
     status: u8,
     name: String,
+    active_program: Option<String>
 }
 
 use serde_json::Value;
@@ -25,12 +26,14 @@ impl Actuador {
         longitud: Value,
         status: Value,
         name: String,
+        active_program: Value,
     ) -> Actuador {
         let mut device_gpio: Option<OutputPin> = None;
         let mut area_value: Option<String> = None;
         let mut latitud_value: Option<f64> = None;
         let mut longitud_value: Option<f64> = None;
         let mut status_value: u8 = 0;
+        let mut active_program: Option<String> = None;
         if device_pin.is_u64() {
             device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
         }
@@ -46,6 +49,9 @@ impl Actuador {
         if status.is_u64() {
             status_value = status.as_u64().unwrap() as u8;
         }
+        if active_program.is_string() {
+            active_program = Ok(active_program.to_string());
+        }
         Actuador {
             id,
             device,
@@ -56,6 +62,7 @@ impl Actuador {
             longitud: longitud_value,
             status: status_value,
             name,
+            active_program
         }
     }
 

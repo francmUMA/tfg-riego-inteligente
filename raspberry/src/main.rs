@@ -2,6 +2,7 @@ use std::{fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
 use crate::device::temperature::get_temperature;
+use crate::utils::programs;
 use crate::utils::time::create_unix_timestamp;
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
@@ -51,8 +52,10 @@ fn main() {
     topics.push(format!("devices/healthcheck"));
     topics.push(format!("devices/{}/actuadores/new", device_uuid));
     topics.push(format!("devices/{}/sensors/new", device_uuid));
+    topics.push(format!("devices/{}/programs/new", device_uuid));
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));
     topics.push(format!("devices/{}/sensors/delete", device_uuid));
+    topics.push(format!("devices/{}/programs/delete", device_uuid));
 
     // Crear cliente mqtt
     let mut mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
@@ -71,10 +74,11 @@ fn main() {
     }
     let mut client = Arc::new(Mutex::new(client.unwrap()));
 
-    // Crear actuadores, sensores y device
+    // Crear actuadores, sensores, device y programas
     let actuadores: Arc<Mutex<Vec<actuadores::Actuador>>> = Arc::new(Mutex::new(Vec::new()));
     let sensors: Arc<Mutex<Vec<Sensor>>> = Arc::new(Mutex::new(Vec::new()));
     let device: Arc<Mutex<Device>> = Arc::new(Mutex::new(Device::initialize(device_uuid.clone())));
+    let programs: Arc<Mutex<Vec<programs::Program>>> = Arc::new(Mutex::new(Vec::new()));
 
     // Suscribirse a los topics
     for topic in topics {
@@ -100,6 +104,7 @@ fn main() {
     let sensors_receiver = Arc::clone(&sensors);
     let device_receiver = Arc::clone(&device);
     let client_receiver = Arc::clone(&client);
+    let programs_receiver = Arc::clone(&programs);
 
     thread::spawn(move || {
         let mut receiver = client_receiver.lock().unwrap().start_consuming();
@@ -112,6 +117,7 @@ fn main() {
                     &mut device_receiver.lock().unwrap(), 
                 &mut actuadores_receiver.lock().unwrap(),
                    &mut sensors_receiver.lock().unwrap(), 
+                    &mut programs_receiver.lock().unwrap(),
                &mut client_receiver.lock().unwrap()
             );
         }
@@ -201,7 +207,14 @@ fn main() {
         }
     });
 
-    // Gestion de programas
+    // Hilo de gestión de actuadores
+    let actuadores_manager = Arc::clone(&actuadores);
+    let client_manager = Arc::clone(&client);
+    let programs_manager = Arc::clone(&programs);
+
+    // thread::spawn( move || {
+        
+    // });
     
 
     loop {

@@ -1,7 +1,13 @@
 use std::borrow::{Borrow, BorrowMut};
 
-use crate::{device::{self, actuadores::{self, Actuador}, info::Device}, sensors::{self, Sensor}, utils::time::create_unix_timestamp};
+use crate::{
+        device::{self, actuadores::{self, Actuador}, info::Device}, 
+        sensors::{self, Sensor}, 
+        utils::time::create_unix_timestamp,
+        programs::Program
+    };
 use mqtt::{client, QOS_0};
+use rand::seq::index;
 use serde_json::{de, json, to_string, Value};
 use paho_mqtt as mqtt;
 
@@ -216,6 +222,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             payload_json["Longitud"].clone(),
             payload_json["status"].clone(),
             payload_json["name"].as_str().unwrap().to_string(),
+            payload_json["activeProgram"].clone(),
         );
         println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
         let timestamp = create_unix_timestamp();
@@ -426,8 +433,70 @@ fn manage_topic_device(topic: &str, payload: &str, device: &mut Device, mqtt_cli
     }
 }
 
+//------------------------------------- PROGRAMS -------------------------------------------------------------------------------------
+pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Program>, device_id: String, mqtt_client: &mut MqttClient){
+    if topic.contains("new"){
+        let payload_json: Value = serde_json::from_str(payload).unwrap();
+        let program = Program::new(
+            payload_json["id"].clone(),
+            payload_json["name"].clone(),
+            payload_json["start_time"].clone(),
+            payload_json["duration"].clone(),
+            payload_json["user"].clone(),
+            payload_json["days"].clone()
+        );
+        if program.is_none() {
+            println!("Error al crear el programa");
+            let timestamp = create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": "00000000A",
+                "deviceName": "NC",
+                "logcode": 3319,
+                "timestamp": timestamp,
+                "description": format!("Error al crear el programa"),
+            });
+            mqtt_client.publish("logs", log_data.to_string().as_str());
+            return
+        }
+        let program = program.unwrap();
+        programs.push(program);
+        println!("Programa añadido: {}", program.get_name());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "NC",
+            "logcode": 3311,
+            "timestamp": timestamp,
+            "description": format!("Programa añadido"),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
+    } else if topic.contains("delete"){
+        // Hay que eliminar el programa cuyo id está en el payload
+        let index = programs.iter().position(|program| program.get_id() == payload).unwrap();
+        let program = programs.remove(index);
+        println!("Programa eliminado");
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "NC",
+            "logcode": 3321,
+            "timestamp": timestamp,
+            "description": format!("Programa {} eliminado", program.get_name()),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
+    }
+}
+
 //------------------------------------- MANAGE MSG ---------------------------------------------------------------------------------------
-pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &mut Vec<Actuador>, sensors: &mut Vec<Sensor>, mqtt_client: &mut MqttClient){
+pub fn manage_msg(
+    topic: &str, 
+    payload: &str, 
+    device: &mut Device, 
+    actuadores: &mut Vec<Actuador>, 
+    sensors: &mut Vec<Sensor>, 
+    programs: &mut Vec<Program>,
+    mqtt_client: &mut MqttClient
+){
     if topic.contains("actuadores") {
         manage_topic_actuadores(device, topic, payload, actuadores, mqtt_client);
     } else if topic.contains("sensors") {
@@ -442,6 +511,8 @@ pub fn manage_msg(topic: &str, payload: &str, device: &mut Device, actuadores: &
         }
         sensors.clear();
         mqtt_client.publish("devices/start", device.get_id().as_str());
+    } else if (topic.contains("programs")) {
+        manage_topic_programs(topic, payload, programs, device.get_id(), mqtt_client);
     } 
     else {
         manage_topic_device(topic, payload, device, mqtt_client);
