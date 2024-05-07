@@ -3,6 +3,8 @@ import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import programsModel from "../models/programsModel.js"
 import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
+import mqtt from "mqtt"
+import { publish_msg } from "../../mqtt.js"
 
 
 /**
@@ -205,6 +207,16 @@ export const associateProgramToActuator = async (req, res) => {
 
         actuador.activeProgram = req.body.programId
         actuador.save()
+
+        let topic = `devices/${device.id}/programs/new`
+        let message = JSON.stringify({
+            id: program.id,
+            name: program.name,
+            days: program.days,
+            startTime: program.startTime,
+            duration: program.duration
+        })
+        publish_msg(topic, message)
 
         res.status(200).send("Program associated")
     } catch (error) {
