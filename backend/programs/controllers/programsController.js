@@ -3,7 +3,6 @@ import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import programsModel from "../models/programsModel.js"
 import actuadoresModel from "../../actuadores/models/actuadoresModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
-import mqtt from "mqtt"
 import { publish_msg } from "../../mqtt.js"
 
 
