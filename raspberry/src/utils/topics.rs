@@ -260,7 +260,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             "logcode": 3311,
             "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
-            "description": format!("Se ha añadido el actuador con nombre", actuador.get_name()),
+            "description": format!("Se ha añadido el actuador con nombre {}" , actuador.get_name()),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         if !suscribe_actuador_topics(actuador.get_id().clone(), actuador.get_device().clone(), mqtt_client){
