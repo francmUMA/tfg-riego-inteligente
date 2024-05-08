@@ -49,8 +49,8 @@ impl Actuador {
         if status.is_u64() {
             status_value = status.as_u64().unwrap() as u8;
         }
-        if active_program_val.is_string() {
-            active_program = Ok(active_program_val.to_string());
+        if active_program.is_string() {
+            active_program_val = Some(active_program.to_string());
         }
         Actuador {
             id,
@@ -62,7 +62,7 @@ impl Actuador {
             longitud: longitud_value,
             status: status_value,
             name,
-            active_program
+            active_program: active_program_val
         }
     }
 

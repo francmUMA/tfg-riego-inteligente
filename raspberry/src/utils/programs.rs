@@ -1,4 +1,5 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use tokio::time::Instant;
 
 use serde_json::Value;
 use crate::utils::time::Timer;
@@ -29,7 +30,7 @@ impl Program {
             return None;
         }
 
-        Ok(Program {
+        Some(Program {
             id: id_val.unwrap(),
             name: name_val.unwrap(),
             start_time: start_time_val.unwrap(),
