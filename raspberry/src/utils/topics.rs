@@ -440,7 +440,7 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
         let program = Program::new(
             payload_json["id"].clone(),
             payload_json["name"].clone(),
-            payload_json["start_time"].clone(),
+            payload_json["startTime"].clone(),
             payload_json["duration"].clone(),
             payload_json["user"].clone(),
             payload_json["days"].clone()

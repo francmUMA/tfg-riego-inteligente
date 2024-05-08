@@ -7,11 +7,17 @@ pub fn get_temperature() -> i8{
         .output();
     
     // Una vez obtenida la salida del comando, hay que convertirla al formato necesario
-    if let Err(_) =  cmd_output {
+    if cmd_output.is_err() {
         println!("Error al ejecutar el comando");
         return -1
     } else {
-        let temperature = String::from_utf8(cmd_output.unwrap().stdout).unwrap().to_string();
+        let value = cmd_output.unwrap().stdout;
+        let temperature = String::from_utf8(value);
+        if (temperature.is_err()) {
+            println!("Error al obtener la temperatura");
+            return -1
+        }
+        let temperature = temperature.unwrap();
         temperature.parse::<f32>().unwrap() as i8
     }   
 }
