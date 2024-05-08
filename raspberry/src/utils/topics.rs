@@ -371,8 +371,8 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             }
             else if topic.contains("update") && topic.contains("activeProgram"){
                 let program_id = payload.to_string();
-                actuador.set_active_program(program_id);
-                println!("Programa activo cambiado a {}", program_id);
+                actuador.set_active_program(program_id.clone());
+                println!("Programa activo cambiado a {}", program_id.clone());
                 let timestamp = create_unix_timestamp();
                 let log_data = json!({
                     "deviceCode": actuador.get_device(),
