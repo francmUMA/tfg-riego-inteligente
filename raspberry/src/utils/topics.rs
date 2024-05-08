@@ -459,7 +459,6 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
             return
         }
         let program = program.unwrap();
-        programs.push(program);
         println!("Programa añadido: {}", program.get_name());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
@@ -470,6 +469,7 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
             "description": format!("Programa añadido"),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
+        programs.push(program);
     } else if topic.contains("delete"){
         // Hay que eliminar el programa cuyo id está en el payload
         let index = programs.iter().position(|program| program.get_id() == payload).unwrap();
