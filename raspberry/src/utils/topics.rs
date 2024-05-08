@@ -520,6 +520,7 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
         mqtt_client.publish("logs", log_data.to_string().as_str());
         programs.push(program);
     } else if topic.contains("delete"){
+        println!("Programa -> {}", payload);
         // Hay que eliminar el programa cuyo id está en el payload
         let index = programs.iter().position(|program| program.get_id() == payload);
         if index.is_none() {
