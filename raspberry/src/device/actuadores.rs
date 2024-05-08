@@ -102,5 +102,9 @@ impl Actuador {
     pub fn clean_pin(&mut self) {
         self.device_pin = None;
     }
+
+    pub fn set_active_program(&mut self, program: String) {
+        self.active_program = Some(program);
+    }
 }
 

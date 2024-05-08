@@ -178,6 +178,21 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
         return false;
     }
 
+    if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/activeProgram", device_id, actuador_id).as_str()){
+        println!("No se ha podido suscribir al topic de programa del actuador con id {}", actuador_id);
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "---",
+            "logcode": 3419,
+            "actuadorCode": actuador_id,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido suscribir al topic de programa activo del actuador",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
+        return false;
+    }
+
     true
 }
 
@@ -207,6 +222,19 @@ fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
     }
+
+    if !mqtt_client.unsubscribe(format!("devices/{}/actuadores/{}/update/activeProgram", actuador.get_device(), actuador.get_id()).as_str()){
+        println!("No se ha podido desuscribir al topic de programa del actuador con id {}", actuador.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": actuador.get_device(),
+            "deviceName": "---",
+            "logcode": 3419,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido desuscribir de un topic",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
+    }
 }
 
 fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
@@ -224,7 +252,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             payload_json["name"].as_str().unwrap().to_string(),
             payload_json["activeProgram"].clone(),
         );
-        println!("Actuador añadido: {} con id {}", actuador.get_name(), actuador.get_id());
+        println!("Actuador añadido: {}", actuador.get_name());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
             "deviceCode": device.get_id(),
@@ -232,7 +260,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             "logcode": 3311,
             "actuadorCode": actuador.get_id(),
             "timestamp": timestamp,
-            "description": format!("Se ha añadido el actuador con id {}", actuador.get_id()),
+            "description": format!("Se ha añadido el actuador con nombre", actuador.get_name()),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         if !suscribe_actuador_topics(actuador.get_id().clone(), actuador.get_device().clone(), mqtt_client){
@@ -340,6 +368,21 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                     });
                     mqtt_client.publish("logs", log_data.to_string().as_str());
                 }
+            }
+            else if topic.contains("update") && topic.contains("activeProgram"){
+                let program_id = payload.to_string();
+                actuador.set_active_program(program_id);
+                println!("Programa activo cambiado a {}", program_id);
+                let timestamp = create_unix_timestamp();
+                let log_data = json!({
+                    "deviceCode": actuador.get_device(),
+                    "deviceName": device.get_name(),
+                    "logcode": 1201,
+                    "actuadorCode": actuador.get_id(),
+                    "timestamp": timestamp,
+                    "description": format!("Se ha cambiado el programa activo"),
+                });
+                mqtt_client.publish("logs", log_data.to_string().as_str());
             }
         } else {
             println!("No se ha encontrado el actuador");
