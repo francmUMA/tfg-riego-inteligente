@@ -17,6 +17,12 @@ impl Program {
     pub fn new(id: Value, name: Value, start_time: Value, duration: Value, user: Value, days: Value) -> Option<Program> {
         if id.is_null() || name.is_null() || start_time.is_null() || duration.is_null() || user.is_null() || days.is_null() {
             println!("Elemento nulo");
+            println!("id: {}", id.is_null());
+            println!("name: {}", name.is_null());
+            println!("start_time: {}", start_time.is_null());
+            println!("duration: {}", duration.is_null());
+            println!("user: {}", user.is_null());
+            println!("days: {}", days.is_null());
             return None;
         }
 
