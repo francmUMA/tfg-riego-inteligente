@@ -213,7 +213,8 @@ export const associateProgramToActuator = async (req, res) => {
             name: program.name,
             days: program.days,
             startTime: program.startTime,
-            duration: program.duration
+            duration: program.duration,
+            user: program.user
         })
         publish_msg(topic, message)
 
