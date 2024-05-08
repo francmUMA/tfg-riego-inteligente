@@ -501,12 +501,13 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
             mqtt_client.publish("logs", log_data.to_string().as_str());
             return
         }
+        
+        let program = program.unwrap();
         let index = programs.iter().position(|p| program.get_id() == p.get_id());
         if index.is_some() {
             println!("El programa ya existe");
             return
         }
-        let program = program.unwrap();
         println!("Programa añadido: {}", program.get_name());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
@@ -525,6 +526,7 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
             println!("No se ha encontrado el programa");
             return
         }
+        let index = index.unwrap();
         let program = programs.remove(index);
         println!("Programa eliminado");
         let timestamp = create_unix_timestamp();
