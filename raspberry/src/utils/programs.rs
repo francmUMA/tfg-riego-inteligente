@@ -16,6 +16,7 @@ pub struct Program {
 impl Program {
     pub fn new(id: Value, name: Value, start_time: Value, duration: Value, user: Value, days: Value) -> Option<Program> {
         if id.is_null() || name.is_null() || start_time.is_null() || duration.is_null() || user.is_null() || days.is_null() {
+            println!("Elemento nulo");
             return None;
         }
 
@@ -27,6 +28,7 @@ impl Program {
         let days_val: Option<u8> = days.is_u64().then(|| days.as_u64().unwrap() as u8);
 
         if id_val.is_none() || name_val.is_none() || start_time_val.is_none() || duration_val.is_none() || user_val.is_none() || days_val.is_none() {
+            println!("Error al obtener los valores");
             return None;
         }
 
