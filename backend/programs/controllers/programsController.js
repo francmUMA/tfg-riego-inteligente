@@ -218,9 +218,11 @@ export const associateProgramToActuator = async (req, res) => {
         })
         publish_msg(topic, message)
 
-        topic = `devices/${device.id}/actuadores/${actuador.id}/update/activeProgram`
-        message = program.id
-        publish_msg(topic, message)
+        setTimeout(() => {
+            topic = `devices/${device.id}/actuadores/${actuador.id}/update/activeProgram`
+            message = program.id
+            publish_msg(topic, message)
+        }, 100)
 
         res.status(200).send("Program associated")
     } catch (error) {
