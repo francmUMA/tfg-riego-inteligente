@@ -18,6 +18,11 @@ pub fn get_temperature() -> i8{
             return -1
         }
         let temperature = temperature.unwrap();
-        temperature.parse::<f32>().unwrap() as i8
+        let res = temperature.parse::<f32>();
+        if (res.is_err()) {
+            println!("Error al convertir la temperatura");
+            return -1
+        }
+        res.unwrap() as i8
     }   
 }
