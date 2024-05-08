@@ -7,6 +7,7 @@ pub fn create_unix_timestamp() -> u64 {
     since_the_epoch.as_secs() 
 }
 
+#[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
     task: fn(actuador: String),

@@ -8,7 +8,6 @@ pub struct Program {
     name: String,
     start_time: u64,
     duration: u64,
-    name: String,
     user: String,
     days: u8
 }
