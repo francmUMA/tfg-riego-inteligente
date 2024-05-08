@@ -33,7 +33,7 @@ impl Actuador {
         let mut latitud_value: Option<f64> = None;
         let mut longitud_value: Option<f64> = None;
         let mut status_value: u8 = 0;
-        let mut active_program: Option<String> = None;
+        let mut active_program_val: Option<String> = None;
         if device_pin.is_u64() {
             device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
         }
@@ -49,8 +49,8 @@ impl Actuador {
         if status.is_u64() {
             status_value = status.as_u64().unwrap() as u8;
         }
-        if active_program.is_string() {
-            active_program = Ok(active_program.to_string());
+        if active_program_val.is_string() {
+            active_program = Ok(active_program_val.to_string());
         }
         Actuador {
             id,
