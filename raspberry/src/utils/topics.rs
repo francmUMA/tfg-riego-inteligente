@@ -501,6 +501,11 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
             mqtt_client.publish("logs", log_data.to_string().as_str());
             return
         }
+        let index = programs.iter().position(|p| program.get_id() == p.get_id());
+        if index.is_some() {
+            println!("El programa ya existe");
+            return
+        }
         let program = program.unwrap();
         println!("Programa añadido: {}", program.get_name());
         let timestamp = create_unix_timestamp();
@@ -515,7 +520,11 @@ pub fn manage_topic_programs(topic: &str, payload: &str, programs: &mut Vec<Prog
         programs.push(program);
     } else if topic.contains("delete"){
         // Hay que eliminar el programa cuyo id está en el payload
-        let index = programs.iter().position(|program| program.get_id() == payload).unwrap();
+        let index = programs.iter().position(|program| program.get_id() == payload);
+        if index.is_none() {
+            println!("No se ha encontrado el programa");
+            return
+        }
         let program = programs.remove(index);
         println!("Programa eliminado");
         let timestamp = create_unix_timestamp();

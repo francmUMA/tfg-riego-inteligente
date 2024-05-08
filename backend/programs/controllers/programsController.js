@@ -277,6 +277,20 @@ export const deleteProgram = async (req, res) => {
             return
         }
 
+        // Eliminar el programa de los devices del usuario
+        let devices = await deviceModel.findAll({
+            where: {
+                Usuario: nif
+            }
+        })
+
+        let topic = ""
+        for (let device of devices) {
+            topic = `devices/${device.id}/programs/delete`
+            let message = program.id
+            publish_msg(topic, message)
+        }
+
         program.destroy()
 
         res.status(200).send("Program deleted")
