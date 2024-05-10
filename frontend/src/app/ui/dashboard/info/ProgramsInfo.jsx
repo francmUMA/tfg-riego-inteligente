@@ -1,10 +1,10 @@
-import { associateProgram, deleteProgram, getPrograms, timestampToTime } from "@/src/app/lib/programUtils"
+import { associateProgram, deleteProgram, disassociateProgram, getPrograms, timestampToTime } from "@/src/app/lib/programUtils"
 import { useEffect, useState } from "react"
 import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa"
 import { FiClock } from "react-icons/fi"
 import { CiSquarePlus } from "react-icons/ci"
 
-export const ProgramsInfo = ({elemId, associate, setAssociate}) => {
+export const ProgramsInfo = ({elem, associate, setAssociate}) => {
 
     const [programs, setPrograms] = useState([])
 
@@ -14,12 +14,17 @@ export const ProgramsInfo = ({elemId, associate, setAssociate}) => {
     }
 
     const updateAssociateProgram = async (index) => {
-        if (elemId !== undefined){
-            let res = await associateProgram(programs[index].id, elemId)
+        if (elem !== undefined && elem.activeProgram == null){
+            let res = await associateProgram(programs[index].id, elem.id)
             if (res) {
                 setAssociate(false)
             }
-        }   
+        } else if (elem !== undefined && elem.activeProgram !== null) {
+            let res = await disassociateProgram(elem.id, elem.activeProgram)
+            if (res) {
+                setAssociate(false)
+            }
+        }
     }
 
     const deleteProgram2 = async (id) => {
@@ -31,7 +36,7 @@ export const ProgramsInfo = ({elemId, associate, setAssociate}) => {
 
     useEffect(() => {
         fetchPrograms()
-    }, [elemId])
+    }, [elem])
     return (
         <main className="w-full h-full flex flex-col items-center">
             <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">
@@ -79,14 +84,14 @@ export const ProgramsInfo = ({elemId, associate, setAssociate}) => {
                             </div>
                             <button onClick={
                                 () => {
-                                    associate 
+                                    associate
                                         ? updateAssociateProgram(index)
                                         : console.log("Edit program")
                                 }
                             }
                             className="min-w-8 h-8 flex items-center justify-center rounded-md border bg-white hover:bg-gray-100 transition ease-in-out duration-150 shadow-md">
                                 {
-                                    associate !== undefined && associate == true
+                                    associate !== undefined && associate == true && elem !== undefined && elem.activeProgram == null
                                         ? <CiSquarePlus className="text-indigo-600" size={16}></CiSquarePlus>
                                         : <FaRegEdit className="text-indigo-600" size={16} />
                                 }

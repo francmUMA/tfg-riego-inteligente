@@ -168,3 +168,36 @@ export const deleteProgram = async (programId: string) => {
         return false
     }
 }
+
+/**
+ * @description Desasocia un programa de un actuador
+ * @param actuadorId ID del actuador
+ * @param programId ID del programa
+ * @returns True si se ha desasociado correctamente, False si ha habido algún error
+ */
+
+export const disassociateProgram = async (actuatorId: string, programId: string) => {
+    const token = getCookie('token')
+
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            actuatorId: actuatorId,
+            programId: programId
+        })
+    }
+
+    let res = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + '/programs/disassociate', options)
+    if (res.status == 200) {
+        notify('Programa desasociado correctamente', 'success')
+        return true
+    } else {
+        notify('Error al desasociar el programa', 'error')
+        return false
+    }
+
+}
