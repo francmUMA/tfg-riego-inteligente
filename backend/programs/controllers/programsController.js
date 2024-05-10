@@ -436,6 +436,9 @@ export const disassociateProgramFromActuator = async (req, res) => {
             res.status(400).send("Program not found")
             return
         }
+        let topic = `devices/${device.id}/actuadores/${actuador.id}/update/activeProgram`
+        message = "null"
+        publish_msg(topic, message)
 
         actuador.activeProgram = null
         actuador.save()

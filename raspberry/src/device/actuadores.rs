@@ -104,6 +104,10 @@ impl Actuador {
     }
 
     pub fn set_active_program(&mut self, program: String) {
+        if program == "null" {
+            self.active_program = None;
+            return;
+        }
         self.active_program = Some(program);
     }
 }
