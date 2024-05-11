@@ -15,7 +15,7 @@ pub fn create_unix_timestamp() -> u64 {
 #[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
-    task: fn()
+    task: impl FnOnce()
 }
 
 impl PartialEq for Timer {
