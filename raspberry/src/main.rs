@@ -223,8 +223,10 @@ fn main() {
         // Hay que comprobar si es el día de arranque y si la hora actual es mayor o igual a la hora de arranque
         // Si es así, se crea un timer asociado a ese programa
         // Se espera 1 minutos para comprobar si hay algún programa que tenga que arrancar
+        println!("Hilo de gestión de actuadores creado");
         loop {
             let time_now = Instant::now();
+            println!("Comprobando programas de actuadores");
             for actuador in actuadores.lock().unwrap().iter_mut(){
                 println!("Comprobando programa de actuador: {}", actuador.get_id());
                 if actuador.get_active_program().is_none() {
