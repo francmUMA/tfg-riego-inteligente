@@ -245,14 +245,18 @@ fn main() {
                 }
                 let timer = Timer::new();
                 println!("Programa de riego activado");
-                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), || println!("Timer finalizado"));
+                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), || tx.send("Hola".to_string()));
             }
-            sleep(Duration::from_secs(60));
+            sleep(Duration::from_secs(5));
         }
     });
 
     thread::spawn(move || {
-
+        let mut receiver = rx;
+        loop {
+            let msg = receiver.recv().unwrap();
+            println!("Mensaje recibido: {}", msg);
+        }
     });
     
 
