@@ -215,7 +215,7 @@ fn main() {
     let actuadores_manager = Arc::clone(&actuadores);
     let client_manager = Arc::clone(&client);
     let programs_manager = Arc::clone(&programs);
-    let mut timers_queue: BinaryHeap<Timer> = BinaryHeap::new();
+    // let mut timers_queue: BinaryHeap<Timer> = BinaryHeap::new();
     let (tx, rx): (Sender<String>, Receiver<String>) = std::sync::mpsc::channel();
 
     thread::spawn( move || {
@@ -239,8 +239,7 @@ fn main() {
                     continue;
                 }
                 let timer = Timer::new();
-                let _guard = timer.schedule_with_delay(Duration::from_secs(2), || println!("Timer finalizado"));
-                
+                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), || println!("Timer finalizado"));
             }
             sleep(Duration::from_secs(60));
         }

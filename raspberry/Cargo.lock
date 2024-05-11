@@ -855,6 +855,7 @@ dependencies = [
 name = "raspberry"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "paho-mqtt",
  "rand",
  "reqwest",

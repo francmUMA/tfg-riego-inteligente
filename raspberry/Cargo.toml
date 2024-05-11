@@ -13,6 +13,7 @@ rppal = "0.17.1"
 paho-mqtt = "0.12"
 rand = "0.8.5"
 timer = "0.2.0"
+chrono = "0.4.38"
 
 [dependencies.uuid]
 version = "1.8.0"
