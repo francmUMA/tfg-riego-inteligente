@@ -240,7 +240,8 @@ fn main() {
 
                 timers_queue.push(Timer::new(
                     time_now + Duration::from_secs(program.get_duration() * 3600), 
-                        program.end_timer_handler(actuador, &mut client_manager.lock().unwrap()) as Fn
+                    program.clone(),
+                    actuador
                 ));
                 println!("Programa añadido a la cola de timers")
             }
@@ -254,8 +255,7 @@ fn main() {
                 sleep(timer.get_deadline() - Instant::now());
             }
             println!("Ejecutando tarea del timer");
-            timer.exec_task();
-
+            timer.exec_task(&mut client_manager.lock().unwrap());
         }
     });
     

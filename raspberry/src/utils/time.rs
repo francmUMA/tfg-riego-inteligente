@@ -4,7 +4,7 @@ use std::sync::mpsc::Sender;
 
 use crate::device::actuadores::Actuador;
 
-use super::mqtt_client::MqttClient;
+use super::{mqtt_client::MqttClient, programs::Program};
 
 pub fn create_unix_timestamp() -> u64 {
     let now = time::SystemTime::now();
@@ -15,7 +15,8 @@ pub fn create_unix_timestamp() -> u64 {
 #[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
-    task: fn()
+    program: Program,
+    actuator: &mut Actuador
 }
 
 impl PartialEq for Timer {
@@ -31,18 +32,18 @@ impl Ord for Timer {
 }
 
 impl Timer {
-    pub fn new(deadline: Instant, task: fn()) -> Timer {
+    pub fn new(deadline: Instant, program: Program, actuator: &mut Actuador) -> Timer {
         Timer {
             deadline,
-            task
+            program,
+            actuator
         }
     }
     pub fn get_deadline(&self) -> Instant {
         self.deadline
     }
-
-    pub fn exec_task(&self) {
-        self.task;
+    pub fn exec_task(&self, client: &mut MqttClient) -> Program {
+        self.program.end_timer_handler(self.actuator, client)
     }
 }
 
