@@ -240,7 +240,7 @@ fn main() {
 
                 timers_queue.push(Timer::new(
                     time_now + Duration::from_secs(program.get_duration() * 3600), 
-                    program.clone(),
+                    program,
                     actuador
                 ));
                 println!("Programa añadido a la cola de timers")

@@ -12,7 +12,6 @@ pub fn create_unix_timestamp() -> u64 {
     since_the_epoch.as_secs() 
 }
 
-#[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
     program: Program,
@@ -42,7 +41,7 @@ impl Timer {
     pub fn get_deadline(&self) -> Instant {
         self.deadline
     }
-    pub fn exec_task(&self, client: &mut MqttClient) -> Program {
+    pub fn exec_task(&self, client: &mut MqttClient) {
         self.program.end_timer_handler(self.actuator, client)
     }
 }
