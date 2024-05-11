@@ -230,7 +230,8 @@ fn main() {
                     continue;
                 }
                 let active_program = actuador.get_active_program().unwrap();
-                let program = programs_manager.lock().unwrap().iter().find(|p| p.get_id() == active_program);
+                let programs_list = programs_manager.lock().unwrap();
+                let program = programs_list.iter().find(|p| p.get_id() == active_program);
                 if program.is_none(){
                     continue;
                 }
