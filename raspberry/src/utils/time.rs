@@ -31,7 +31,7 @@ impl Ord for Timer {
 }
 
 impl Timer {
-    pub fn new(deadline: Instant, task: fn()) -> Timer {
+    pub fn new(deadline: Instant, task: impl FnOnce()) -> Timer {
         Timer {
             deadline,
             task
