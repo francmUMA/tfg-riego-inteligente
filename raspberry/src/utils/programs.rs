@@ -58,6 +58,10 @@ impl Program {
         self.id.clone()
     }
 
+    pub fn get_duration(&self) -> u64 {
+        self.duration
+    }
+
     pub fn end_timer_handler(&self, actuador: &mut Actuador, client: &mut MqttClient) {
         let res = actuador.close();
         if !res {

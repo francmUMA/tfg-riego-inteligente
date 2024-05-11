@@ -2,6 +2,10 @@ use std::time;
 use tokio::time::{sleep, Instant};
 use std::sync::mpsc::Sender;
 
+use crate::device::actuadores::Actuador;
+
+use super::mqtt_client::MqttClient;
+
 pub fn create_unix_timestamp() -> u64 {
     let now = time::SystemTime::now();
     let since_the_epoch = now.duration_since(time::UNIX_EPOCH).expect("Error al obtener el tiempo actual.");
@@ -11,7 +15,7 @@ pub fn create_unix_timestamp() -> u64 {
 #[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
-    task: fn(actuador: String)
+    task: fn(actuador: Actuador, client: &mut MqttClient)
 }
 
 impl PartialEq for Timer {
@@ -27,7 +31,7 @@ impl Ord for Timer {
 }
 
 impl Timer {
-    pub fn new(deadline: Instant, task: fn(actuador: String)) -> Timer {
+    pub fn new(deadline: Instant, task: fn(actuador: Actuador, client: &mut MqttClient)) -> Timer {
         Timer {
             deadline,
             task

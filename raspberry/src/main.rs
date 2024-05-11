@@ -248,7 +248,7 @@ fn main() {
         }
     });
 
-    thread::spawn(move || {
+    thread::spawn(async move || {
         while let Some(mut timer) =  timers_queue.pop() {
             if timer.get_deadline() > Instant::now() {
                 sleep(timer.get_deadline() - Instant::now()).await;
