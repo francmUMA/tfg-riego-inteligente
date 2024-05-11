@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::device::temperature::get_temperature;
 use crate::utils::programs;
-use crate::utils::time::{create_unix_timestamp, Timer};
+use crate::utils::time::create_unix_timestamp;
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
 use paho_mqtt as mqtt;
@@ -14,6 +14,7 @@ use utils::{config::{create_config_file, read_config_file}, topics::manage_msg};
 use uuid::timestamp;
 use std::time::Duration;
 use tokio::time::Instant;
+use timer::Timer;
 
 // Definir módulos
 mod device;
@@ -237,25 +238,16 @@ fn main() {
                 if !program.irrigate_now(time_now) {
                     continue;
                 }
-
-                timers_queue.push(Timer::new(
-                    time_now + Duration::from_secs(program.get_duration() * 3600), 
-                        program.end_timer_handler
-                ));
-                println!("Programa añadido a la cola de timers")
+                let timer = Timer::new();
+                let _guard = timer.schedule_with_delay(Duration::from_secs(2), || println!("Timer finalizado"));
+                
             }
             sleep(Duration::from_secs(60));
         }
     });
 
     thread::spawn(move || {
-        while let Some(mut timer) =  timers_queue.pop() {
-            if timer.get_deadline() > Instant::now() {
-                sleep(timer.get_deadline() - Instant::now());
-            }
-            println!("Ejecutando tarea del timer");
-            timer.exec_task();
-        }
+
     });
     
 
