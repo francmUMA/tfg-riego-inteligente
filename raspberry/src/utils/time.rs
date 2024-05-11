@@ -15,7 +15,7 @@ pub fn create_unix_timestamp() -> u64 {
 #[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
-    task: fn()
+    task: fn(Actuador, &mut MqttClient)
 }
 
 impl PartialEq for Timer {
@@ -31,7 +31,7 @@ impl Ord for Timer {
 }
 
 impl Timer {
-    pub fn new(deadline: Instant, task: fn()) -> Timer {
+    pub fn new(deadline: Instant, task: fn(Actuador, &mut MqttClient)) -> Timer {
         Timer {
             deadline,
             task
