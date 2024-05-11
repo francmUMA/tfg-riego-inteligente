@@ -240,7 +240,7 @@ fn main() {
 
                 timers_queue.push(Timer::new(
                         time_now + Duration::from_secs(program.get_duration() * 3600), 
-                    program.end_timer_handler(actuador, &mut client_manager.lock().unwrap())
+                    || program.end_timer_handler(actuador, &mut client_manager.lock().unwrap())
                 ));
                 println!("Programa añadido a la cola de timers")
             }
@@ -248,10 +248,10 @@ fn main() {
         }
     });
 
-    thread::spawn(async move || {
+    thread::spawn(move || {
         while let Some(mut timer) =  timers_queue.pop() {
             if timer.get_deadline() > Instant::now() {
-                sleep(timer.get_deadline() - Instant::now()).await;
+                sleep(timer.get_deadline() - Instant::now());
             }
             println!("Ejecutando tarea del timer");
             timer.exec_task();
