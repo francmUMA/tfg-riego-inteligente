@@ -238,13 +238,9 @@ fn main() {
                     continue;
                 }
 
-                let handler = Fn {
-                    program.end_timer_handler(actuador, &mut client_manager.lock().unwrap())
-                };
-
                 timers_queue.push(Timer::new(
-                        time_now + Duration::from_secs(program.get_duration() * 3600), 
-                        handler
+                    time_now + Duration::from_secs(program.get_duration() * 3600), 
+                        program.end_timer_handler(actuador, &mut client_manager.lock().unwrap()) as Fn
                 ));
                 println!("Programa añadido a la cola de timers")
             }
