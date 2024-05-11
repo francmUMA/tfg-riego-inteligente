@@ -226,7 +226,9 @@ fn main() {
         loop {
             let time_now = Instant::now();
             for actuador in actuadores.lock().unwrap().iter_mut(){
+                println!("Comprobando programa de actuador: {}", actuador.get_id());
                 if actuador.get_active_program().is_none() {
+                    println!("No hay programa activo en el actuador: {}", actuador.get_id());
                     continue;
                 }
                 let active_program = actuador.get_active_program().unwrap();
@@ -240,6 +242,7 @@ fn main() {
                     continue;
                 }
                 let timer = Timer::new();
+                println!("Programa de riego activado");
                 let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), || println!("Timer finalizado"));
             }
             sleep(Duration::from_secs(60));
