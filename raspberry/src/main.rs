@@ -245,7 +245,8 @@ fn main() {
                 }
                 let timer = Timer::new();
                 println!("Programa de riego activado");
-                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), || { tx.clone().send("Hola".to_string()); } );
+                let tx_clone = tx.clone();
+                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send("Hola".to_string()); } );
             }
             sleep(Duration::from_secs(5));
         }
