@@ -87,7 +87,7 @@ export default function Page (){
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md">
                         <Suspense>
-                            <ProgramsInfo setAssociate={setAssociate} associate={associate} elemId={elem !== undefined}/>
+                            <ProgramsInfo setAssociate={setAssociate} associate={associate} elem={elem}/>
                         </Suspense>
                     </div>
                     <div id="logs" className="border w-full h-full max-h-[420px] shadow-md rounded-md">
