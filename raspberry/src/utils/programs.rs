@@ -2,7 +2,9 @@ use std::time::Duration;
 use tokio::time::Instant;
 
 use serde_json::Value;
-use crate::utils::time::Timer;
+use crate::{device::actuadores::Actuador, utils::time::Timer};
+
+use super::mqtt_client::MqttClient;
 
 pub struct Program {
     id: String,
@@ -48,17 +50,33 @@ impl Program {
         })
     }
 
-    pub fn create_timer(&self, task: fn(actuador: String)) -> Timer {
-        let deadline = Instant::now() + Duration::from_secs(self.duration);
-        Timer::new(deadline, task)
-    }
-
     pub fn get_name(&self) -> String {
         self.name.clone()
     }
 
     pub fn get_id(&self) -> String {
         self.id.clone()
+    }
+
+    pub fn end_timer_handler(&self, actuador: &mut Actuador, client: &mut MqttClient) {
+        let res = actuador.close();
+        if !res {
+            println!("Error al cerrar el actuador");
+            let timestamp = super::time::create_unix_timestamp();
+            let log_data = json!({
+                "deviceCode": actuador.get_device(),
+                "deviceName": "NC",
+                "actuatorCode": actuador.get_id(),
+                "logcode": 2109,
+                "timestamp": timestamp,
+                "description": format!("Error al cerrar el actuador"),
+            });
+            client.publish("logs", log_data.to_string().as_str());
+        }
+    }
+
+    pub fn irrigate_now (&self, time: Instant) -> bool{
+        true
     }
 
 }

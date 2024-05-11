@@ -94,6 +94,10 @@ impl Actuador {
         self.status
     }
 
+    pub fn get_active_program(&self) -> Option<String> {
+        self.active_program.clone()
+    }
+
     pub fn change_pin(&mut self, pin: u8) -> bool {
         self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_output());
         true

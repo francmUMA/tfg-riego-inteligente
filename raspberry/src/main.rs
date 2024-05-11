@@ -1,9 +1,11 @@
+use std::collections::BinaryHeap;
+use std::sync::mpsc::{Receiver, Sender};
 use std::{fs, thread::sleep};
 use std::sync::{Arc, Mutex};
 
 use crate::device::temperature::get_temperature;
 use crate::utils::programs;
-use crate::utils::time::create_unix_timestamp;
+use crate::utils::time::{create_unix_timestamp, Timer};
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
 use paho_mqtt as mqtt;
@@ -11,6 +13,7 @@ use serde_json::{de, json};
 use utils::{config::{create_config_file, read_config_file}, topics::manage_msg};
 use uuid::timestamp;
 use std::time::Duration;
+use tokio::time::Instant;
 
 // Definir módulos
 mod device;
@@ -211,10 +214,50 @@ fn main() {
     let actuadores_manager = Arc::clone(&actuadores);
     let client_manager = Arc::clone(&client);
     let programs_manager = Arc::clone(&programs);
+    let mut timers_queue: BinaryHeap<Timer> = BinaryHeap::new();
+    let (tx, rx): (Sender<String>, Receiver<String>) = std::sync::mpsc::channel();
 
-    // thread::spawn( move || {
-        
-    // });
+    thread::spawn( move || {
+        // Comprobar si hay algún actuador con un programa que tenga que arrancar
+        // Hay que comprobar si es el día de arranque y si la hora actual es mayor o igual a la hora de arranque
+        // Si es así, se crea un timer asociado a ese programa
+        // Se espera 1 minutos para comprobar si hay algún programa que tenga que arrancar
+        loop {
+            let time_now = Instant::now();
+            for actuador in actuadores.lock().unwrap().iter_mut(){
+                if actuador.get_active_program().is_none() {
+                    continue;
+                }
+                let active_program = actuador.get_active_program().unwrap();
+                let program = programs_manager.lock().unwrap().iter().find(|p| p.get_id() == active_program);
+                if program.is_none(){
+                    continue;
+                }
+                let program = program.unwrap();
+                if !program.irrigate_now(time_now) {
+                    continue;
+                }
+
+                timers_queue.push(Timer::new(
+                        time_now + Duration::from_secs(program.get_duration() * 3600), 
+                    program.end_timer_handler(actuador, &mut client_manager.lock().unwrap())
+                ));
+                println!("Programa añadido a la cola de timers")
+            }
+            sleep(Duration::from_secs(60));
+        }
+    });
+
+    thread::spawn(move || {
+        while let Some(mut timer) =  timers_queue.pop() {
+            if timer.get_deadline() > Instant::now() {
+                sleep(timer.get_deadline() - Instant::now()).await;
+            }
+            println!("Ejecutando tarea del timer");
+            timer.exec_task();
+
+        }
+    });
     
 
     loop {

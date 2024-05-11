@@ -1,5 +1,6 @@
 use std::time;
 use tokio::time::{sleep, Instant};
+use std::sync::mpsc::Sender;
 
 pub fn create_unix_timestamp() -> u64 {
     let now = time::SystemTime::now();
@@ -10,7 +11,7 @@ pub fn create_unix_timestamp() -> u64 {
 #[derive(PartialOrd,Eq)]
 pub struct Timer {
     deadline: Instant,
-    task: fn(actuador: String),
+    task: fn(actuador: String)
 }
 
 impl PartialEq for Timer {
@@ -29,8 +30,15 @@ impl Timer {
     pub fn new(deadline: Instant, task: fn(actuador: String)) -> Timer {
         Timer {
             deadline,
-            task,
+            task
         }
+    }
+    pub fn get_deadline(&self) -> Instant {
+        self.deadline
+    }
+
+    pub fn exec_task(&self) {
+        self.task;
     }
 }
 
