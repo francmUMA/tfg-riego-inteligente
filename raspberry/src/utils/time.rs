@@ -1,5 +1,5 @@
 use std::time;
-use timer::Guard;
+use timer::{Guard, Timer};
 use tokio::time::{sleep, Instant};
 use std::sync::mpsc::Sender;
 
@@ -21,6 +21,7 @@ pub struct TimerWrapper {
 
 impl TimerWrapper {
     pub fn new(id: String, deadline: Instant, tx_clone: Sender<String>) -> TimerWrapper {
+        let timer = Timer::new();
         TimerWrapper {
             id,
             deadline,
