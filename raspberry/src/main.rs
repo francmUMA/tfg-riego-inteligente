@@ -220,10 +220,10 @@ fn main() {
     let timers_list_clone = Arc::clone(&timers_list);
 
     thread::spawn( move || {
-        loop {
-            let time_now = Instant::now();
-            let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(async {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            loop {
+                let time_now = Instant::now();
                 let mut actuadores = actuadores_manager.lock().unwrap();
                 for actuador in actuadores.iter_mut(){
                     println!("Comprobando programa de actuador: {}", actuador.get_id());
@@ -246,9 +246,10 @@ fn main() {
                     });
                     println!("Post init_timer");
                 }
-            });
-            sleep(Duration::from_secs(5));
-        }
+                sleep(Duration::from_secs(5));
+            }
+        });
+        
     });
 
     thread::spawn(move || {
