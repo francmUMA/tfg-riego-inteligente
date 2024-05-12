@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::device::temperature::get_temperature;
 use crate::utils::programs;
-use crate::utils::time::{create_unix_timestamp, TimerWrapper};
+use crate::utils::time::{create_unix_timestamp, init_timer, TimerWrapper};
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
 use paho_mqtt as mqtt;
@@ -222,27 +222,28 @@ fn main() {
     thread::spawn( move || {
         loop {
             let time_now = Instant::now();
-            println!("Comprobando programas de actuadores");
-            for actuador in actuadores.lock().unwrap().iter_mut(){
-                println!("Comprobando programa de actuador: {}", actuador.get_id());
-                if actuador.get_active_program().is_none() {
-                    println!("No hay programa activo en el actuador: {}", actuador.get_id());
-                    continue;
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(async {
+                for actuador in actuadores.lock().unwrap().iter_mut(){
+                    println!("Comprobando programa de actuador: {}", actuador.get_id());
+                    if actuador.get_active_program().is_none() {
+                        println!("No hay programa activo en el actuador: {}", actuador.get_id());
+                        continue;
+                    }
+                    let active_program = actuador.get_active_program().unwrap();
+                    let programs_list = programs_manager.lock().unwrap();
+                    let program = programs_list.iter().find(|p| p.get_id() == active_program);
+                    if program.is_none(){
+                        continue;
+                    }
+                    let program = program.unwrap();
+                    if !program.irrigate_now(time_now) {
+                        continue;
+                    }
+                    init_timer(actuador.get_id());
+                    println!("Post init_timer");
                 }
-                let active_program = actuador.get_active_program().unwrap();
-                let programs_list = programs_manager.lock().unwrap();
-                let program = programs_list.iter().find(|p| p.get_id() == active_program);
-                if program.is_none(){
-                    continue;
-                }
-                let program = program.unwrap();
-                if !program.irrigate_now(time_now) {
-                    continue;
-                }
-
-                let tx_clone = tx.clone();
-                timers_list_clone.lock().unwrap().push(TimerWrapper::new( time_now, tx_clone.clone()));
-            }
+            });
             sleep(Duration::from_secs(5));
         }
     });

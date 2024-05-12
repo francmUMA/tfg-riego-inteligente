@@ -1,5 +1,5 @@
-use std::time;
-use timer::{Guard, Timer};
+use std::time::{self, Duration};
+use timer::Guard;
 use tokio::time::{sleep, Instant};
 use std::sync::mpsc::Sender;
 
@@ -20,18 +20,21 @@ pub struct TimerWrapper {
 }
 
 impl TimerWrapper {
-    pub fn new(deadline: Instant, tx_clone: Sender<String>) -> TimerWrapper {
-        let timer = Timer::new();
-        let uuid = uuid::Uuid::new_v4();
+    pub fn new(uuid: String, deadline: Instant, guard: Guard) -> Timer {
         TimerWrapper {
-            id: uuid.clone().to_string(),
+            id: uuid,
             deadline,
-            guard: timer.schedule_with_delay(chrono::Duration::seconds(2), move || { println!("Hola"); tx_clone.send(uuid.clone().to_string()); } )
+            guard
         }
     }
     pub fn get_deadline(&self) -> Instant {
         self.deadline
     }
+}
+
+pub async fn init_timer(id: String){
+    sleep(Duration::from_secs(10)).await;
+    println!("Timer {} finalizado", id);
 }
 
 
