@@ -226,10 +226,12 @@ fn main() {
                 // Recorrer los actuadores para hay algún programa que tenga que iniciarse
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
                     let id = actuator.get_id();
+                    println!("Actuador timer: {}", id);
                     tokio::spawn(async move {
                             init_timer(id).await;
                     });
                 }
+                sleep(Duration::from_secs(10));
             }
         });
     });
