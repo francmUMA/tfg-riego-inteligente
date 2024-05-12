@@ -225,33 +225,7 @@ fn main() {
             loop {
                 // Recorrer los actuadores para hay algún programa que tenga que iniciarse
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
-                    let programs = programs_manager.lock().unwrap();
-                    for program in programs.iter() {
-                        if program.get_id() == actuator.get_id() {
-                            let now = create_unix_timestamp();
-                            if now >= program.get_start_time() && now <= program.get_start_time() + program.get_duration() {
-                                let res = actuator.open();
-                                if !res {
-                                    println!("Error al abrir el actuador");
-                                    let timestamp = create_unix_timestamp();
-                                    let log_data = json!({
-                                        "deviceCode": actuator.get_device(),
-                                        "deviceName": "NC",
-                                        "actuatorCode": actuator.get_id(),
-                                        "logcode": 2109,
-                                        "timestamp": timestamp,
-                                        "description": format!("Error al abrir el actuador"),
-                                    });
-                                    client_manager.lock().unwrap().publish("logs", log_data.to_string().as_str());
-                                }
-                                let timer = Timer::new();
-                                let deadline = Instant::now() + Duration::from_secs(program.get_duration());
-                                let guard = timer.schedule_at(deadline, init_timer(program.get_id().clone()));
-                                let timer_wrapper = TimerWrapper::new(program.get_id().clone(), deadline, guard);
-                                timers_list_clone.lock().unwrap().push(timer_wrapper);
-                            }
-                        }
-                    }
+                   ;
                 }
             }
         });
