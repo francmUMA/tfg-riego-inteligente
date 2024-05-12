@@ -243,16 +243,10 @@ fn main() {
                 let timer = Timer::new();
                 let tx_clone = tx.clone();
                 let timer_id = uuid::Uuid::new_v4();
-                let timer_wrapper = TimerWrapper::new(
-                    timer_id.clone().to_string(), time_now, 
-                    timer.schedule_with_delay(chrono::Duration::seconds(2), 
-                            move || { 
-                                let _ = tx_clone.send(timer_id.clone().to_string()); 
-                            } 
-                    )
-                );
+                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(timer_id.clone().to_string()); } );
+                std::mem::forget(_guard);
+                let timer_wrapper = TimerWrapper::new(timer_id.clone().to_string(), time_now, _guard);
                 timers_list_clone.lock().unwrap().push(timer_wrapper);
-                sleep(Duration::from_secs(5));
             }
             sleep(Duration::from_secs(5));
         }
