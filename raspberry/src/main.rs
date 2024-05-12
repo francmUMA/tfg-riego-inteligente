@@ -230,8 +230,8 @@ fn main() {
                     tokio::spawn(async move {
                             init_timer(id).await;
                     });
+                    sleep(Duration::from_secs(3));
                 }
-                sleep(Duration::from_secs(10));
             }
         });
     });
