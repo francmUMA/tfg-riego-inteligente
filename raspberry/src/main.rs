@@ -243,7 +243,8 @@ fn main() {
                 let timer = Timer::new();
                 let tx_clone = tx.clone();
                 let timer_id = uuid::Uuid::new_v4().to_string();
-                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(timer_id.clone()); } );
+                let timer_id_clone = timer_id.clone();
+                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(timer_id_clone); } );
                 let timer_wrapper = TimerWrapper::new(timer_id.clone(), time_now, _guard);
                 timers_list_clone.lock().unwrap().push(timer_wrapper);
             }
