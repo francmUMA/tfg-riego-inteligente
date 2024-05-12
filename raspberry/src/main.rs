@@ -240,7 +240,9 @@ fn main() {
                     if !program.irrigate_now(time_now) {
                         continue;
                     }
-                    init_timer(actuador.get_id());
+                    tokio::spawn(async move {
+                        init_timer(actuador.get_id()).await;
+                    });
                     println!("Post init_timer");
                 }
             });
