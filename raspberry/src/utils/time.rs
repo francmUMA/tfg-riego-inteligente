@@ -20,11 +20,11 @@ pub struct TimerWrapper {
 }
 
 impl TimerWrapper {
-    pub fn new(id: String, deadline: Instant, guard: Guard) -> TimerWrapper {
+    pub fn new(id: String, deadline: Instant, tx_clone: Sender<String>) -> TimerWrapper {
         TimerWrapper {
             id,
             deadline,
-            guard
+            guard: timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(id); } )
         }
     }
     pub fn get_deadline(&self) -> Instant {
