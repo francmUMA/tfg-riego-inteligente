@@ -20,7 +20,7 @@ pub struct TimerWrapper {
 }
 
 impl TimerWrapper {
-    pub fn new(uuid: String, deadline: Instant, guard: Guard) -> Timer {
+    pub fn new(uuid: String, deadline: Instant, guard: Guard) -> TimerWrapper {
         TimerWrapper {
             id: uuid,
             deadline,
