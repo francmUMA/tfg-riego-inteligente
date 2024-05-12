@@ -26,7 +26,7 @@ impl TimerWrapper {
         TimerWrapper {
             id: uuid.clone().to_string(),
             deadline,
-            guard: timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(uuid.clone().to_string()); } )
+            guard: timer.schedule_with_delay(chrono::Duration::seconds(2), move || { println!("Hola".to_string); tx_clone.send(uuid.clone().to_string()); } )
         }
     }
     pub fn get_deadline(&self) -> Instant {
