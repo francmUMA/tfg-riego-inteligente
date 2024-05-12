@@ -228,7 +228,8 @@ fn main() {
                     if actuator.get_active_program().is_none() {
                         continue;
                     }
-                    let program = programs_manager.lock().unwrap().iter().find(|p| p.get_id() == actuator.get_active_program().unwrap());
+                    let programs = programs_manager.lock().unwrap();
+                    let program = programs.iter().find(|p| p.get_id() == actuator.get_active_program().unwrap());
                     if program.is_none() {
                         println!("Error al obtener el programa");
                         continue;
