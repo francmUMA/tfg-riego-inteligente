@@ -223,8 +223,9 @@ fn main() {
         loop {
             let time_now = Instant::now();
             let rt = tokio::runtime::Runtime::new().unwrap();
+            let actuadores_aux = actuadores.lock().unwrap();
             rt.block_on(async {
-                for actuador in actuadores.lock().unwrap().iter_mut(){
+                for actuador in actuadores_aux.iter_mut(){
                     println!("Comprobando programa de actuador: {}", actuador.get_id());
                     if actuador.get_active_program().is_none() {
                         println!("No hay programa activo en el actuador: {}", actuador.get_id());
