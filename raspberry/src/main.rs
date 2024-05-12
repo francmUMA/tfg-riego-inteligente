@@ -221,10 +221,11 @@ fn main() {
 
     thread::spawn( move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
+        let actuadores_aux = Arc::clone(&actuadores_manager);
         rt.block_on(async move{
             loop {
                 let time_now = Instant::now();
-                for actuador in actuadores_manager.lock().unwrap().iter() {
+                for actuador in actuadores_aux.lock().unwrap().iter() {
                     tokio::spawn(async move {
                         init_timer(actuador.get_name()).await;
                     });
