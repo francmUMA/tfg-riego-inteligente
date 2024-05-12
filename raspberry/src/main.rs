@@ -221,32 +221,13 @@ fn main() {
 
     thread::spawn( move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
-        let actuadores_aux = Arc::clone(&actuadores_manager);
         rt.block_on(async {
             loop {
                 let time_now = Instant::now();
-                let mut actuadores_async = actuadores_aux.lock().unwrap();
-                for actuador in actuadores_async.iter_mut(){
-                    println!("Comprobando programa de actuador: {}", actuador.get_id());
-                    if actuador.get_active_program().is_none() {
-                        println!("No hay programa activo en el actuador: {}", actuador.get_id());
-                        continue;
-                    }
-                    let active_program = actuador.get_active_program().unwrap();
-                    let programs_list = programs_manager.lock().unwrap();
-                    let program = programs_list.iter().find(|p| p.get_id() == active_program);
-                    if program.is_none(){
-                        continue;
-                    }
-                    let program = program.unwrap();
-                    if !program.irrigate_now(time_now) {
-                        continue;
-                    }
-                    tokio::spawn(async move {
-                        init_timer(actuador.get_id()).await;
-                    });
-                    println!("Post init_timer");
-                }
+                tokio::spawn(async move {
+                    init_timer("test".to_string()).await;
+                });
+                println!("Timer creado");
                 sleep(Duration::from_secs(5));
             }
         });
