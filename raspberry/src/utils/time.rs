@@ -1,4 +1,5 @@
 use std::time;
+use timer::Guard;
 use tokio::time::{sleep, Instant};
 use std::sync::mpsc::Sender;
 
@@ -12,37 +13,22 @@ pub fn create_unix_timestamp() -> u64 {
     since_the_epoch.as_secs() 
 }
 
-#[derive(PartialOrd,Eq)]
-pub struct Timer {
+pub struct TimerWrapper {
+    id: String,
     deadline: Instant,
-    task: fn(Actuador, &mut MqttClient)
+    guard: Guard
 }
 
-impl PartialEq for Timer {
-    fn eq(&self, other: &Self) -> bool {
-        self.deadline == other.deadline
-    }
-}
-
-impl Ord for Timer {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.deadline.cmp(&other.deadline)
-    }
-}
-
-impl Timer {
-    pub fn new(deadline: Instant, task: fn(Actuador, &mut MqttClient)) -> Timer {
+impl TimerWrapper {
+    pub fn new(uuid: String, deadline: Instant, guard: Guard) -> Timer {
         Timer {
+            uuid,
             deadline,
-            task
+            guard
         }
     }
     pub fn get_deadline(&self) -> Instant {
         self.deadline
-    }
-
-    pub fn exec_task(&self) {
-        self.task;
     }
 }
 

@@ -5,7 +5,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::device::temperature::get_temperature;
 use crate::utils::programs;
-use crate::utils::time::create_unix_timestamp;
+use crate::utils::time::{create_unix_timestamp, TimerWrapper};
 use crate::{device::{actuadores, info::{register_device, Device}, sensors::{self, Sensor}}, utils::{config::update_config_file, mqtt_client}};
 use mqtt::{client, topic};
 use paho_mqtt as mqtt;
@@ -215,15 +215,11 @@ fn main() {
     let actuadores_manager = Arc::clone(&actuadores);
     let client_manager = Arc::clone(&client);
     let programs_manager = Arc::clone(&programs);
-    // let mut timers_queue: BinaryHeap<Timer> = BinaryHeap::new();
     let (tx, rx): (Sender<String>, Receiver<String>) = std::sync::mpsc::channel();
+    let timers_list: Arc<Mutex<Vec<TimerWrapper>>> = Arc::new(Mutex::new(Vec::new()));
+    let timers_list_clone = Arc::clone(&timers_list);
 
     thread::spawn( move || {
-        // Comprobar si hay algún actuador con un programa que tenga que arrancar
-        // Hay que comprobar si es el día de arranque y si la hora actual es mayor o igual a la hora de arranque
-        // Si es así, se crea un timer asociado a ese programa
-        // Se espera 1 minutos para comprobar si hay algún programa que tenga que arrancar
-        println!("Hilo de gestión de actuadores creado");
         loop {
             let time_now = Instant::now();
             println!("Comprobando programas de actuadores");
@@ -243,11 +239,13 @@ fn main() {
                 if !program.irrigate_now(time_now) {
                     continue;
                 }
+
                 let timer = Timer::new();
-                println!("Programa de riego activado");
                 let tx_clone = tx.clone();
-                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send("Hola".to_string()); } );
-                sleep(Duration::from_secs(5));
+                let timer_id = uuid::Uuid::new_v4().to_string();
+                let _guard = timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(timer_id); } );
+                let timer_wrapper = TimerWrapper::new(timer_id, time_now, _guard);
+                timers_list_clone.lock().unwrap().push(timer_wrapper);
             }
             sleep(Duration::from_secs(5));
         }
