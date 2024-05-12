@@ -1,5 +1,4 @@
 use std::time::{self, Duration};
-use timer::Guard;
 use tokio::time::{sleep, Instant};
 use std::sync::mpsc::Sender;
 
@@ -15,20 +14,23 @@ pub fn create_unix_timestamp() -> u64 {
 
 pub struct TimerWrapper {
     id: String,
-    deadline: Instant,
-    guard: Guard
+    actuador_id: String
 }
 
 impl TimerWrapper {
-    pub fn new(uuid: String, deadline: Instant, guard: Guard) -> TimerWrapper {
+    pub fn new(id: String, actuador_id: String) -> TimerWrapper {
         TimerWrapper {
-            id: uuid,
-            deadline,
-            guard
+            id,
+            actuador_id
         }
     }
-    pub fn get_deadline(&self) -> Instant {
-        self.deadline
+
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+    }
+
+    pub fn get_actuador_id(&self) -> String {
+        self.actuador_id.clone()
     }
 }
 

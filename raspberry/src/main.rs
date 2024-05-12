@@ -217,7 +217,6 @@ fn main() {
     let programs_manager = Arc::clone(&programs);
     let (tx, rx): (Sender<String>, Receiver<String>) = std::sync::mpsc::channel();
     let timers_list: Arc<Mutex<Vec<TimerWrapper>>> = Arc::new(Mutex::new(Vec::new()));
-    let timers_list_clone = Arc::clone(&timers_list);
 
     thread::spawn( move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
@@ -238,7 +237,8 @@ fn main() {
                     if !program.irrigate_now(now){
                         continue;
                     }
-                    let id = actuator.get_id();
+                    let timer = TimerWrapper::new(uuid::Uuid::new_v4().to_string(), actuator.get_id());
+                    timers_list.lock().unwrap().push(timer);
                     tokio::spawn(async move {
                         init_timer(id).await;
                     });
