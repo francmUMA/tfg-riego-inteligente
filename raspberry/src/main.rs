@@ -241,8 +241,7 @@ fn main() {
                 }
 
                 let tx_clone = tx.clone();
-                let timer_id = uuid::Uuid::new_v4();
-                timers_list_clone.lock().unwrap().push(TimerWrapper::new(timer_id.clone().to_string(), time_now, tx_clone.clone()));
+                timers_list_clone.lock().unwrap().push(TimerWrapper::new( time_now, tx_clone.clone()));
             }
             sleep(Duration::from_secs(5));
         }

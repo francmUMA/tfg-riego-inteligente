@@ -20,12 +20,13 @@ pub struct TimerWrapper {
 }
 
 impl TimerWrapper {
-    pub fn new(id: String, deadline: Instant, tx_clone: Sender<String>) -> TimerWrapper {
+    pub fn new(deadline: Instant, tx_clone: Sender<String>) -> TimerWrapper {
         let timer = Timer::new();
+        let uuid = uuid::Uuid::new_v4();
         TimerWrapper {
-            id,
+            id: uuid.clone().to_string(),
             deadline,
-            guard: timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(id); } )
+            guard: timer.schedule_with_delay(chrono::Duration::seconds(2), move || { tx_clone.send(uuid.clone().to_string()); } )
         }
     }
     pub fn get_deadline(&self) -> Instant {
