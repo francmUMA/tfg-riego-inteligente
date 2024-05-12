@@ -225,9 +225,10 @@ fn main() {
             loop {
                 // Recorrer los actuadores para hay algún programa que tenga que iniciarse
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
-                   tokio::spawn(async move {
-                        init_timer(actuator.get_name()).await;
-                   });
+                    let id = actuator.get_id();
+                    tokio::spawn(async move {
+                            init_timer(id).await;
+                    });
                 }
             }
         });
