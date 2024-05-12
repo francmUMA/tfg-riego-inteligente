@@ -252,7 +252,7 @@ fn main() {
                     )
                 );
                 timers_list_clone.lock().unwrap().push(timer_wrapper);
-                sleep(duration::from_secs(5));
+                sleep(Duration::from_secs(5));
             }
             sleep(Duration::from_secs(5));
         }
