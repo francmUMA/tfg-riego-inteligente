@@ -223,15 +223,26 @@ fn main() {
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(async move{
             loop {
-                // Recorrer los actuadores para hay algún programa que tenga que iniciarse
+                let now = create_unix_timestamp();
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
+                    if actuator.get_active_program().is_none() {
+                        continue;
+                    }
+                    let program = programs_manager.lock().unwrap().iter().find(|p| p.get_id() == program);
+                    if program.is_none() {
+                        println!("Error al obtener el programa");
+                        continue;
+                    }
+                    let program = program.unwrap();
+                    if !program.irrigate_now(now){
+                        continue;
+                    }
                     let id = actuator.get_id();
-                    println!("Actuador timer: {}", id);
                     tokio::spawn(async move {
-                            init_timer(id).await;
+                        init_timer(id).await;
                     });
-                    sleep(Duration::from_secs(3));
                 }
+                sleep(Duration::from_secs(30));
             }
         });
     });

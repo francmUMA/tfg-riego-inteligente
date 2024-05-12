@@ -62,24 +62,7 @@ impl Program {
         self.duration
     }
 
-    pub fn end_timer_handler(&self, actuador: &mut Actuador, client: &mut MqttClient) {
-        let res = actuador.close();
-        if !res {
-            println!("Error al cerrar el actuador");
-            let timestamp = super::time::create_unix_timestamp();
-            let log_data = json!({
-                "deviceCode": actuador.get_device(),
-                "deviceName": "NC",
-                "actuatorCode": actuador.get_id(),
-                "logcode": 2109,
-                "timestamp": timestamp,
-                "description": format!("Error al cerrar el actuador"),
-            });
-            client.publish("logs", log_data.to_string().as_str());
-        }
-    }
-
-    pub fn irrigate_now (&self, time: Instant) -> bool{
+    pub fn irrigate_now (&self, time: u64) -> bool{
         true
     }
 
