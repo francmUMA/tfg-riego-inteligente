@@ -2,7 +2,7 @@ use std::time::Duration;
 use tokio::time::Instant;
 
 use serde_json::{Value, json};
-use crate::{device::actuadores::Actuador, utils::time::Timer};
+use crate::device::actuadores::Actuador;
 
 use super::mqtt_client::MqttClient;
 
