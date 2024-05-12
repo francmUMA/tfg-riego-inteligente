@@ -221,10 +221,11 @@ fn main() {
 
     thread::spawn( move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
+        let mut actuadores = Arc::clone(&actuadores_manager);
         rt.block_on(async {
             loop {
                 let time_now = Instant::now();
-                let mut actuadores = Arc::clone(&actuadores_manager).lock().unwrap();
+                let mut actuadores = actuadores.lock().unwrap();
                 for actuador in actuadores.iter_mut(){
                     println!("Comprobando programa de actuador: {}", actuador.get_id());
                     if actuador.get_active_program().is_none() {
