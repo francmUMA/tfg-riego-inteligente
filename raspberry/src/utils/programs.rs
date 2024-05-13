@@ -73,7 +73,7 @@ impl Program {
 
     pub fn irrigate_now (&self, now: u64) -> bool{
         // Comprobar si es el día de la semana
-        let datetime = Utc.timestamp(now, 0);
+        let datetime = Utc.timestamp(now as i64, 0);
         let weekday = datetime.weekday();
         let irrigate_day = match weekday {
             Weekday::Mon => days & 0b00000001,
