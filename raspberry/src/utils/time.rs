@@ -35,7 +35,7 @@ impl TimerWrapper {
 }
 
 pub async fn init_timer(id: String, tx: Sender<String>, duration: u64) {
-    sleep(Duration::from_secs(duration*3600)).await;
+    sleep(Duration::from_secs(duration)).await;
     tx.send(id);
 }
 
