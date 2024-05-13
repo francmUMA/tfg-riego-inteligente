@@ -6,6 +6,7 @@ import deviceModel from './devices/models/deviceModel.js'
 import actuadoresModel from './actuadores/models/actuadoresModel.js'
 import { addValue } from './monitors/controllers/monitorController.js'
 import { addLog } from './logs/controllers/logController.js'
+import programsModel from './programs/models/programsModel.js'
 
 if (!isMainThread){
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
@@ -119,6 +120,18 @@ if (!isMainThread){
                         console.log("No se ha podido enviar la información del actuador: " + actuador.id)
                     }
                 })
+
+                if (actuador.activeProgram != null) {
+                    let program = await programsModel.findOne({where: {id: actuador.activeProgram}})
+                    if (program == null) {
+                        console.log("No se ha encontrado el programa para enviar al actuador")
+                    }
+                    client.publish(`devices/${device_data.id}/programs/new`, JSON.stringify(program), (err) => {
+                        if (err) {
+                            console.log("No se ha podido enviar la información del programa: " + program.id)
+                        }
+                    })
+                }
             }
         } else if (topic.includes('available')){
             let device_id = topic.split('/')[1]
