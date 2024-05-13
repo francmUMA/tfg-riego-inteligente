@@ -35,7 +35,9 @@ impl TimerWrapper {
 }
 
 pub async fn init_timer(id: String, tx: Sender<String>){
-    sleep(Duration::from_secs(10)).await;
+    //Gnerar un valor aleatorio entre 1 y 10
+    let random_value = rand::random::<u64>() % 10 + 1;
+    sleep(Duration::from_secs(random_value)).await;
     tx.send(id);
 }
 
