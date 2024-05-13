@@ -217,6 +217,7 @@ fn main() {
     let programs_manager = Arc::clone(&programs);
     let (tx, rx): (Sender<String>, Receiver<String>) = std::sync::mpsc::channel();
     let timers_list: Arc<Mutex<Vec<TimerWrapper>>> = Arc::new(Mutex::new(Vec::new()));
+    let timers_list_clone = Arc::clone(&timers_list);
 
     thread::spawn( move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
@@ -238,10 +239,11 @@ fn main() {
                         continue;
                     }
                     let timer = TimerWrapper::new(uuid::Uuid::new_v4().to_string(), actuator.get_id());
-                    timers_list.lock().unwrap().push(timer);
                     let id = timer.get_id();
+                    timers_list.lock().unwrap().push(timer);
+                    let tx_clone = tx.clone();
                     tokio::spawn(async move {
-                        init_timer(id,tx.clone()).await;
+                        init_timer(id,tx_clone).await;
                     });
                 }
                 sleep(Duration::from_secs(30));
@@ -253,13 +255,13 @@ fn main() {
         let mut receiver = rx;
         loop {
             let msg = receiver.recv().unwrap();
-            let timer_index = timers_list.lock().unwrap().iter().position(|t| t.get_id() == msg);
+            let timer_index = timers_list_clone.lock().unwrap().iter().position(|t| t.get_id() == msg);
             if timer_index.is_none() {
                 println!("Error al obtener el índice del timer");
                 continue;
             }
             let timer_index = timer_index.unwrap();
-            let timer = timers_list.lock().unwrap().remove(timer_index);
+            let timer = timers_list_clone.lock().unwrap().remove(timer_index);
             println!("Timer finalizado: {}", timer.get_id());
         }
     });
