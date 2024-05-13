@@ -76,13 +76,13 @@ impl Program {
         let datetime = Utc.timestamp(now as i64, 0);
         let weekday = datetime.weekday();
         let irrigate_day = match weekday {
-            Weekday::Mon => days & 0b00000001,
-            Weekday::Tue => days & 0b00000010 >> 1,
-            Weekday::Wed => days & 0b00000100 >> 2,
-            Weekday::Thu => days & 0b00001000 >> 3,
-            Weekday::Fri => days & 0b00010000 >> 4,
-            Weekday::Sat => days & 0b00100000 >> 5,
-            Weekday::Sun => days & 0b01000000 >> 6,
+            Weekday::Mon => self.days & 0b00000001,
+            Weekday::Tue => self.days & 0b00000010 >> 1,
+            Weekday::Wed => self.days & 0b00000100 >> 2,
+            Weekday::Thu => self.days & 0b00001000 >> 3,
+            Weekday::Fri => self.days & 0b00010000 >> 4,
+            Weekday::Sat => self.days & 0b00100000 >> 5,
+            Weekday::Sun => self.days & 0b01000000 >> 6,
         };
         return irrigate_day
     }
