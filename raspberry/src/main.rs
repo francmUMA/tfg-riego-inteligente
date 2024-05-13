@@ -241,13 +241,15 @@ fn main() {
                     if !program.irrigate_now(now){
                         continue;
                     }
+
                     let timer = TimerWrapper::new(uuid::Uuid::new_v4().to_string(), actuator.get_id());
                     let id = timer.get_id();
                     timers_list.lock().unwrap().push(timer);
                     let tx_clone = tx.clone();
+                    let duration = program.get_duration();
                     println!("Timer creado para el actuador: {}", actuator.get_name());
                     tokio::spawn(async move {
-                        init_timer(id,tx_clone, program.get_duration()).await;
+                        init_timer(id,tx_clone, duration).await;
                     });
                 }
                 sleep(Duration::from_secs(30));
@@ -256,7 +258,7 @@ fn main() {
     });
 
     thread::spawn(move || {
-        let mut receiver = rx;
+        let receiver = rx;
         loop {
             let msg = receiver.recv().unwrap();
             let timer_index = timers_list_clone.lock().unwrap().iter().position(|t| t.get_id() == msg);
