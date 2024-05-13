@@ -31,7 +31,7 @@ impl Program {
         let id_val: Option<String> = id.is_string().then(|| id.as_str().unwrap().to_string());
         let name_val: Option<String> = name.is_string().then(|| name.as_str().unwrap().to_string());
         let start_time_val: Option<u64> = start_time.is_u64().then(|| start_time.as_u64().unwrap());
-        let duration_val: Option<u64> = duration.is_u64().then(|| duration.as_u64().unwrap());
+        let duration_val: Option<u64> = duration.is_f64().then(|| (duration.as_f64().unwrap() * 3600.0) as u64);
         let user_val: Option<String> = user.is_string().then(|| user.as_str().unwrap().to_string());
         let days_val: Option<u8> = days.is_u64().then(|| days.as_u64().unwrap() as u8);
 
