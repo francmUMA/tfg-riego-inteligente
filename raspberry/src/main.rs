@@ -228,7 +228,8 @@ fn main() {
                     sleep(Duration::from_secs(1));
                 }
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
-                    let timer = timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuator.get_id());
+                    let actuador_id = actuator.get_id();
+                    let timer = timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuador_id);
                     if timer.is_some() {
                         continue;
                     }
