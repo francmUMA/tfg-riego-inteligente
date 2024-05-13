@@ -50,7 +50,7 @@ impl Actuador {
             status_value = status.as_u64().unwrap() as u8;
         }
         if active_program.is_string() {
-            active_program_val = Some(active_program.to_string());
+            active_program_val = Some(active_program.as_str().unwrap().to_string());
         }
         Actuador {
             id,
