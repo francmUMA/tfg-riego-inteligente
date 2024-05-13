@@ -242,6 +242,7 @@ fn main() {
                     let id = timer.get_id();
                     timers_list.lock().unwrap().push(timer);
                     let tx_clone = tx.clone();
+                    println!("Timer creado: {}", id);
                     tokio::spawn(async move {
                         init_timer(id,tx_clone).await;
                     });
