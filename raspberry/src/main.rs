@@ -239,8 +239,9 @@ fn main() {
                     }
                     let timer = TimerWrapper::new(uuid::Uuid::new_v4().to_string(), actuator.get_id());
                     timers_list.lock().unwrap().push(timer);
+                    let id = timer.get_id();
                     tokio::spawn(async move {
-                        init_timer(id).await;
+                        init_timer(id,tx.clone()).await;
                     });
                 }
                 sleep(Duration::from_secs(30));
@@ -252,7 +253,14 @@ fn main() {
         let mut receiver = rx;
         loop {
             let msg = receiver.recv().unwrap();
-            println!("Mensaje recibido: {}", msg);
+            let timer_index = timers_list.lock().unwrap().iter().position(|t| t.get_id() == msg);
+            if timer_index.is_none() {
+                println!("Error al obtener el índice del timer");
+                continue;
+            }
+            let timer_index = timer_index.unwrap();
+            let timer = timers_list.lock().unwrap().remove(timer_index);
+            println!("Timer finalizado: {}", timer.get_id());
         }
     });
     

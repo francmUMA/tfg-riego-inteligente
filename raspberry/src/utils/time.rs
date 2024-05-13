@@ -34,9 +34,9 @@ impl TimerWrapper {
     }
 }
 
-pub async fn init_timer(id: String){
+pub async fn init_timer(id: String, tx: Sender<String>){
     sleep(Duration::from_secs(10)).await;
-    println!("Timer {} finalizado", id);
+    tx.send(id);
 }
 
 
