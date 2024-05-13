@@ -221,7 +221,6 @@ fn main() {
 
     thread::spawn( move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
-        println!("Runtime de tokio creado");
         rt.block_on(async move{
             loop {
                 let now = create_unix_timestamp();
@@ -229,7 +228,6 @@ fn main() {
                     sleep(Duration::from_secs(1));
                 }
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
-                    println!("Actuator program: {}", actuator.get_active_program().unwrap());
                     if actuator.get_active_program().is_none() {
                         continue;
                     }
@@ -247,9 +245,9 @@ fn main() {
                     let id = timer.get_id();
                     timers_list.lock().unwrap().push(timer);
                     let tx_clone = tx.clone();
-                    println!("Timer creado: {}", id);
+                    println!("Timer creado para el actuador: {}", actuator.get_name());
                     tokio::spawn(async move {
-                        init_timer(id,tx_clone).await;
+                        init_timer(id,tx_clone, program.get_duration()).await;
                     });
                 }
                 sleep(Duration::from_secs(30));
