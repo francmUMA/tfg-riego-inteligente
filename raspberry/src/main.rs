@@ -225,7 +225,7 @@ fn main() {
             loop {
                 let now = create_unix_timestamp();
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
-                    println!("Actuator: {}", actuator.get_id());
+                    println!("Actuator program: {}", actuator.get_active_program().unwrap());
                     if actuator.get_active_program().is_none() {
                         continue;
                     }
