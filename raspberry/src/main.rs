@@ -228,6 +228,10 @@ fn main() {
                     sleep(Duration::from_secs(1));
                 }
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
+                    let timer = timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuator.get_id());
+                    if timer.is_some() {
+                        continue;
+                    }
                     if actuator.get_active_program().is_none() {
                         continue;
                     }
@@ -247,7 +251,6 @@ fn main() {
                     timers_list.lock().unwrap().push(timer);
                     let tx_clone = tx.clone();
                     let duration = program.get_duration();
-                    println!("Timer creado para el actuador: {}", actuator.get_name());
                     tokio::spawn(async move {
                         init_timer(id,tx_clone, duration).await;
                     });
