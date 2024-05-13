@@ -84,7 +84,7 @@ impl Program {
             Weekday::Sat => self.days & 0b00100000 >> 5,
             Weekday::Sun => self.days & 0b01000000 >> 6,
         };
-        return irrigate_day
+        return irrigate_day == 1
     }
 
 }
