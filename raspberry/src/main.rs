@@ -225,6 +225,9 @@ fn main() {
         rt.block_on(async move{
             loop {
                 let now = create_unix_timestamp();
+                while actuadores_manager.lock().unwrap().is_empty(){
+                    sleep(Duration::from_secs(1));
+                }
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
                     println!("Actuator program: {}", actuator.get_active_program().unwrap());
                     if actuator.get_active_program().is_none() {
@@ -249,7 +252,7 @@ fn main() {
                         init_timer(id,tx_clone).await;
                     });
                 }
-                // sleep(Duration::from_secs(30));
+                sleep(Duration::from_secs(30));
             }
         });
     });
