@@ -220,8 +220,6 @@ fn main() {
     let timers_list_clone = Arc::clone(&timers_list);
 
     thread::spawn( move || {
-        let rt = tokio::runtime::Runtime::new().unwrap();
-        rt.block_on(async move{
             loop {
                 let now = create_unix_timestamp();
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
@@ -250,7 +248,7 @@ fn main() {
                 }
                 sleep(Duration::from_secs(30));
             }
-        });
+        
     });
 
     thread::spawn(move || {
