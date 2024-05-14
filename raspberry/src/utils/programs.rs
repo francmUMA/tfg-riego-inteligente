@@ -1,6 +1,6 @@
 use std::time::Duration;
 use tokio::time::Instant;
-use chrono::{DateTime, Datelike, Local, NaiveTime, TimeZone, Timelike, Utc, Weekday};
+use chrono::{naive, DateTime, Datelike, Local, NaiveTime, TimeZone, Timelike, Utc, Weekday};
 
 use serde_json::{Value, json};
 use crate::device::actuadores::Actuador;
@@ -92,6 +92,7 @@ impl Program {
         
         let naive_start_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
                                                                         chrono::Duration::from_std(Duration::from_millis(self.start_time)).unwrap();
+        println!("naive_start_time: {}", naive_start_time.to_string());
         let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
         println!("start_time_date: {}", start_time_date.to_string());
         
