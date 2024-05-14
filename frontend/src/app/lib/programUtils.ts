@@ -12,6 +12,7 @@ import { notify } from "./notify"
 export const timestampToTime = (timestamp: number) => {
     const date = new Date(timestamp)
     let currentTime = date.toLocaleTimeString()
+    console.log(currentTime)
     
     // Eliminamos los segundos
     currentTime = currentTime.slice(0, currentTime.length - 3)
