@@ -1,6 +1,6 @@
 use std::time::Duration;
 use tokio::time::Instant;
-use chrono::{DateTime, Datelike, Local, TimeZone, Timelike, Utc, Weekday};
+use chrono::{DateTime, Datelike, Local, NaiveTime, TimeZone, Timelike, Utc, Weekday};
 
 use serde_json::{Value, json};
 use crate::device::actuadores::Actuador;
@@ -77,7 +77,6 @@ impl Program {
         let weekday = datetime.weekday();
         let hour = datetime.hour();
         let minute = datetime.minute();
-        println!("weekday: {} Hour: {} Minute: {}", weekday.to_string(), hour, minute);
         let irrigate_day = match weekday {
             Weekday::Mon => self.days & 0b00000001,
             Weekday::Tue => self.days & 0b00000010 >> 1,
@@ -90,20 +89,12 @@ impl Program {
         if (irrigate_day == 0) {
             return false;
         }
-        let start_time_check = Local.timestamp_millis(self.start_time as i64);
-        println!("start_time_check: {}", start_time_check.to_string());
-        // if start_time_check.is_none() {
-        //     println!("Error al obtener la hora de inicio");
-        //     return false;
-        // }
-        // let start_time_check = start_time_check.unwrap();
-        // let start_minute = start_time_check.minute();
-        // let start_hour = start_time_check.hour();
-        // println!("start_hour: {} start_minute: {}", start_hour, start_minute);
-        // // Comprobar si es la hora de inicio para saber si se debe regar
-        // if (hour == start_hour && minute == start_minute) {
-        //     return true;
-        // }
+        
+        let naive_start_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
+                                                                        chrono::Duration::from_std(Duration::from_millis(self.start_time)).unwrap();
+        let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
+        println!("start_time_date: {}", start_time_date.to_string());
+        
         return false;
     }
 
