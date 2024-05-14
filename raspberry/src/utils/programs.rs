@@ -77,7 +77,7 @@ impl Program {
         let weekday = datetime.weekday();
         let hour = datetime.hour();
         let minute = datetime.minute();
-        println!("weekday: {} Hour: {}", weekday.to_string(), hour);
+        println!("weekday: {} Hour: {} Minute: {}", weekday.to_string(), hour, minute);
         let irrigate_day = match weekday {
             Weekday::Mon => self.days & 0b00000001,
             Weekday::Tue => self.days & 0b00000010 >> 1,
@@ -98,7 +98,7 @@ impl Program {
         if (hour == start_hour && minute == start_minute) {
             return true;
         }
-        return true;
+        return false;
     }
 
 }
