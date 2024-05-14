@@ -84,7 +84,17 @@ impl Program {
             Weekday::Sat => self.days & 0b00100000 >> 5,
             Weekday::Sun => self.days & 0b01000000 >> 6,
         };
-        return irrigate_day == 1
+        if (irrigate_day == 0) {
+            return false;
+        }
+
+        // Comprobar si es la hora de inicio para saber si se debe regar
+        let start_time = self.start_time;
+        let end_time = start_time + self.duration;
+        if (now >= start_time && now <= end_time) {
+            return true;
+        }
+        return false;
     }
 
 }
