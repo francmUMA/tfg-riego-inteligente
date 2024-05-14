@@ -90,8 +90,8 @@ impl Program {
         if (irrigate_day == 0) {
             return false;
         }
-        let start_time_check = DateTime::UNIX_EPOCH.second();
-        println!("start_time_check: {}", start_time_check);
+        let start_time_check = Utc.timestamp_millis(self.start_time as i64);
+        println!("start_time_check: {}", start_time_check.to_string());
         // if start_time_check.is_none() {
         //     println!("Error al obtener la hora de inicio");
         //     return false;
