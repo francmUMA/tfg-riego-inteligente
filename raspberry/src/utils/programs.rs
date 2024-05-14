@@ -89,7 +89,7 @@ impl Program {
         if (irrigate_day == 0) {
             return false;
         }
-        let start_hour = Utc.timestamp(self.start_time, 0);
+        let start_hour = Utc.timestamp(self.start_time as i64, 0);
         println!("start_hour: {}", start_hour.to_string());
         // Comprobar si es la hora de inicio para saber si se debe regar
         // let start_time = self.start_time;
