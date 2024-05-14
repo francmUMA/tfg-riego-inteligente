@@ -91,8 +91,9 @@ impl Program {
             return false;
         }
         let start_time = Local.timestamp(self.start_time as i64, 0);
-        let start_minute = start_hour.minute();
-        let start_hour = start_hour.hour();
+        let start_minute = start_time.minute();
+        let start_hour = start_time.hour();
+        println!("start_hour: {} start_minute: {}", start_hour, start_minute);
         // Comprobar si es la hora de inicio para saber si se debe regar
         if (hour == start_hour && minute == start_minute) {
             return true;
