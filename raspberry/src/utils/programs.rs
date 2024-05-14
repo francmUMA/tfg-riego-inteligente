@@ -1,6 +1,6 @@
 use std::time::Duration;
 use tokio::time::Instant;
-use chrono::{Datelike, Local, TimeZone, Timelike, Utc, Weekday};
+use chrono::{DateTime, Datelike, Local, TimeZone, Timelike, Utc, Weekday};
 
 use serde_json::{Value, json};
 use crate::device::actuadores::Actuador;
@@ -90,9 +90,14 @@ impl Program {
         if (irrigate_day == 0) {
             return false;
         }
-        let start_time = Local.timestamp(self.start_time as i64, 0);
-        let start_minute = start_time.minute();
-        let start_hour = start_time.hour();
+        let start_time_check = DateTime::from_timestamp(self.start_time as i64, 0);
+        if start_time_check.is_none() {
+            println!("Error al obtener la hora de inicio");
+            return false;
+        }
+        let start_time_check = start_time_check.unwrap();
+        let start_minute = start_time_check.minute();
+        let start_hour = start_time_check.hour();
         println!("start_hour: {} start_minute: {}", start_hour, start_minute);
         // Comprobar si es la hora de inicio para saber si se debe regar
         if (hour == start_hour && minute == start_minute) {
