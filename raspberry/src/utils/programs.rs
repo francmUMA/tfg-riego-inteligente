@@ -92,10 +92,13 @@ impl Program {
         
         let naive_start_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
                                                                         chrono::Duration::from_std(Duration::from_millis(self.start_time + 3600*1000)).unwrap();
-
-        println!("naive_start_time: {}", naive_start_time.to_string());
         let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
-        println!("start_time_date: {}", start_time_date.to_string());
+        let naive_end_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
+                                                                        chrono::Duration::from_std(Duration::from_millis(self.start_time + 3600*1000 + self.duration*1000)).unwrap();
+        let end_time_date = Local::now().date().and_time(naive_end_time).unwrap();
+        println!("Hora actual: {}", datetime.to_string());
+        println!("Hora de inicio: {}", start_time_date.to_string());
+        println!("Hora de fin: {}", end_time_date.to_string());
         
         return false;
     }
