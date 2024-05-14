@@ -1,6 +1,6 @@
 use std::time::Duration;
 use tokio::time::Instant;
-use chrono::{Datelike, TimeZone, Utc, Weekday};
+use chrono::{Datelike, TimeZone, Timelike, Utc, Weekday};
 
 use serde_json::{Value, json};
 use crate::device::actuadores::Actuador;
@@ -75,6 +75,8 @@ impl Program {
         // Comprobar si es el día de la semana
         let datetime = Utc.timestamp(now as i64, 0);
         let weekday = datetime.weekday();
+        let hour = datetime.hour();
+        println!("weekday: {} Hour: {}", weekday.to_string(), hour);
         let irrigate_day = match weekday {
             Weekday::Mon => self.days & 0b00000001,
             Weekday::Tue => self.days & 0b00000010 >> 1,
@@ -87,14 +89,15 @@ impl Program {
         if (irrigate_day == 0) {
             return false;
         }
-
+        let start_hour = Utc.timestamp(self.start_time, 0);
+        println!("start_hour: {}", start_hour.to_string());
         // Comprobar si es la hora de inicio para saber si se debe regar
-        let start_time = self.start_time;
-        let end_time = start_time + self.duration;
-        if (now >= start_time && now <= end_time) {
-            return true;
-        }
-        return false;
+        // let start_time = self.start_time;
+        // let end_time = start_time + self.duration;
+        // if (now >= start_time && now <= end_time) {
+        //     return true;
+        // }
+        return true;
     }
 
 }
