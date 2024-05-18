@@ -48,18 +48,18 @@ impl Sensor {
 pub struct ESP32info {
     id: String,
     time: u64,
-    temp: i8,
-    hum: i8,
-    soil_temp: i8,
+    temp: f64,
+    hum: f64,
+    soil_temp: u32,
 }
 
 impl ESP32info {
     pub fn new(
         id: String,
         time: u64,
-        temp: i8,
-        hum: i8,
-        soil_temp: i8
+        temp: f64,
+        hum: f64,
+        soil_temp: u32
     ) -> ESP32info {
         ESP32info {
             id,
@@ -78,15 +78,15 @@ impl ESP32info {
         self.time
     }
 
-    pub fn get_temp(&self) -> i8 {
+    pub fn get_temp(&self) -> f64 {
         self.temp
     }
 
-    pub fn get_hum(&self) -> i8 {
+    pub fn get_hum(&self) -> f64 {
         self.hum
     }
 
-    pub fn get_soil_temp(&self) -> i8 {
+    pub fn get_soil_temp(&self) -> u32 {
         self.soil_temp
     }
 }   
@@ -96,7 +96,7 @@ pub fn get_esp32_info(id: String, payload: String) -> ESP32info {
     let json_payload: Value = serde_json::from_str(&payload).unwrap();
     let analog = json_payload["ANALOG"].as_object().unwrap();
     let am3201 = json_payload["AM2301"].as_object().unwrap();
-    let soil_temp = analog["A1"].as_u64().unwrap_or_else(|| 0.0);
+    let soil_temp = analog["A1"].as_u64().unwrap_or_else(|| 0) as u32;
     let temp = am3201["Temperature"].as_f64().unwrap_or_else(|| 0.0);
     let hum = am3201["Humidity"].as_f64().unwrap_or_else(|| 0.0);
     return ESP32info::new(id, time, temp, hum,soil_temp)
