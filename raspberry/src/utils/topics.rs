@@ -53,10 +53,24 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         mqtt_client.publish("logs", log_data.to_string().as_str());
         unsubscribe_sensor_topics(sensor, mqtt_client);
     } else if topic.contains("SENSOR"){
-       //TO-DO
-       let sensor_id = topic.split("/").collect::<Vec<&str>>()[1];
-       let data = get_esp32_info(sensor_id.to_string(), payload.to_string());
-         println!("Datos del sensor: {} -> Temp: {} Hum: {} Soil Temp: {}", data.get_id(), data.get_temp(), data.get_hum(), data.get_soil_temp());
+        //TO-DO
+        let sensor_id = topic.split("/").collect::<Vec<&str>>()[1];
+        let data = get_esp32_info(sensor_id.to_string(), payload.to_string());
+        println!("Datos del sensor: {} -> Temp: {} Hum: {} Soil Temp: {}", data.get_id(), data.get_temp(), data.get_hum(), data.get_soil_temp());
+        let index = sensors.iter().position(|sensor| sensor.get_id() == data.get_id());
+        if index.is_none() {
+            println!("No se ha encontrado el sensor");
+            return
+        }
+        let sensor = sensors.get(index.unwrap()).unwrap();
+        let json = json!({
+            "deviceCode": sensor.get_device(),
+            "sensorCode": sensor.get_id(),
+            "timestamp": data.get_time(),
+            "temperature": data.get_temp(),
+            "humidity": data.get_hum(),
+            "soilTemperature": data.get_soil_temp(),
+        });
     }
 }
 
