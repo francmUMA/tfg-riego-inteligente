@@ -2,7 +2,7 @@ use std::borrow::{Borrow, BorrowMut};
 use sensors::{ESP32info, get_esp32_info};
 
 use crate::{
-        device::{self, actuadores::{self, Actuador}, info::Device, sensors::get_ESP32_info}, programs::Program, sensors::{self, Sensor}, utils::time::create_unix_timestamp
+        device::{self, actuadores::{self, Actuador}, info::Device}, programs::Program, sensors::{self, Sensor}, utils::time::create_unix_timestamp
     };
 use mqtt::{client, QOS_0};
 use rand::seq::index;
@@ -76,7 +76,7 @@ fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mu
 }
 
 fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
-    if !mqtt_client.unsubscribe(format!("tele/{}/SENSOR", sensor_id).as_str()){
+    if !mqtt_client.unsubscribe(format!("tele/{}/SENSOR", sensor.get_id()).as_str()){
         println!("No se ha podido desuscribir al topic de lectura del sensor con id {}", sensor.get_id());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
