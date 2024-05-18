@@ -24,9 +24,6 @@ export default db.define("Sensores", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    value: {
-        type: DataTypes.INTEGER,
-    },
     available: {
         type: DataTypes.TINYINT,
         allowNull: false,
