@@ -98,5 +98,5 @@ pub fn get_esp32_info(payload: String) -> ESP32info {
     let am3201 = json_payload["AM2301"].as_array().unwrap();
     println!("Analog: {:?}", analog);
     println!("AM2301: {:?}", am3201);
-    return ESP32info::new(0, time, 0, 0, 0)
+    return ESP32info::new("0".to_string(), time, 0, 0, 0)
 }

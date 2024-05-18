@@ -39,9 +39,6 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         sensors.push(sensor);
     } else if topic.contains("delete"){
         // Hay que eliminar el sensor cuyo id está en el payload
-        for sensor in sensors.iter_mut(){
-            sensor.clean_pin();
-        }
         let index = sensors.iter().position(|sensor| sensor.get_id() == payload).unwrap();
         let sensor = sensors.remove(index);
         println!("Sensor eliminado: {} con id {}", sensor.get_name(), sensor.get_id());
@@ -508,9 +505,6 @@ pub fn manage_msg(
             actuador.clean_pin();
         }
         actuadores.clear();
-        for sensor in sensors.iter_mut() {
-            sensor.clean_pin();
-        }
         sensors.clear();
         mqtt_client.publish("devices/start", device.get_id().as_str());
     } else if (topic.contains("programs")) {
