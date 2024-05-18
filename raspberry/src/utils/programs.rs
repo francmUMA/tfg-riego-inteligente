@@ -90,13 +90,13 @@ impl Program {
             return false;
         }
         
-        let naive_start_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
-                                                                        chrono::Duration::from_std(Duration::from_millis(self.start_time + 3600*1000)).unwrap();
-        let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
-        let naive_end_time = Local.datetime_from_str(start_time_date.format("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S").unwrap() + chrono::Duration::from_std(Duration::from_millis(self.duration*1000)).unwrap();
-        println!("Hora actual: {}", datetime.to_string());
-        println!("Hora de inicio: {}", start_time_date.to_string());
-        println!("Hora de fin: {}", end_time_date.to_string());
+        // let naive_start_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
+        //                                                                 chrono::Duration::from_std(Duration::from_millis(self.start_time + 3600*1000)).unwrap();
+        // let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
+        // let naive_end_time = Local.datetime_from_str(start_time_date.format("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S").unwrap() + chrono::Duration::from_std(Duration::from_millis(self.duration*1000)).unwrap();
+        // println!("Hora actual: {}", datetime.to_string());
+        // println!("Hora de inicio: {}", start_time_date.to_string());
+        // println!("Hora de fin: {}", end_time_date.to_string());
         
         return false;
     }
