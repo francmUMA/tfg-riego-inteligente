@@ -60,6 +60,7 @@ fn main() {
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));
     topics.push(format!("devices/{}/sensors/delete", device_uuid));
     topics.push(format!("devices/{}/programs/delete", device_uuid));
+    topics.push(format!("tele/test/SENSOR"));
 
     // Crear cliente mqtt
     let mut mqtt_broker_ip = read_config_file("mqtt_broker".to_string());
@@ -150,43 +151,43 @@ fn main() {
             sleep(Duration::from_secs(30));
         }
         loop {
-            for sensor in sensors_publisher.lock().unwrap().iter_mut() {
-                let time_now = utils::time::create_unix_timestamp();
-                let value = sensor.read();
-                if value.is_none() {
-                    println!("Error al leer el sensor: {}", sensor.get_id());
-                    let timestamp = create_unix_timestamp();
-                    let log_data = json!({
-                        "deviceCode": sensor.get_device(),
-                        "deviceName": "NC",
-                        "sensorCode": sensor.get_id(),
-                        "logcode": 2109,
-                        "timestamp": timestamp,
-                        "description": format!("Error de lectura",),
-                    });
-                    client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
-                    continue;
-                }
-                let value = value.unwrap();
-                let payload = json!({
-                    "time": time_now,
-                    "value": value
-                });
-                let topic = format!("devices/{}/sensors/{}/value", device_uuid_clone, sensor.get_id());
-                if !client_publisher.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
-                    println!("Error al publicar el mensaje");
-                    let timestamp = create_unix_timestamp();
-                    let log_data = json!({
-                        "deviceCode": device_uuid_clone,
-                        "deviceName": "NC",
-                        "sensorCode": sensor.get_id(),
-                        "logcode": 3429,
-                        "timestamp": timestamp,
-                        "description": format!("Error al publicar el mensaje del valor del sensor",),
-                    });
-                    client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
-                }
-            }
+            // for sensor in sensors_publisher.lock().unwrap().iter_mut() {
+            //     let time_now = utils::time::create_unix_timestamp();
+            //     let value = sensor.read();
+            //     if value.is_none() {
+            //         println!("Error al leer el sensor: {}", sensor.get_id());
+            //         let timestamp = create_unix_timestamp();
+            //         let log_data = json!({
+            //             "deviceCode": sensor.get_device(),
+            //             "deviceName": "NC",
+            //             "sensorCode": sensor.get_id(),
+            //             "logcode": 2109,
+            //             "timestamp": timestamp,
+            //             "description": format!("Error de lectura",),
+            //         });
+            //         client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
+            //         continue;
+            //     }
+            //     let value = value.unwrap();
+            //     let payload = json!({
+            //         "time": time_now,
+            //         "value": value
+            //     });
+            //     let topic = format!("devices/{}/sensors/{}/value", device_uuid_clone, sensor.get_id());
+            //     if !client_publisher.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
+            //         println!("Error al publicar el mensaje");
+            //         let timestamp = create_unix_timestamp();
+            //         let log_data = json!({
+            //             "deviceCode": device_uuid_clone,
+            //             "deviceName": "NC",
+            //             "sensorCode": sensor.get_id(),
+            //             "logcode": 3429,
+            //             "timestamp": timestamp,
+            //             "description": format!("Error al publicar el mensaje del valor del sensor",),
+            //         });
+            //         client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
+            //     }
+            //}
             let temp_val = get_temperature();
             if (temp_val > -1) {
                 let timestamp = create_unix_timestamp();

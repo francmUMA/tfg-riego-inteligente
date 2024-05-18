@@ -1,10 +1,8 @@
 use std::borrow::{Borrow, BorrowMut};
+use sensors::{ESP32info, get_esp32_info};
 
 use crate::{
-        device::{self, actuadores::{self, Actuador}, info::Device}, 
-        sensors::{self, Sensor}, 
-        utils::time::create_unix_timestamp,
-        programs::Program
+        device::{self, actuadores::{self, Actuador}, info::Device, sensors::get_ESP32_info}, programs::Program, sensors::{self, Sensor}, utils::time::create_unix_timestamp
     };
 use mqtt::{client, QOS_0};
 use rand::seq::index;
@@ -20,13 +18,8 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         let sensor = Sensor::new(
             payload_json["id"].as_str().unwrap().to_string(),
             payload_json["device"].as_str().unwrap().to_string(),
-            payload_json["device_pin"].clone(),
-            payload_json["type"].to_string(),
             payload_json["area"].clone(),
-            payload_json["Latitud"].clone(),
-            payload_json["Longitud"].clone(),
             payload_json["name"].as_str().unwrap().to_string(),
-            payload_json["value"].clone(),
             payload_json["available"].as_u64().unwrap() as u8
         );
         println!("Sensor añadido: {} con id {}", sensor.get_name(), sensor.get_id());
@@ -62,68 +55,22 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         unsubscribe_sensor_topics(sensor, mqtt_client);
-    } else {
-        // Se obtiene el id del sensor
-        let topic_split: Vec<&str> = topic.split("/").collect();
-        let sensor_id = topic_split[3];
-
-        // Se obtiene el sensor
-        if let Some(sensor) = sensors.iter_mut().find(|sensor| sensor.get_id() == sensor_id) {
-            // Hay que saber que es lo que se va a hacer con el sensor
-            if topic.contains("update") && topic.contains("device_pin") {
-                let pin = payload.parse::<u8>().unwrap();
-                if pin > 0 && pin < 28 {
-                    sensor.change_pin(pin);
-                    println!("Cambiando el pin del sensor con id {} a {}", sensor.get_id(), pin);
-                    let timestamp = create_unix_timestamp();
-                    let log_data = json!({
-                        "deviceCode": sensor.get_device(),
-                        "deviceName": "---",
-                        "logcode": 2201,
-                        "sensorCode": sensor.get_id(),
-                        "timestamp": timestamp,
-                        "description": format!("Pin cambiado",),
-                    });
-                    mqtt_client.publish("logs", log_data.to_string().as_str());
-                } else {
-                    println!("Pin no válido");
-                    let timestamp = create_unix_timestamp();
-                    let log_data = json!({
-                        "deviceCode": sensor.get_device(),
-                        "deviceName": "---",
-                        "logcode": 2209,
-                        "sensorCode": sensor.get_id(),
-                        "timestamp": timestamp,
-                        "description": format!("Pin no válido",),
-                    });
-                    mqtt_client.publish("logs", log_data.to_string().as_str());
-                }
-            }
-        } else {
-            println!("No se ha encontrado el sensor");
-            let timestamp = create_unix_timestamp();
-            let log_data = json!({
-                "deviceCode": topic_split[1],
-                "deviceName": "---",
-                "logcode": 3239,
-                "timestamp": timestamp,
-                "description": format!("No se ha encontrado el sensor con id {}", sensor_id),
-            });
-            mqtt_client.publish("logs", log_data.to_string().as_str());
-        }
+    } else if topic.contains("SENSOR"){
+       //TO-DO
+       let data = get_esp32_info(payload.to_string());
     }
 }
 
 fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mut MqttClient) -> bool{
-    if !mqtt_client.subscribe(format!("devices/{}/sensores/{}/update/device_pin", device_id, sensor_id).as_str()){
-        println!("No se ha podido suscribir al topic de device_pin del sensor con id {}", sensor_id);
+    if !mqtt_client.subscribe(format!("tele/{}/SENSOR", sensor_id).as_str()){
+        println!("No se ha podido suscribir al topic del sensor con id {}", sensor_id);
         let timestamp = create_unix_timestamp();
         let log_data = json!({
             "deviceCode": device_id,
             "deviceName": "---",
             "logcode": 3419,
             "timestamp": timestamp,
-            "description": format!("No se ha podido suscribir al topic de device_pin del sensor",),
+            "description": format!("No se ha podido suscribir al topic del sensor"),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         return false;
@@ -132,15 +79,15 @@ fn suscribe_sensor_topics(sensor_id: String, device_id: String, mqtt_client: &mu
 }
 
 fn unsubscribe_sensor_topics(sensor: Sensor, mqtt_client: &mut MqttClient){
-    if !mqtt_client.unsubscribe(format!("devices/{}/sensores/{}/update/device_pin", sensor.get_device().clone(), sensor.get_id()).as_str()){
-        println!("No se ha podido desuscribir al topic de device_pin del sensor con id {}", sensor.get_id());
+    if !mqtt_client.unsubscribe(format!("tele/{}/SENSOR", sensor_id).as_str()){
+        println!("No se ha podido desuscribir al topic de lectura del sensor con id {}", sensor.get_id());
         let timestamp = create_unix_timestamp();
         let log_data = json!({
             "deviceCode": sensor.get_device(),
             "deviceName": "---",
             "logcode": 3419,
             "timestamp": timestamp,
-            "description": format!("No se ha podido desuscribir al topic de device_pin",),
+            "description": format!("No se ha podido desuscribir del topic",),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
     }
@@ -554,7 +501,7 @@ pub fn manage_msg(
 ){
     if topic.contains("actuadores") {
         manage_topic_actuadores(device, topic, payload, actuadores, mqtt_client);
-    } else if topic.contains("sensors") {
+    } else if topic.contains("SENSOR") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else if topic.contains("server/available") {
         for actuador in actuadores.iter_mut() {
