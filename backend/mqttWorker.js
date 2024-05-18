@@ -17,6 +17,11 @@ if (!isMainThread){
     client.on('connect',async () => {
         console.log("Conectando")
         try {
+            client.subscribe('server/discover/sensors', (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: server/discover")
+                }
+            })
             client.subscribe('logs', (err) => {
                 if (err) {
                     console.log("No se ha podido suscribir al topic: logs")
@@ -148,7 +153,20 @@ if (!isMainThread){
             let jsonData = JSON.parse(message.toString())
             addValue({
                 sensorCode: sensor_id,
-                value: jsonData.value,
+                type: 0,
+                value: jsonData.temperature,
+                time: jsonData.time
+            })
+            addValue({
+                sensorCode: sensor_id,
+                type: 1,
+                value: jsonData.soilTemperature,
+                time: jsonData.time
+            })
+            addValue({
+                sensorCode: sensor_id,
+                type: 2,
+                value: jsonData.humidity,
                 time: jsonData.time
             })
         } else if (topic.includes('logs')){
@@ -162,8 +180,9 @@ if (!isMainThread){
                 value: jsonData.value,
                 time: jsonData.time
             })
+        } else if (topic.includes('discover')){
+            console.log("Sensor descubierto -> " + message.toString())
         }
-        
     })
 
     parentPort.on('message', (data) => {

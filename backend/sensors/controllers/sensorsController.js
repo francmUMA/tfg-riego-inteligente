@@ -70,8 +70,8 @@ export const getSensors = async (req, res) => {
         device: string          // id del dispositivo
     }
     @body: {
+        id: string,           // id del sensor
         name: string,           // nombre del sensor
-        type: string            // tipo de sensor
     }
 */
 
@@ -118,26 +118,39 @@ export const addSensor = async (req, res) => {
         return
     }
 
-    // Comprobar si el sensor ya existe
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid sensor")
+        return
+    }
+
+    // Comprobar si el sensor pertenece a algún dispositivo y que sea del admin
     try {
-        let sensor = await sensorsModel.findOne({ where: { name: req.body.name, device: req.params.device } })
-        if (sensor !== null) {
-            res.status(409).send("Sensor already exists")
+        let sensor = await sensorsModel.findOne({ where: { id: req.body.id } })
+        if (sensor == null) {
+            res.status(404).send("Sensor not registered")
             return
         }
+        if (sensor.user != "00000000A"){
+            res.status(403).send("Sensor already registered")
+            return
+        }
+        if (sensor.device != null){
+            res.status(403).send("Sensor already registered")
+            return
+        }
+
     } catch (error) {
         res.status(500).send(error.message)
     }
 
-    if (req.body.type === undefined || req.body.type === null || req.body.type == "") {
-        res.status(400).send("Missing type")
-        return
-    }
-
     // ----------------------------------------------------------
-    let uuid = v4()
     try {
-        await sensorsModel.create({ id: uuid, name: req.body.name, type: req.body.type, device: req.params.device })
+        await sensorsModel.create({ id: id, name: req.body.name, device: req.params.device, user: nif })
         let sensor = await sensorsModel.findOne({ where: { id: uuid } })
         publish_msg(`devices/${sensor.device}/sensors/new`, JSON.stringify(sensor))
         sendCommandToWorker('suscribe', `devices/${sensor.device}/sensors/${sensor.id}/value`)
@@ -309,97 +322,7 @@ export const updateSensorArea = async (req, res) => {
 
 }
 
-/*
-    @description: Actualiza el pin del dispositivo al que está conectado el sensor
-    @body: {
-        id: string,         // id del sensor
-        device_pin: int       
-    }
 
-*/
-export const updateSensorDevicePin = async (req, res) => {
-    //------------------------------------- Validar token ---------------------------------------------------------
-    let nif
-    try {
-        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
-    } catch (error) {
-        res.status(401).send("Invalid token")
-        return
-    }
-
-    if (nif === undefined) {
-        res.status(401).send("Invalid token")
-        return
-    }
-    // -----------------------------------------------------------------------------------------------------------
-    //------------------------------------- Validar datos ---------------------------------------------------------
-    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
-        res.status(400).send("Missing id")
-        return
-    }
-
-    if (!validate(req.body.id)) {
-        res.status(400).send("Invalid sensor")
-        return
-    }
-
-    if (req.body.device_pin === undefined || req.body.device_pin === null || req.body.device_pin < 0 || req.body.device_pin > 40) {
-        res.status(400).send("Missing device_pin or bad device_pin")
-        return
-    }
-    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
-    let sensor
-    try {
-        sensor = await sensorsModel.findOne({ where: { id: req.body.id } })
-        if (sensor === null) {
-            res.status(404).send("Sensor not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
-    try {
-        let device = await deviceModel.findOne({ where: { id: sensor.device, Usuario: nif } })
-        if (device === null) {
-            res.status(404).send("Device not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    // ------------------------------------- Comprobar que el pin no este en uso por otro sensor o actuador -------------
-    try {
-        let actuador = await actuadoresModel.findOne({ where: { device_pin: req.body.device_pin, device: sensor.device } })
-        if (actuador !== null) {
-            res.status(409).send("Pin already in use")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    try {
-        let used_sensor = await sensorsModel.findOne({ where: { device_pin: req.body.device_pin, device: sensor.device } })
-        if (used_sensor !== null) {
-            res.status(409).send("Pin already in use")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    // ------------------------------------ Actualizar pin ---------------------------------------------------------
-    try {
-        sensor.device_pin = req.body.device_pin
-        let payload = req.body.device_pin
-        if (typeof payload !== "string") payload = payload.toString()
-        publish_msg(`devices/${sensor.device}/sensors/${sensor.id}/update/device_pin`, payload)
-        sensor.save()
-        res.status(200).send("Sensor pin updated")
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-
-}
 
 /*
     @description: Actualiza el dispositivo al que está conectado el sensor
@@ -630,73 +553,6 @@ export const updateSensorName = async (req, res) => {
     }
 }
 
-/*
-    @description: Actualiza el valor de un sensor
-    @body: {
-        id: string,         // id del sensor
-        value: int
-    }
-*/
-export const updateSensorValue = async (req, res) => {
-    //------------------------------------- Validar token ---------------------------------------------------------
-    let nif
-    try {
-        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
-    } catch (error) {
-        res.status(401).send("Invalid token")
-        return
-    }
-
-    if (nif === undefined) {
-        res.status(401).send("Invalid token")
-        return
-    }
-    // -----------------------------------------------------------------------------------------------------------
-    //------------------------------------- Validar datos ---------------------------------------------------------
-    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
-        res.status(400).send("Missing id")
-        return
-    }
-
-    if (!validate(req.body.id)) {
-        res.status(400).send("Invalid sensor")
-        return
-    }
-
-    if (req.body.value === undefined || req.body.value === null) {
-        res.status(400).send("Missing value")
-        return
-    }
-    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
-    let sensor
-    try {
-        sensor = await sensorsModel.findOne({ where: { id: req.body.id } })
-        if (sensor === null) {
-            res.status(404).send("Sensor not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
-    try {
-        let device = await deviceModel.findOne({ where: { id: sensor.device, Usuario: nif } })
-        if (device === null) {
-            res.status(404).send("Device not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-    // ------------------------------------ Actualizar posicion ---------------------------------------------------------
-    try {
-        sensor.value = req.body.value
-        sensor.save()
-        res.status(200).send("Value updated")
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-}
 
 /*
     @description: Actualiza la disponibilidad de un sensor

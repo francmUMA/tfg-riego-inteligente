@@ -10,11 +10,9 @@ router.get("/:device", getSensors)
 router.post("/:device", addSensor)
 router.delete("/:device", deleteSensor)
 router.put("/area", updateSensorArea)
-router.put("/pin", updateSensorDevicePin)
 router.put("/device", updateSensorDevice)
 router.put("/position", updateSensorPosition)
 router.put("/name", updateSensorName)
 router.put("/availability", updateSensorAvailability)
-router.put("/value", updateSensorValue)
 
 export default router;
