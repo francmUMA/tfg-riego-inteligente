@@ -91,18 +91,13 @@ impl ESP32info {
     }
 }   
 
-pub fn get_esp32_info(payload: String) -> ESP32info {
+pub fn get_esp32_info(id: String, payload: String) -> ESP32info {
     let time = crate::utils::time::create_unix_timestamp();
     let json_payload: Value = serde_json::from_str(&payload).unwrap();
     let analog = json_payload["ANALOG"].as_object().unwrap();
     let am3201 = json_payload["AM2301"].as_object().unwrap();
-    let analog_temp = analog["A1"].as_u64().unwrap();
-    let temp = am3201["Temperature"].as_f64().unwrap();
-    let hum = am3201["Humidity"].as_f64().unwrap();
-    println!("Payload: {}", payload);
-    println!("Time: {}", time);
-    println!("Analog temp: {}", analog_temp);
-    println!("Temp: {}", temp);
-    println!("Hum: {}", hum);
-    return ESP32info::new("0".to_string(), time, 0, 0, 0)
+    let soil_temp = analog["A1"].as_u64().unwrap_or_else(|| 0.0);
+    let temp = am3201["Temperature"].as_f64().unwrap_or_else(|| 0.0);
+    let hum = am3201["Humidity"].as_f64().unwrap_or_else(|| 0.0);
+    return ESP32info::new(id, time, temp, hum,soil_temp)
 }

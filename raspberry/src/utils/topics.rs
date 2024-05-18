@@ -54,7 +54,9 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         unsubscribe_sensor_topics(sensor, mqtt_client);
     } else if topic.contains("SENSOR"){
        //TO-DO
-       let data = get_esp32_info(payload.to_string());
+       let sensor_id = topic.split("/").collect::<Vec<&str>>()[1];
+       let data = get_esp32_info(sensor_id.to_string(), payload.to_string());
+         println!("Datos del sensor: {} -> Temp: {} Hum: {} Soil Temp: {}", data.get_id(), data.get_temp(), data.get_hum(), data.get_soil_temp());
     }
 }
 
