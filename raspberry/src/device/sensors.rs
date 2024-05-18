@@ -97,7 +97,7 @@ pub fn get_esp32_info(payload: String) -> ESP32info {
     let analog = json_payload["ANALOG"];
     let am3201 = json_payload["AM2301"];
     println!("Payload: {}", payload);
-    println!("Analog: {:?}", analog);
-    println!("AM2301: {:?}", am3201);
+    println!("Analog: {:?}", analog.clone());
+    println!("AM2301: {:?}", am3201.clone());
     return ESP32info::new("0".to_string(), time, 0, 0, 0)
 }
