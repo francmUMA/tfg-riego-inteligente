@@ -94,10 +94,10 @@ impl ESP32info {
 pub fn get_esp32_info(payload: String) -> ESP32info {
     let time = crate::utils::time::create_unix_timestamp();
     let json_payload: Value = serde_json::from_str(&payload).unwrap();
-    let analog = json_payload["ANALOG"].take();
-    let am3201 = json_payload["AM2301"].take();
+    let analog = json_payload["ANALOG"];
+    let am3201 = json_payload["AM2301"];
     println!("Payload: {}", payload);
-    println!("Analog: {:?}", analog.unwrap_or_else(|| "None"));
-    println!("AM2301: {:?}", am3201.unwrap_or_else(|| "None"));
+    println!("Analog: {:?}", analog);
+    println!("AM2301: {:?}", am3201);
     return ESP32info::new("0".to_string(), time, 0, 0, 0)
 }
