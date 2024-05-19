@@ -20,8 +20,9 @@ import { Op } from 'sequelize';
  */
 export const addValue = async (data) => {
     let uuid = v1()
+    console.log(data)
 
-    if (data.value === undefined || data.time === undefined) {
+    if ((data.value === undefined) || data.time === undefined) {
         console.log("Faltan datos para añadir el valor")
         return
     }
@@ -85,6 +86,7 @@ export const addValue = async (data) => {
             // Añadir el valor
             await monitorModel.create({
                 id: uuid,
+                type: data.type,
                 sensorCode: data.sensorCode,
                 value: data.value,
                 time: data.time
