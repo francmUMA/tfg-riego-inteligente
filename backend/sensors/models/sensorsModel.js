@@ -8,8 +8,7 @@ export default db.define("Sensores", {
         allowNull: false,
     },
     device: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.STRING
     },
     area: {
         type: DataTypes.STRING
