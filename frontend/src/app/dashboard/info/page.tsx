@@ -33,7 +33,7 @@ export default function Page (){
             <ToastContainer />
             <AddProgramDialog open={IsOpenAddProgramDialog} onClose={closeAddProgramDialog}/>
             <section className="w-full h-full flex flex-col lg:flex-row gap-3">
-                <div id="elems-info" className="w-full h-full flex flex-col gap-y-3 justify-center items-center">
+                <div id="elems-info" className="w-full h-full flex flex-col gap-y-3 justify-start items-center overflow-y-auto">
                     <div id="selector" className="w-full flex justify-start items-center">
                         <Suspense>
                             <ElemSelector setElem={setElem} setType={setType}/>
@@ -73,8 +73,24 @@ export default function Page (){
                             }
                         </Suspense>
                     </div>
+                    <div id="chart" className={`${type != 1  && "hidden "} border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden`}>
+                        <Suspense>
+                            {   
+                                type == 1 && elem !== undefined &&
+                                <SensorChart id={elem.id} className="w-full h-full"/>
+                            }
+                        </Suspense>
+                    </div>
+                    <div id="chart" className={`${type != 1 && "hidden "} border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden`}>
+                        <Suspense>
+                            {   
+                                type == 1 && elem !== undefined &&
+                                <SensorChart id={elem.id} className="w-full h-full"/>
+                            }
+                        </Suspense>
+                    </div>
                 </div>
-                <div id="programs-logs" className="w-full lg:w-4/5 h-full flex flex-col gap-y-3 justify-center items-center">
+                <div id="programs-logs" className="w-full lg:w-4/5 h-full flex flex-col gap-y-3 justify-start items-center">
                     <div id="buttons" className="w-full h-1/6 min-h-10 flex flex-row gap-x-2 justify-end items-center">
                         <AssociateButton assocProgram={associate} setAssocProgram={setAssociate}  elem={elem} type={type}/>
                         <button onClick={openAddProgramDialog}
