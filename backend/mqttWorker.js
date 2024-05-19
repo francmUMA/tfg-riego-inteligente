@@ -7,7 +7,30 @@ import actuadoresModel from './actuadores/models/actuadoresModel.js'
 import { addValue } from './monitors/controllers/monitorController.js'
 import { addLog } from './logs/controllers/logController.js'
 import programsModel from './programs/models/programsModel.js'
-import { registerSensor } from './sensors/controllers/sensorsController.js'
+// import { registerSensor } from './sensors/controllers/sensorsController.js'
+import { validate } from 'uuid'
+/**
+ * @description Registra un sensor descubierto
+ * @param sensorId Identificador del sensor
+ * @returns true si se ha registrado correctamente, false en caso contrario
+ */
+
+const registerSensor = async (sensorId) => {
+    try {
+        if (!validate(sensorId)) {
+            return false
+        }
+        await sensorsModel.create({ 
+            id: sensorId, 
+            user: "00000000A",
+            name: "Unreg-" + sensorId.substring(0, 4)
+        })
+        return true
+    } catch (error) {
+        console.log(error.message)
+        return false
+    }
+}
 
 if (!isMainThread){
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
@@ -182,6 +205,11 @@ if (!isMainThread){
                 time: jsonData.time
             })
         } else if (topic.includes('discover')){
+            // Comprobar si el dispositivo de lectura ya existe
+            let sensor = await sensorsModel.findOne({where: {id: message.toString()}})
+            if (sensor != null){
+                return
+            }
             console.log("Sensor descubierto -> " + message.toString())
             registerSensor(message.toString())
             
