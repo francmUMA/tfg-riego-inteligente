@@ -66,7 +66,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         let json = json!({
             "deviceCode": sensor.get_device(),
             "sensorCode": sensor.get_id(),
-            "timestamp": data.get_time(),
+            "time": data.get_time(),
             "temperature": data.get_temp(),
             "humidity": data.get_hum(),
             "soilTemperature": data.get_soil_temp(),
