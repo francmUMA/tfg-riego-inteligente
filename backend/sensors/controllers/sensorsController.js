@@ -762,3 +762,26 @@ export const getSensor = async (req, res) => {
         return
     }
 }
+
+/**
+ * @description Registra un sensor descubierto
+ * @param sensorId Identificador del sensor
+ * @returns true si se ha registrado correctamente, false en caso contrario
+ */
+
+export const registerSensor = async (sensorId) => {
+    try {
+        if (!validate(sensorId)) {
+            return false
+        }
+        await sensorsModel.create({ 
+            id: sensorId, 
+            user: "00000000A",
+            name: "Unreg-" + sensorId.substring(0, 4)
+        })
+        return true
+    } catch (error) {
+        console.log(error.message)
+        return false
+    }
+}
