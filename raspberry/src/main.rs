@@ -45,9 +45,6 @@ fn main() {
     let mut topics: Vec<String> = Vec::new();
 
     // Devices topics
-    // topics.push(format!("devices/{}/update/lat", device_uuid));
-    // topics.push(format!("devices/{}/update/lng", device_uuid));
-    // topics.push(format!("devices/{}/update/area", device_uuid));
     topics.push(format!("server/available"));
     topics.push(format!("devices/{}/update/name", device_uuid));
     topics.push(format!("devices/{}/info", device_uuid));
@@ -60,7 +57,6 @@ fn main() {
     topics.push(format!("devices/{}/actuadores/delete", device_uuid));
     topics.push(format!("devices/{}/sensors/delete", device_uuid));
     topics.push(format!("devices/{}/programs/delete", device_uuid));
-    topics.push(format!("tele/test/SENSOR"));
 
     // Crear cliente mqtt
     let mut mqtt_broker_ip = read_config_file("mqtt_broker".to_string());

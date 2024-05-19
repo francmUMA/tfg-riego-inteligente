@@ -72,7 +72,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             "soilTemperature": data.get_soil_temp(),
         });
         let topic = format!("devices/{}/sensors/{}/value", sensor.get_device(), sensor.get_id());
-        if !mqtt_client.lock().unwrap().publish(topic.as_str(), json.to_string().as_str()) {
+        if !mqtt_client.publish(topic.as_str(), json.to_string().as_str()) {
             println!("Error al publicar el mensaje");
             let timestamp = create_unix_timestamp();
             let log_data = json!({
@@ -83,7 +83,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
                 "timestamp": timestamp,
                 "description": format!("Error al publicar el mensaje del valor del sensor",),
             });
-            mqtt_client.lock().unwrap().publish("logs", log_data.to_string().as_str());
+            mqtt_client.publish("logs", log_data.to_string().as_str());
         }
     }
 }
