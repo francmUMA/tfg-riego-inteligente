@@ -3,7 +3,7 @@ import { getSensors, addSensor, deleteSensor, updateSensorArea, updateSensorDevi
 
 const router = express.Router();
 
-router.get("/all", getUserSensors)
+// router.get("/all", getUserSensors)
 router.get("/unassignedCauSensors", getUnassignedSensors)
 router.get('/sensor/:sensorId', getSensor)
 router.get("/:device", getSensors)
