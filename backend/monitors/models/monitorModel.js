@@ -20,7 +20,10 @@ const monitorModel = db.define("SensorDatas", {
     time: {
         type: DataTypes.TIME,
         allowNull: false
-    }  
+    },
+    actuadorCode:{
+        type: DataTypes.STRING
+    }
 })
 
 export default monitorModel

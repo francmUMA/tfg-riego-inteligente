@@ -130,7 +130,6 @@ fn main() {
 
     let client_publisher = Arc::clone(&client);
     let device_uuid_clone = device_uuid.clone();
-    let sensors_publisher = Arc::clone(&sensors);
     let actuadores_publisher = Arc::clone(&actuadores);
 
     // Hilo de publicación
@@ -151,43 +150,6 @@ fn main() {
             sleep(Duration::from_secs(30));
         }
         loop {
-            // for sensor in sensors_publisher.lock().unwrap().iter_mut() {
-            //     let time_now = utils::time::create_unix_timestamp();
-            //     let value = sensor.read();
-            //     if value.is_none() {
-            //         println!("Error al leer el sensor: {}", sensor.get_id());
-            //         let timestamp = create_unix_timestamp();
-            //         let log_data = json!({
-            //             "deviceCode": sensor.get_device(),
-            //             "deviceName": "NC",
-            //             "sensorCode": sensor.get_id(),
-            //             "logcode": 2109,
-            //             "timestamp": timestamp,
-            //             "description": format!("Error de lectura",),
-            //         });
-            //         client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
-            //         continue;
-            //     }
-            //     let value = value.unwrap();
-            //     let payload = json!({
-            //         "time": time_now,
-            //         "value": value
-            //     });
-            //     let topic = format!("devices/{}/sensors/{}/value", device_uuid_clone, sensor.get_id());
-            //     if !client_publisher.lock().unwrap().publish(topic.as_str(), payload.to_string().as_str()) {
-            //         println!("Error al publicar el mensaje");
-            //         let timestamp = create_unix_timestamp();
-            //         let log_data = json!({
-            //             "deviceCode": device_uuid_clone,
-            //             "deviceName": "NC",
-            //             "sensorCode": sensor.get_id(),
-            //             "logcode": 3429,
-            //             "timestamp": timestamp,
-            //             "description": format!("Error al publicar el mensaje del valor del sensor",),
-            //         });
-            //         client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
-            //     }
-            //}
             let temp_val = get_temperature();
             if (temp_val > -1) {
                 let timestamp = create_unix_timestamp();
@@ -207,6 +169,29 @@ fn main() {
                     "description": format!("Error al obtener la temperatura",),
                 });
                 client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
+            }
+            for actuador in actuadores_publisher.lock().unwrap().iter() {
+                let timestamp = create_unix_timestamp();
+                let data = actuador.get_current_flow();
+                if data == -1 {
+                    println!("Error al obtener el flujo del actuador");
+                    let timestamp = create_unix_timestamp();
+                    let log_data = json!({
+                        "deviceCode": device_uuid_clone,
+                        "deviceName": "NC",
+                        "logcode": 3429,
+                        "timestamp": timestamp,
+                        "description": format!("Error al obtener el flujo del actuador",),
+                    });
+                    client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
+                    continue;
+                } else {
+                    let payload = json!({
+                        "time": timestamp,
+                        "value": data
+                    });
+                    client_publisher.lock().unwrap().publish(format!("devices/{}/actuadores/{}/flow", device_uuid_clone, actuador.get_id()).as_str(), payload.to_string().as_str());
+                }
             }
             std::thread::sleep(std::time::Duration::from_secs(30));
         }
@@ -275,7 +260,6 @@ fn main() {
         }
     });
     
-
     loop {
         sleep(Duration::from_secs(1));
     }

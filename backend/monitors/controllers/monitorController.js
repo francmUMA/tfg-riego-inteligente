@@ -13,6 +13,7 @@ import { Op } from 'sequelize';
  * @param {
  *  "deviceCode"?: string,
  *  "sensorCode"?: string,
+ *  "actuadorCode"?: string,
  *  "value": number,
  *  "time": string
  * } data  
@@ -91,6 +92,39 @@ export const addValue = async (data) => {
             console.log("Valor añadido correctamente")
         } catch (error) {
             console.log(error)
+        }
+    } else if (data.actuadorCode !== undefined) {
+        // Validar que el codigo del dispositivo sea correcto
+        if (!validate(data.actuadorCode)) {
+            console.log("Codigo de actuador invalido")
+            return
+        }
+
+        try {
+            // Comprobar si el dispositivo existe
+            let actuador = await actuadoresModel.findOne({ where: { id: data.actuadorCode } })
+            if (actuador == null) {
+                console.log("El dispositivo no existe")
+                return
+            }
+
+            // Comprobar que no haya un valor en la misma fecha
+            let last_value = await monitorModel.findOne({ where: { actuadorCode: data.actuadorCode, time: data.time } })
+            if (last_value !== null) {
+                console.log("Ya existe un valor en la misma fecha")
+                return
+            }
+
+            // Añadir el valor
+            await monitorModel.create({
+                id: uuid,
+                actuadorCode: data.actuadorCode,
+                value: data.value,
+                time: data.time
+            })
+            console.log("Valor añadido correctamente")
+        } catch (error) {
+            console.log("Error al añadir el valor")
         }
     }
 }

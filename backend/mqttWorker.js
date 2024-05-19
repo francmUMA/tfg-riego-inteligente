@@ -212,7 +212,14 @@ if (!isMainThread){
             }
             console.log("Sensor descubierto -> " + message.toString())
             registerSensor(message.toString())
-            
+        } else if (topic.includes('flow')){
+            let actuador_id = topic.split('/')[3]
+            let jsonData = JSON.parse(message.toString())
+            addValue({
+                actuadorCode: actuador_id,
+                value: jsonData.value,
+                time: jsonData.time
+            })
         }
     })
 

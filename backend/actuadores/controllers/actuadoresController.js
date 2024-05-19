@@ -819,174 +819,174 @@ export const updateActuadorName = async (req, res) => {
     }
 }
 
-/**
- * @description Actualizar el caudalimetro asociado a un actuador
- * @param actuadorId identificador del actuador
- * @param flowmeterId identificador del caudalimetro
- * @returns 200 si se ha actualizado correctamente, 500 si ha habido un error
- */
+// /**
+//  * @description Actualizar el caudalimetro asociado a un actuador
+//  * @param actuadorId identificador del actuador
+//  * @param flowmeterId identificador del caudalimetro
+//  * @returns 200 si se ha actualizado correctamente, 500 si ha habido un error
+//  */
 
-export const updateActuadorFlowmeter = async (req, res) => {
-    //------------------------------------- Validar token ---------------------------------------------------------
-    let nif
-    try {
-        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
-    } catch (error) {
-        res.status(401).send("Invalid token")
-        return
-    }
+// export const updateActuadorFlowmeter = async (req, res) => {
+//     //------------------------------------- Validar token ---------------------------------------------------------
+//     let nif
+//     try {
+//         nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+//     } catch (error) {
+//         res.status(401).send("Invalid token")
+//         return
+//     }
 
-    if (nif === undefined) {
-        res.status(401).send("Invalid token")
-        return
-    }
-    // -----------------------------------------------------------------------------------------------------------
-    //------------------------------------- Validar datos ---------------------------------------------------------
-    if (req.body.actuadorId === undefined || req.body.actuadorId === null || req.body.actuadorId == "") {
-        res.status(400).send("Missing actuador id")
-        return
-    }
+//     if (nif === undefined) {
+//         res.status(401).send("Invalid token")
+//         return
+//     }
+//     // -----------------------------------------------------------------------------------------------------------
+//     //------------------------------------- Validar datos ---------------------------------------------------------
+//     if (req.body.actuadorId === undefined || req.body.actuadorId === null || req.body.actuadorId == "") {
+//         res.status(400).send("Missing actuador id")
+//         return
+//     }
 
-    if (!validate(req.body.actuadorId)) {
-        res.status(400).send("Invalid actuador")
-        return
-    }
+//     if (!validate(req.body.actuadorId)) {
+//         res.status(400).send("Invalid actuador")
+//         return
+//     }
 
-    if (req.body.flowmeterId === undefined || req.body.flowmeterId === null || req.body.flowmeterId == "") {
-        res.status(400).send("Missing flowmeter id")
-        return
-    }
+//     if (req.body.flowmeterId === undefined || req.body.flowmeterId === null || req.body.flowmeterId == "") {
+//         res.status(400).send("Missing flowmeter id")
+//         return
+//     }
 
-    if (!validate(req.body.flowmeterId)) {
-        res.status(400).send("Invalid flowmeter")
-        return
-    }
-    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
-    let actuador
-    try {
-        actuador = await actuadoresModel.findOne({ where: { id: req.body.actuadorId } })
-        if (actuador === null) {
-            res.status(404).send("Actuator not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
-    }
-    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
-    try {
-        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
-        if (device === null) {
-            res.status(404).send("Device not found for this user")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
-    }
+//     if (!validate(req.body.flowmeterId)) {
+//         res.status(400).send("Invalid flowmeter")
+//         return
+//     }
+//     // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
+//     let actuador
+//     try {
+//         actuador = await actuadoresModel.findOne({ where: { id: req.body.actuadorId } })
+//         if (actuador === null) {
+//             res.status(404).send("Actuator not found")
+//             return
+//         }
+//     } catch (error) {
+//         res.status(500).send(error.message)
+//         return
+//     }
+//     // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+//     try {
+//         let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+//         if (device === null) {
+//             res.status(404).send("Device not found for this user")
+//             return
+//         }
+//     } catch (error) {
+//         res.status(500).send(error.message)
+//         return
+//     }
 
-    // ------------------------------------ Comprobar si el caudalimetro existe ----------------------------------------
-    let flowmeter
-    try {
-        flowmeter = await sensorModel.findOne({ where: { id: req.body.flowmeterId } })
-        if (flowmeter === null) {
-            res.status(404).send("Flowmeter not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
-    }
+//     // ------------------------------------ Comprobar si el caudalimetro existe ----------------------------------------
+//     let flowmeter
+//     try {
+//         flowmeter = await sensorModel.findOne({ where: { id: req.body.flowmeterId } })
+//         if (flowmeter === null) {
+//             res.status(404).send("Flowmeter not found")
+//             return
+//         }
+//     } catch (error) {
+//         res.status(500).send(error.message)
+//         return
+//     }
 
-    // ----------------------------------- Comprobar que el caudalimetro pertenezca al usuario ---------------------------
-    try {
-        let device = await deviceModel.findOne({ where: { id: flowmeter.device, Usuario: nif } })
-        if (device === null) {
-            res.status(404).send("Device not found for this user")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
-    }
+//     // ----------------------------------- Comprobar que el caudalimetro pertenezca al usuario ---------------------------
+//     try {
+//         let device = await deviceModel.findOne({ where: { id: flowmeter.device, Usuario: nif } })
+//         if (device === null) {
+//             res.status(404).send("Device not found for this user")
+//             return
+//         }
+//     } catch (error) {
+//         res.status(500).send(error.message)
+//         return
+//     }
 
-    // ------------------------------------ Actualizar caudalimetro ---------------------------------------------------------
-    try {
-        actuador.flowmeter = req.body.flowmeterId
-        actuador.save()
-        res.status(200).send("Flowmeter updated")
-    } catch (error) {
-        console.log(error)
-        res.status(500).send(error.message)
-        return
-    }
-}
+//     // ------------------------------------ Actualizar caudalimetro ---------------------------------------------------------
+//     try {
+//         actuador.flowmeter = req.body.flowmeterId
+//         actuador.save()
+//         res.status(200).send("Flowmeter updated")
+//     } catch (error) {
+//         console.log(error)
+//         res.status(500).send(error.message)
+//         return
+//     }
+// }
 
-/**
- * @description Desvincular el caudalimetro asociado a un actuador
- * @param actuadorId identificador del actuador
- * @returns 200 si se ha actualizado correctamente, 500 si ha habido un error
- */
+// /**
+//  * @description Desvincular el caudalimetro asociado a un actuador
+//  * @param actuadorId identificador del actuador
+//  * @returns 200 si se ha actualizado correctamente, 500 si ha habido un error
+//  */
 
-export const deleteActuadorFlowmeter = async (req, res) => {
-    //------------------------------------- Validar token ---------------------------------------------------------
-    let nif
-    try {
-        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
-    } catch (error) {
-        res.status(401).send("Invalid token")
-        return
-    }
+// export const deleteActuadorFlowmeter = async (req, res) => {
+//     //------------------------------------- Validar token ---------------------------------------------------------
+//     let nif
+//     try {
+//         nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+//     } catch (error) {
+//         res.status(401).send("Invalid token")
+//         return
+//     }
 
-    if (nif === undefined) {
-        res.status(401).send("Invalid token")
-        return
-    }
-    // -----------------------------------------------------------------------------------------------------------
-    //------------------------------------- Validar datos ---------------------------------------------------------
-    if (req.body.actuadorId === undefined || req.body.actuadorId === null || req.body.actuadorId == "") {
-        res.status(400).send("Missing actuador id")
-        return
-    }
+//     if (nif === undefined) {
+//         res.status(401).send("Invalid token")
+//         return
+//     }
+//     // -----------------------------------------------------------------------------------------------------------
+//     //------------------------------------- Validar datos ---------------------------------------------------------
+//     if (req.body.actuadorId === undefined || req.body.actuadorId === null || req.body.actuadorId == "") {
+//         res.status(400).send("Missing actuador id")
+//         return
+//     }
 
-    if (!validate(req.body.actuadorId)) {
-        res.status(400).send("Invalid actuador")
-        return
-    }
+//     if (!validate(req.body.actuadorId)) {
+//         res.status(400).send("Invalid actuador")
+//         return
+//     }
 
-    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
-    let actuador
-    try {
-        actuador = await actuadoresModel.findOne({ where: { id: req.body.actuadorId } })
-        if (actuador === null) {
-            res.status(404).send("Actuator not found")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
-    }
-    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
-    try {
-        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
-        if (device === null) {
-            res.status(404).send("Device not found for this user")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-        return
-    }
+//     // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
+//     let actuador
+//     try {
+//         actuador = await actuadoresModel.findOne({ where: { id: req.body.actuadorId } })
+//         if (actuador === null) {
+//             res.status(404).send("Actuator not found")
+//             return
+//         }
+//     } catch (error) {
+//         res.status(500).send(error.message)
+//         return
+//     }
+//     // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+//     try {
+//         let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+//         if (device === null) {
+//             res.status(404).send("Device not found for this user")
+//             return
+//         }
+//     } catch (error) {
+//         res.status(500).send(error.message)
+//         return
+//     }
 
-    // ------------------------------------ Actualizar caudalimetro ---------------------------------------------------------
-    try {
-        actuador.flowmeter = null
-        actuador.save()
-        res.status(200).send("Flowmeter deleted")
-    } catch (error) {
-        console.log(error)
-        res.status(500).send(error.message)
-        return
-    }
-}
+//     // ------------------------------------ Actualizar caudalimetro ---------------------------------------------------------
+//     try {
+//         actuador.flowmeter = null
+//         actuador.save()
+//         res.status(200).send("Flowmeter deleted")
+//     } catch (error) {
+//         console.log(error)
+//         res.status(500).send(error.message)
+//         return
+//     }
+// }
 
