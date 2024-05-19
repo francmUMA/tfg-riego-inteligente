@@ -182,11 +182,6 @@ if (!isMainThread){
                 time: jsonData.time
             })
         } else if (topic.includes('discover')){
-            // Comprobar si el dispositivo de lectura ya existe
-            let sensor = await sensorsModel.findOne({where: {id: message.toString()}})
-            if (sensor != null){
-                return
-            }
             console.log("Sensor descubierto -> " + message.toString())
             registerSensor(message.toString())
             
