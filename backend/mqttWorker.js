@@ -188,12 +188,8 @@ if (!isMainThread){
                 return
             }
             console.log("Sensor descubierto -> " + message.toString())
-            let res = registerSensor(message.toString())
-            if (res){
-                console.log("Sensor registrado correctamente")
-            } else {
-                console.log("No se ha podido registrar el sensor")
-            }
+            registerSensor(message.toString())
+            
         }
     })
 
