@@ -14,7 +14,6 @@ use super::mqtt_client::MqttClient;
 //------------------------------------- SENSORES ----------------------------------------------------------------------------------------
 fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, mqtt_client: &mut MqttClient){
     if topic.contains("new"){
-        println!("{}", payload);
         let payload_json: Value = serde_json::from_str(payload).unwrap();
         let sensor = Sensor::new(
             payload_json["id"].as_str().unwrap().to_string(),
@@ -529,7 +528,7 @@ pub fn manage_msg(
 ){
     if topic.contains("actuadores") {
         manage_topic_actuadores(device, topic, payload, actuadores, mqtt_client);
-    } else if topic.contains("SENSOR") {
+    } else if topic.contains("sensors") || topic.contains("SENSOR") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else if topic.contains("server/available") {
         for actuador in actuadores.iter_mut() {
