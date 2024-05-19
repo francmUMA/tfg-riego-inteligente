@@ -68,7 +68,7 @@ export const addValue = async (data) => {
         }
 
         try {
-            console.log(data)
+            console.log(data.type)
             // Comprobar si el dispositivo existe
             let sensor = await sensorsModel.findOne({ where: { id: data.sensorCode } })
             if (sensor == null) {
