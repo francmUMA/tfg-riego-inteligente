@@ -114,5 +114,9 @@ impl Actuador {
         }
         self.active_program = Some(program);
     }
+
+    pub fn get_current_flow(&self) -> i64 {
+        0
+    }
 }
 
