@@ -7,7 +7,7 @@ import actuadoresModel from './actuadores/models/actuadoresModel.js'
 import { addValue } from './monitors/controllers/monitorController.js'
 import { addLog } from './logs/controllers/logController.js'
 import programsModel from './programs/models/programsModel.js'
-// import { registerSensor } from './sensors/controllers/sensorsController.js'
+import { registerSensor } from './sensors/controllers/sensorsController.js'
 
 if (!isMainThread){
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
@@ -188,12 +188,12 @@ if (!isMainThread){
                 return
             }
             console.log("Sensor descubierto -> " + message.toString())
-            // let res = registerSensor(message.toString())
-            // if (res){
-            //     console.log("Sensor registrado correctamente")
-            // } else {
-            //     console.log("No se ha podido registrar el sensor")
-            // }
+            let res = registerSensor(message.toString())
+            if (res){
+                console.log("Sensor registrado correctamente")
+            } else {
+                console.log("No se ha podido registrar el sensor")
+            }
         }
     })
 
