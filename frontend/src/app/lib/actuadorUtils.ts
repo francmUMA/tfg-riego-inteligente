@@ -185,36 +185,4 @@ export const getActuadorLogs = async (actuador: string) => {
     }
 }
 
-export const updateActuadorFlowmeter = async (id: string, flowmeter: number, token: string) => {
-    let options = {
-        method: 'PUT',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({actuadorId: id, flowmeterId: flowmeter})
-    }
-    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/flowmeter", options)
-    if (request.status === 200) {
-        return true
-    } else {
-        return false
-    }
-}
 
-export const removeActuadorFlowmeter = async (id: string, token: string) => {
-    let options = {
-        method: 'DELETE',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({actuadorId: id})
-    }
-    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/flowmeter", options)
-    if (request.status === 200) {
-        return true
-    } else {
-        return false
-    }
-}

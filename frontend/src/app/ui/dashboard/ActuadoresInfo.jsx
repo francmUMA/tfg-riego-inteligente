@@ -7,7 +7,7 @@ import { IoWaterOutline } from "react-icons/io5";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { FaRobot } from "react-icons/fa";
 
-const ActuadorInfo = ({ actuador, devices, setActuadores }) => {
+const ActuadorInfo = ({ actuador, devices }) => {
     return(
         <main className="w-full h-full px-2 items-center flex flex-row gap-x-10 justify-center">
             <p className="font-semibold w-full flex flex-row gap-x-3 items-center justify-start">

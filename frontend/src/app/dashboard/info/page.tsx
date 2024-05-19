@@ -68,9 +68,7 @@ export default function Page (){
                                 : type == 1 && elem !== undefined 
                                 ? <SensorChart id={elem.id} className="w-full h-full"/>
                                 : type == 2 && elem !== undefined
-                                ? elem.flowmeter != null 
-                                    ? <SensorChart id={elem.flowmeter} className="w-full h-full"/>
-                                    : <p className="w-full h-full flex justify-center items-center text-center">No se ha asociado un caudalímetro</p>
+                                ? <p className="w-full h-full flex justify-center items-center text-center">No se puede mostrar un gráfico de un actuador aun</p>
                                 : <p className="w-full h-full flex justify-center items-center text-center">No se ha seleccionado ningún elemento</p>
                             }
                         </Suspense>

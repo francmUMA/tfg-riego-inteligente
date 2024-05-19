@@ -158,7 +158,7 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensor
                             {deviceName}
                         </div>
                 }
-                {
+                {/* {
                     type == 1 && 
                         <div className="flex flex-row gap-x-2 items-center">
                             <IoWaterOutline size={18} className="text-indigo-600"/>
@@ -167,7 +167,7 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensor
                                 elem.type == "DHT" ? "%" : elem.type == "TMP" ? "°C" : "m3"
                             }</p>
                         </div>
-                }
+                } */}
                 {
                     type == 2 &&
                         <div className="flex flex-row gap-x-2 items-center">

@@ -22,10 +22,6 @@ const SensorInfo = ({ sensor, devices }) => {
                 <HiMiniCpuChip size={18} className="text-indigo-600"/>
                 {devices.find((device) => device.id == sensor.device)?.name}
             </p> 
-            <p className="flex w-full flex-row justify-start items-center gap-x-3">
-                <FaRobot size={18} className="text-indigo-600"/>
-                {sensor.value == null ? "-" : sensor.value}
-            </p>
         </main>
     )
 }

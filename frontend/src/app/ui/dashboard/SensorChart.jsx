@@ -1,6 +1,6 @@
 import { createChart, ColorType } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
-import { getSensorLast24hValues } from '../../lib/sensorsUtils';
+import { getSensorLast24hValues, getSensorLast24hValuesTemp } from '../../lib/sensorsUtils';
 import { getCookie } from 'cookies-next';
 
 export const SensorChart = props => {
@@ -21,7 +21,7 @@ export const SensorChart = props => {
     
     const [data, setData] = useState([])
     const fetchSensorData = async (id, token) => {
-        let newData = await getSensorLast24hValues(id, token);
+        let newData = await getSensorLast24hValuesTemp(id, token);
         if (newData !== undefined) {
             //Ordenar los datos por fecha
             newData = newData.sort((a, b) => {

@@ -165,11 +165,7 @@ const App = () => {
                     closePlaceMarkerDialog()
                   }}
                  className='border flex items-center text-lg hover:border-indigo-600 hover:text-indigo-500 duration-150 w-60 min-h-12 rounded-md shadow-md'>
-                  {
-                    sensor.type == 'DHT' ? <WiHumidity size={30} className='w-9 ml-2 mr-5'/>
-                    : sensor.type == 'TMP' ? <FaTemperatureQuarter  size={30} className='w-9 ml-2 mr-5'/>
-                    : sensor.type == 'CAU' && <IoWaterOutline size={30} className='w-9 ml-2 mr-5' />
-                  }
+                    <WiHumidity size={30} className='w-9 ml-2 mr-5'/>
                   {sensor.name}
                 </button>
               )
@@ -612,7 +608,7 @@ const App = () => {
                 clickable
                 onClick={() => setSelectedMarker(devices.length + index)}
                 key={sensor.id}
-                icon={sensor.type == 'DHT' ? "/humidity-percentage.svg" : sensor.type == 'TMP' ? "/temperature.svg" : "/water-level.svg"}
+                icon={"/humidity-percentage.svg"}
                 position={{lat: sensor.Latitud, lng: sensor.Longitud}}
                 draggable={editMode || (selectedMarker == (devices.length + index) && editOneMarker == true)}
                 onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}

@@ -2,11 +2,7 @@ import { NormalInfo, getCropName } from "./DeviceInfo";
 import { TbDeviceWatchStats2 } from "react-icons/tb"
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { PiPlantDuotone } from "react-icons/pi"
-import { BsClipboard2Data } from "react-icons/bs"
 import { getDeviceName } from "@/src/app/lib/devicesUtils";
-// import { getSensorLastValue } from "@/src/app/lib/sensorsUtils";
-// import { getCookie } from "cookies-next";
-// import { useEffect, useState } from "react";
 
 export const SensorInfo =  ({sensor}) => {
 
@@ -20,10 +16,6 @@ export const SensorInfo =  ({sensor}) => {
             } />
             <NormalInfo description={"Cultivo"} Icon={PiPlantDuotone} info={
                 sensor !== undefined ? getCropName(sensor.area) : "Sin cultivo"
-            } />
-            {/* <NormalInfo description={"Pin"} Icon={IoIosAddCircleOutline} info={"19"} /> */}
-            <NormalInfo description={"Valor"} Icon={BsClipboard2Data} info={
-                0
             } />
         </div>
     )
