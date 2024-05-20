@@ -148,7 +148,52 @@ export const getSensorLast24hValuesTemp = async (id: string, token: string) => {
     if (request.status === 200) {
         return await request.json()
     } else {
-        return undefined
+        return []
+    }
+}
+
+export const getSensorLast24hValuesSoilHum = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/soilHumidity/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
+
+export const getSensorLast24hValuesSoilTemp = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/soilTemperature/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
+
+export const getSensorLast24hValuesHum = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/humidity/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
     }
 }
 

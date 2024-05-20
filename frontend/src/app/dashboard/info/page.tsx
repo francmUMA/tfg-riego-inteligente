@@ -60,32 +60,44 @@ export default function Page (){
                             }
                         </Suspense>
                     </div>
-                    <div id="chart" className="border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden">
+                    <div id="chart-temp" className="border w-full h-full min-h-52 flex flex-col items-center shadow-md rounded-md overflow-hidden">
+                        <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">Temperatura</h1>
                         <Suspense>
                             {   
                                 type == 0 && elem !== undefined
                                 ? <ChartComponent id={elem.id}  className="w-full h-full"/>
                                 : type == 1 && elem !== undefined 
-                                ? <SensorChart id={elem.id} className="w-full h-full"/>
+                                ? <SensorChart type={0} id={elem.id} className="w-full h-full"/>
                                 : type == 2 && elem !== undefined
                                 ? <p className="w-full h-full flex justify-center items-center text-center">No se puede mostrar un gráfico de un actuador aun</p>
                                 : <p className="w-full h-full flex justify-center items-center text-center">No se ha seleccionado ningún elemento</p>
                             }
                         </Suspense>
                     </div>
-                    <div id="chart" className={`${type != 1  && "hidden "} border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden`}>
+                    <div id="chart-hum" className={`${type != 1  && "hidden "} border w-full h-full min-h-52 flex flex-col items-center shadow-md rounded-md overflow-hidden`}>
+                        <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">Humedad</h1>
                         <Suspense>
                             {   
                                 type == 1 && elem !== undefined &&
-                                <SensorChart id={elem.id} className="w-full h-full"/>
+                                <SensorChart type={2} id={elem.id} className="w-full h-full"/>
                             }
                         </Suspense>
                     </div>
-                    <div id="chart" className={`${type != 1 && "hidden "} border w-full h-full min-h-52 flex items-center justify-center shadow-md rounded-md overflow-hidden`}>
+                    <div id="chart-soilTemp" className={`${type != 1 && "hidden "} border w-full h-full min-h-52 flex flex-col items-center shadow-md rounded-md overflow-hidden`}>
+                        <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">Temperatura de suelo</h1>
                         <Suspense>
                             {   
                                 type == 1 && elem !== undefined &&
-                                <SensorChart id={elem.id} className="w-full h-full"/>
+                                <SensorChart type={1} id={elem.id} className="w-full h-full"/>
+                            }
+                        </Suspense>
+                    </div>
+                    <div id="chart-soilTemp" className={`${type != 1 && "hidden "} border w-full h-full min-h-52 flex flex-col items-center shadow-md rounded-md overflow-hidden`}>
+                        <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">Humedad de suelo</h1>
+                        <Suspense>
+                            {   
+                                type == 1 && elem !== undefined &&
+                                <SensorChart type={3} id={elem.id} className="w-full h-full"/>
                             }
                         </Suspense>
                     </div>

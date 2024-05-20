@@ -75,7 +75,7 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
                             setClickedActuador(undefined)
                             setClickedArea(undefined) 
                         }}
-                        mapId={"750877eaffcf7c34"}
+                        mapId={"880d1a58ffae37c1"}
                         disableDefaultUI
                         defaultCenter={{lat: startLocation.lat, lng: startLocation.lng}} 
                         defaultZoom={15}

@@ -51,7 +51,7 @@ export const ElemMap = ({elem}) => {
             ?
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
                 <Map 
-                    mapId={"750877eaffcf7c34"}
+                    mapId={"880d1a58ffae37c1"}
                     disableDefaultUI
                     defaultCenter={{lat: elem.Latitud, lng: elem.Longitud}} 
                     defaultZoom={15}

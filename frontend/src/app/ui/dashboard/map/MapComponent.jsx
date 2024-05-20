@@ -570,7 +570,7 @@ const App = () => {
             setClickedArea(undefined)
             setPlacePolygon(false)
           }}
-         mapId={"750877eaffcf7c34"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: centerLat, lng: centerLng}}>
+         mapId={"880d1a58ffae37c1"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: centerLat, lng: centerLng}}>
           {devices.map((device, index) => (
             device.Latitud && device.Longitud &&
             <div key={index}>

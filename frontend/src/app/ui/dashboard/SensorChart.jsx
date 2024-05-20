@@ -1,12 +1,13 @@
 import { createChart, ColorType } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
-import { getSensorLast24hValues, getSensorLast24hValuesTemp } from '../../lib/sensorsUtils';
+import { getSensorLast24hValuesHum, getSensorLast24hValuesSoilHum, getSensorLast24hValuesSoilTemp, getSensorLast24hValuesTemp } from '../../lib/sensorsUtils';
 import { getCookie } from 'cookies-next';
 
 export const SensorChart = props => {
 	const {
 	    id,
         className,
+		type,		
 		colors: {
 			backgroundColor = 'white',
 			lineColor = '#2962FF',
@@ -20,8 +21,16 @@ export const SensorChart = props => {
 
     
     const [data, setData] = useState([])
-    const fetchSensorData = async (id, token) => {
-        let newData = await getSensorLast24hValuesTemp(id, token);
+    const fetchSensorData = async (id, type, token) => {
+        let newData = type == 0 
+			? await getSensorLast24hValuesTemp(id, token) 
+			: type == 1 
+				? await getSensorLast24hValuesSoilTemp(id, token)
+				: type == 2
+					? await getSensorLast24hValuesHum(id, token)
+					: type == 3
+						? await getSensorLast24hValuesSoilHum(id, token)
+						: []
         if (newData !== undefined) {
             //Ordenar los datos por fecha
             newData = newData.sort((a, b) => {
@@ -33,7 +42,7 @@ export const SensorChart = props => {
 
     useEffect(() => {
         const token = getCookie('token');
-        fetchSensorData(id, token)
+        fetchSensorData(id, type, token)
     }, [id])
 
 	useEffect(

@@ -13,7 +13,7 @@ import { Suspense, useEffect, useState } from "react";
 
 import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
-import { FaTemperatureQuarter } from "react-icons/fa6";
+import { FaTemperatureArrowDown, FaTemperatureArrowUp, FaTemperatureQuarter, FaWater } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
 import { FaFaucetDrip } from "react-icons/fa6";
 import { FaRobot } from "react-icons/fa";
@@ -562,10 +562,12 @@ export default function Page() {
 
     const [chartSensor, setChartSensor] = useState("")
     const [IsOpenChartDialog, setIsOpenChartDialog] = useState(false)
+    const [sensorType, setSensorType] = useState(0)
 
-    const openChartDialog = (sensor: string) => {
+    const openChartDialog = (sensor: string, type: number) => {
         setChartSensor(sensor)
         setIsOpenChartDialog(true)
+        setSensorType(type)
     }
 
     const closeChartDialog = () => {
@@ -580,6 +582,7 @@ export default function Page() {
             <div className="w-full h-full flex flex-col gap-3">
                 {ChartDialog({
                     id: chartSensor,
+                    type: sensorType,
                     onClose: closeChartDialog,
                     isOpen: IsOpenChartDialog
                 })}
@@ -711,22 +714,6 @@ export default function Page() {
                                                                         : actuador.device_pin
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
-                                                                <button onClick={() => openSetFlowmeterDialog(index)} 
-                                                                    className={`w-9 h-2/3 rounded-md shadow-sm ${
-                                                                        actuador.flowmeter == null
-                                                                            ? "bg-gray-50 hover:bg-gray-100 text-indigo-600"
-                                                                            : "border-red-600 bg-red-600 hover:bg-red-500 text-white"
-                                                                    } borde duration-150`}>
-                                                                        {
-                                                                            actuador.flowmeter == null
-                                                                                ? <IoWaterOutline size={24} className="w-9 px-2"></IoWaterOutline>
-                                                                                : <XMarkIcon size={24} className="w-9 px-2"></XMarkIcon>
-                                                                        }
-                                                                    
-                                                                </button>
-                                                                <FlowmeterInfo elem={deviceActuadores[index]} />
-                                                            </div>
                                                             <button onClick={() => handleActuadorMode(index)} className="w-16 h-5 flex items-center">
                                                                 {
                                                                     actuador.mode == 1
@@ -780,13 +767,33 @@ export default function Page() {
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-44 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
                                                                 <button
-                                                                    onClick={() => openChartDialog(sensor.id)}
+                                                                    onClick={() => openChartDialog(sensor.id, 0)}
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
-                                                                    <FaChartLine size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                    <FaTemperatureArrowUp size={24} className="w-9 px-2 text-indigo-600"/>
                                                                 </button>
-                                                            </div>                                                  
+                                                            </div>
+                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
+                                                                <button
+                                                                    onClick={() => openChartDialog(sensor.id, 2)}
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <IoWaterOutline size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                </button>
+                                                            </div> 
+                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
+                                                                <button
+                                                                    onClick={() => openChartDialog(sensor.id, 1)}
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <FaTemperatureArrowDown size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                </button>
+                                                            </div> <div className="px-3 w-44 h-full flex flex-row gap-2 items-center">
+                                                                <button
+                                                                    onClick={() => openChartDialog(sensor.id, 3)}
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <FaWater size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                </button>
+                                                            </div>                                                   
                                                             <div className="px-2 w-12 h-2/3 flex justify-center items-center">
                                                                 <button onClick={() => handleOpenDeleteElemDialogButton(index, true)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>

@@ -1,12 +1,12 @@
 import { SensorChart } from "./SensorChart";
 import { Dialog } from "@mui/material";
 
-const ChartDialog = ({id, isOpen, onClose }) => {
+const ChartDialog = ({id, isOpen, onClose, type }) => {
     return (
         <Dialog  fullWidth open={isOpen} onClose={onClose}>
             <div
                  className="flex items-center justify-center h-96">
-                <SensorChart id={id} className="w-full h-full"/>
+                <SensorChart type={type} id={id} className="w-full h-full"/>
             </div>
             
         </Dialog>
