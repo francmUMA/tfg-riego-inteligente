@@ -484,15 +484,6 @@ export const updateActuadorDevicePin = async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
-    try {
-        let sensor = await sensorModel.findOne({ where: { device_pin: req.body.device_pin, device: actuador.device } })
-        if (sensor !== null) {
-            res.status(409).send("Pin already in use")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
         let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/device_pin`
