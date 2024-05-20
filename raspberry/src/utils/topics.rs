@@ -56,7 +56,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
         //TO-DO
         let sensor_id = topic.split("/").collect::<Vec<&str>>()[1];
         let data = get_esp32_info(sensor_id.to_string(), payload.to_string());
-        println!("Datos del sensor: {} -> Temp: {} Hum: {} Soil Temp: {}", data.get_id(), data.get_temp(), data.get_hum(), data.get_soil_temp());
+        // println!("Datos del sensor: {} -> Temp: {} Hum: {} Soil Temp: {}", data.get_id(), data.get_temp(), data.get_hum(), data.get_soil_temp());
         let index = sensors.iter().position(|sensor| sensor.get_id() == data.get_id());
         if index.is_none() {
             println!("No se ha encontrado el sensor");
@@ -70,6 +70,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             "temperature": data.get_temp(),
             "humidity": data.get_hum(),
             "soilTemperature": data.get_soil_temp(),
+            "soilHumidity": data.get_soil_hum(),
         });
         let topic = format!("devices/{}/sensors/{}/value", sensor.get_device(), sensor.get_id());
         if !mqtt_client.publish(topic.as_str(), json.to_string().as_str()) {

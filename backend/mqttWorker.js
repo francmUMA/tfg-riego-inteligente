@@ -193,6 +193,12 @@ if (!isMainThread){
                 value: jsonData.humidity,
                 time: jsonData.time
             })
+            addValue({
+                sensorCode: sensor_id,
+                type: 3,
+                value: jsonData.soilHumidity,
+                time: jsonData.time
+            })
         } else if (topic.includes('logs')){
             let logData = JSON.parse(message.toString())
             addLog(logData)
