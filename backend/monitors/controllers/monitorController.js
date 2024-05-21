@@ -20,6 +20,7 @@ import { Op } from 'sequelize';
  */
 export const addValue = async (data) => {
     let uuid = v1()
+    console.log(data)
 
     if ((data.value === undefined) || data.time === undefined) {
         console.log("Faltan datos para añadir el valor")
@@ -115,7 +116,6 @@ export const addValue = async (data) => {
                 console.log("Ya existe un valor en la misma fecha")
                 return
             }
-            console.log(data)
             // Añadir el valor
             await monitorModel.create({
                 id: uuid,
