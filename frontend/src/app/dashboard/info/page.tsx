@@ -69,7 +69,7 @@ export default function Page (){
                                 : type == 1 && elem !== undefined 
                                 ? <SensorChart type={0} id={elem.id} className="w-full h-full"/>
                                 : type == 2 && elem !== undefined
-                                ? <p className="w-full h-full flex justify-center items-center text-center">No se puede mostrar un gráfico de un actuador aun</p>
+                                ? <SensorChart type={4} id={elem.id} className="w-full h-full"/>
                                 : <p className="w-full h-full flex justify-center items-center text-center">No se ha seleccionado ningún elemento</p>
                             }
                         </Suspense>

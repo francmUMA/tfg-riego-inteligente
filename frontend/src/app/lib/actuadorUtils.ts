@@ -185,4 +185,18 @@ export const getActuadorLogs = async (actuador: string) => {
     }
 }
 
+export const getSensorLast24hValuesFlow = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/flow/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
 

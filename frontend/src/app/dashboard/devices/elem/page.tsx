@@ -1,6 +1,6 @@
 'use client'
 import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
-import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors, updateSensorPin } from "@/src/app/lib/sensorsUtils";
+import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
 import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
@@ -26,6 +26,7 @@ import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
 import { AddFlowmeterDialog } from "@/src/app/ui/dashboard/elem/AddFlowmeterDialog";
 import { FlowmeterInfo } from "@/src/app/ui/dashboard/elem/FlowmeterInfo";
 import { LogInfo } from "@/src/app/ui/dashboard/info/LogInfo";
+import { MdOutlineAddchart } from "react-icons/md";
 
 
 export default function Page() {
@@ -191,16 +192,9 @@ export default function Page() {
         setIsOpenSensorActuadorDialog(false);
     }
 
-    const addSensorActuador = () => {
+    const addSensorActuador = (isSensor: boolean) => {
+        setSensorActuador(isSensor)
         setIsOpenSensorActuadorDialog(true);
-    }
-    
-    const handleSelectSensorActuador = (e: any) => {
-        if (e.target.value == "sensor") {
-            setSensorActuador(true)
-        } else {
-            setSensorActuador(false)
-        }
     }
 
     const handleSensorName = async (e: any) => {
@@ -220,10 +214,24 @@ export default function Page() {
         }
     }
 
+
+    
+    const [sensorId, setSensorId] = useState("")
+    const [emptySensorId, setEmptySensorId] = useState(true)
+
+    const handleSensorId = async (e: any) => {
+        if (e.target.value == "") {
+            setEmptySensorId(true)
+        } else {
+            setEmptySensorId(false)
+            setSensorId(e.target.value)
+        }
+    }
+
     const handleAddSensor = async () => {
-        if (validSensorName) {
+        if (validSensorName && !emptySensorId) {
             const token = getCookie("token");
-            let res = await addSensor(sensorName, deviceId as string, token as string)
+            let res = await addSensor(sensorId, sensorName, deviceId as string, token as string)
             if (res) {
                 fetchDeviceSensors(deviceId as string, token as string)
             } else {
@@ -265,20 +273,29 @@ export default function Page() {
     const SensorActuadorDialog = () => {
         return (
             <Dialog open={IsOpenSensorActuadorDialog} onClose={closeSensorActuadorDialog}>
-                <DialogTitle className="w-full h-full border">Añade un nuevo elemento</DialogTitle>
+                <DialogTitle className="w-full h-full border">Añade un nuevo {
+                    sensorActuador
+                        ? "sensor"
+                        : "actuador"
+                
+                }</DialogTitle>
                 <div className="flex flex-col justify-center items-center p-4 gap-4">
-                    <div className="w-full h-full">
-                        <label className="font-medium">Tipo de dispositivo</label>
-                    </div>
                     <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                        <select className="w-full h-10" onChange={handleSelectSensorActuador}>
-                            <option value="sensor">Sensor</option>
-                            <option value="actuador">Actuador</option>
-                        </select>
                         {
                             sensorActuador
                                 ?   <div className="w-full h-full flex flex-col">
-                                        <label className="font-medium">Nombre</label>
+                                        <label className="font-medium">Identificador</label>
+                                        <input onChange={handleSensorId} onBlur={handleSensorId} name="id" type="text" placeholder="Identificador" required
+                                                    className={`transition easy-in-out duration-200
+                                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
+                                                    shadow-sm rounded-lg ${
+                                                        emptySensorId
+                                                            ? "border-[#d6d3d1]"
+                                                            : !emptySensorId
+                                                                ? "border-green-500 text-[#22c55e] bg-gray-500/5"
+                                                                : "border-red-500 text-red-500 bg-gray-500/5"
+                                        }`}/>
+                                        <label className="font-medium pt-2">Nombre</label>
                                         <input onChange={handleSensorName} onBlur={handleSensorName} name="name" type="text" placeholder="Nombre" required
                                                     className={`transition easy-in-out duration-200
                                                     w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
@@ -288,7 +305,7 @@ export default function Page() {
                                                             : validSensorName
                                                                 ? "border-green-500 text-[#22c55e] bg-gray-500/5"
                                                                 : "border-red-500 text-red-500 bg-gray-500/5"
-                                                    }`}/>
+                                        }`}/>
                                         <div className="w-full h-full flex flex-col gap-2 pt-2">
                                             <div className="w-full h-full pt-3">
                                                 <button onClick={handleAddSensor} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
@@ -603,7 +620,10 @@ export default function Page() {
                         <button onClick={openUpdateAreaDialog} className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                             <MapPinIcon className={`w-6 text-indigo-600`}/>
                         </button>
-                        <button onClick={addSensorActuador}  className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                        <button onClick={() => addSensorActuador(true)}  className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                            <MdOutlineAddchart className={`w-6 text-indigo-600`}/>
+                        </button>
+                        <button onClick={() => addSensorActuador(false)}  className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                             <PlusCircleIcon className={`w-6 text-indigo-600`}/>
                         </button>
                         <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
@@ -809,13 +829,13 @@ export default function Page() {
                         </div>
                     </div>
                     <div id="graficas" className="w-full h-full max-h-64 flex flex-col md:flex-row gap-3 items-center justify-center">
-                        <div className="w-full h-full flex flex-col justify-center items-center border rounded-md shadow-md">
+                        <div className="w-full h-full flex flex-col items-center border rounded-md shadow-md">
                             <h1 className="w-full h-12 text-lg text-center text-slate-400">Temperatura</h1>
                             <Suspense>
                                 <ChartComponent className="w-full h-full" id={deviceId}/>
                             </Suspense>
                         </div>
-                        <div className="w-full h-full flex justify-center items-center border shadow-md rounded-md">
+                        <div className="w-full h-full flex items-center border shadow-md rounded-md">
                             <LogInfo elemId={deviceId} type={0}/>
                         </div>
                     </div>

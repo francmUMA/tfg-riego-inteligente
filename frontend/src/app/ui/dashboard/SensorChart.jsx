@@ -2,6 +2,7 @@ import { createChart, ColorType } from 'lightweight-charts';
 import React, { useEffect, useRef, useState } from 'react';
 import { getSensorLast24hValuesHum, getSensorLast24hValuesSoilHum, getSensorLast24hValuesSoilTemp, getSensorLast24hValuesTemp } from '../../lib/sensorsUtils';
 import { getCookie } from 'cookies-next';
+import { getSensorLast24hValuesFlow } from '../../lib/actuadorUtils';
 
 export const SensorChart = props => {
 	const {
@@ -30,12 +31,20 @@ export const SensorChart = props => {
 					? await getSensorLast24hValuesHum(id, token)
 					: type == 3
 						? await getSensorLast24hValuesSoilHum(id, token)
-						: []
+						: type == 4
+							? await getSensorLast24hValuesFlow(id, token)
+							: []
         if (newData !== undefined) {
             //Ordenar los datos por fecha
             newData = newData.sort((a, b) => {
                 return a.time - b.time
             })
+			// Elimina los datos con el mismo timestamp
+			newData = newData.filter((value, index, self) =>
+				index === self.findIndex((t) => (
+					t.time === value.time
+				))
+			)
             setData(newData)
         }
     }
@@ -81,7 +90,7 @@ export const SensorChart = props => {
 				}
 			})
 
-			chart.timeScale().fitContent()
+			chart.timeScale().fitContent();
 
 
 
@@ -91,7 +100,7 @@ export const SensorChart = props => {
 				topColor: areaTopColor, 
 				bottomColor: areaBottomColor,
 				priceLineVisible: false ,
-				lineType: 2
+				lineType: 2,
 			});
 
 			newSeries.setData(data);

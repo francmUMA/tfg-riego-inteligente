@@ -54,14 +54,14 @@ export async function checkSensorId(sensors: any, id: string){
     return !(sensors.find((sensor: any) => sensor.id == id))
 }
 
-export async function addSensor(name: string, device: string, token: string) {
+export async function addSensor(sensor: string, name: string, device: string, token: string) {
     let options = {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({name: name})
+        body: JSON.stringify({name: name, id: sensor})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
     if (request.status === 200) {
@@ -90,14 +90,14 @@ export async function updateSensorArea(id: string, area: string, token: string) 
 
 export async function deleteSensor(id: string, device: string, token: string) {
     let options = {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({id: id})
     }
-    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/unlink/" + device, options)
     if (request.status === 200) {
         return true
     } else {
