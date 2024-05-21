@@ -80,6 +80,16 @@ if (!isMainThread){
                 })
                 console.log(`Suscrito al topic: ${topic}`)
             })
+            let actuadores = await actuadoresModel.findAll()
+            actuadores.forEach(actuador => {
+                let topic = `devices/${actuador.device}/actuadores/${actuador.id}/flow`
+                client.subscribe(topic, (err) => {
+                    if (err) {
+                        console.log("No se ha podido suscribir al topic: " + topic)
+                    }
+                })
+                console.log(`Suscrito al topic: ${topic}`)
+            })
             console.log("Conexión con el broker MQTT exitosa")
             client.publish('server/available', '1', (err) => {
                 if (err) {

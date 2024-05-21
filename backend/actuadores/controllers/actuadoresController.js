@@ -5,6 +5,7 @@ import sensorModel from "../../sensors/models/sensorsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import { v4, validate } from "uuid"
 import { publish_msg } from "../../mqtt.js"
+import { sendCommandToWorker } from "../../index.js"
 
 /**
  * 
@@ -175,6 +176,7 @@ export const addActuador = async (req, res) => {
         let topic = `devices/${device.id}/actuadores/new`
         let actuador = await actuadoresModel.findOne({ where: { id: uuid } })
         publish_msg(topic, JSON.stringify(actuador))
+        sendCommandToWorker("suscribe", `devices/${device.id}/actuadores/${actuador.id}/flow`)
         res.status(200).send("Actuator added")
     } catch (error) {
         res.status(500).send(error.message)
@@ -242,8 +244,9 @@ export const deleteActuador = async (req, res) => {
     }
 
     // Comprobar si el actuador existe
+    let actuador
     try {
-        let actuador = await actuadoresModel.findOne({ where: { id: req.body.id, device: req.params.device } })
+        actuador = await actuadoresModel.findOne({ where: { id: req.body.id, device: req.params.device } })
         if (actuador === null) {
             res.status(404).send("Actuator not found")
             return
@@ -258,6 +261,7 @@ export const deleteActuador = async (req, res) => {
         let topic = `devices/${device.id}/actuadores/delete`
         let payload = req.body.id
         publish_msg(topic, payload)
+        sendCommandToWorker("unsuscribe", `devices/${device.id}/actuadores/${actuador.id}/flow`)
         res.status(200).send("Actuator deleted")
     } catch (error) {
         res.status(500).send(error.message)
@@ -576,8 +580,10 @@ export const updateActuadorDevice = async (req, res) => {
     }
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
+        sendCommandToWorker("unsuscribe", `devices/${actuador.device}/actuadores/${actuador.id}/flow`)
         actuador.device = req.body.device
         actuador.save()
+        sendCommandToWorker("suscribe", `devices/${req.body.device}/actuadores/${actuador.id}/flow`)
         res.status(200).send("Device updated")
     } catch (error) {
         res.status(500).send(error.message)
