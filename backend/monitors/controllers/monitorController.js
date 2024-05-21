@@ -7,6 +7,7 @@ import sensorsModel from '../../sensors/models/sensorsModel.js';
 import { v1 } from 'uuid';
 import sequelize from 'sequelize';
 import { Op } from 'sequelize';
+import actuadoresModel from '../../actuadores/models/actuadoresModel.js';
 
 /**
  * 
@@ -20,7 +21,6 @@ import { Op } from 'sequelize';
  */
 export const addValue = async (data) => {
     let uuid = v1()
-    console.log(data)
 
     if ((data.value === undefined) || data.time === undefined) {
         console.log("Faltan datos para añadir el valor")
