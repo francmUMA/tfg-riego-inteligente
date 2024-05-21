@@ -143,18 +143,14 @@ export const addSensor = async (req, res) => {
             res.status(403).send("Sensor already registered")
             return
         }
-
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-
-    // ----------------------------------------------------------
-    try {
-        await sensorsModel.create({ id: id, name: req.body.name, device: req.params.device, user: nif })
-        let sensor = await sensorsModel.findOne({ where: { id: uuid } })
+        sensor.name = req.body.name
+        sensor.device = req.params.device
+        sensor.user = nif
+        sensor.save()
         publish_msg(`devices/${sensor.device}/sensors/new`, JSON.stringify(sensor))
         sendCommandToWorker('suscribe', `devices/${sensor.device}/sensors/${sensor.id}/value`)
         res.status(200).send("Sensor added")
+
     } catch (error) {
         res.status(500).send(error.message)
     }
@@ -230,6 +226,82 @@ export const deleteSensor = async (req, res) => {
     // ----------------------------------------------------------
     try {
         await sensorsModel.destroy({ where: { id: req.body.id, device: req.params.device } })
+        let payload = req.body.id
+        publish_msg(`devices/${req.params.device}/sensors/delete`, payload)
+        sendCommandToWorker('unsuscribe', `devices/${req.params.device}/sensors/${req.body.id}/value`)
+        res.status(200).send("Sensor deleted")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/*
+    @description: Deslinla un sensor de un usuario y un device
+    @params: {
+        device: string          // id del dispositivo
+    }
+    @body: {
+        id: string              // id del sensor
+    }
+*/
+
+export const unlinkSensor = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    // ------------------- POSIBLES ERRORES --------------------
+    if (req.params.device === undefined || req.params.device === null || req.params.device == "") {
+        res.status(400).send("Missing device")
+        return
+    }
+
+    if (!validate(req.params.device)) {
+        res.status(400).send("Invalid device")
+        return
+    }
+
+    // Comprobar si el dispositivo existe y si es de este usuario
+    try {
+        let device = await deviceModel.findOne({ where: { id: req.params.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid sensor")
+        return
+    }
+
+    // Comprobar si el sensor existe
+    try {
+        let sensor = await sensorsModel.findOne({ where: { id: req.body.id, device: req.params.device } })
+        if (sensor === null) {
+            res.status(404).send("Sensor not found")
+            return
+        }
+        sensor.device = null
+        sensor.user = "00000000A"
+        sensor.save()
         let payload = req.body.id
         publish_msg(`devices/${req.params.device}/sensors/delete`, payload)
         sendCommandToWorker('unsuscribe', `devices/${req.params.device}/sensors/${req.body.id}/value`)
