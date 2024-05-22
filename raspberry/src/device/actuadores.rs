@@ -139,7 +139,7 @@ impl Actuador {
         println!("Pulses: {}", *pulses);
         self.flowmeter.as_mut().unwrap().clear_async_interrupt();
         
-        (*pulses / 7.5) as i64
+        (*pulses as f32 / 7.5) as i64
     }
     
 }
