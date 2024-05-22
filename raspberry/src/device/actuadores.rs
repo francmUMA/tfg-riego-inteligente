@@ -1,6 +1,5 @@
 use std::{thread::sleep, time::{Duration, Instant}};
 
-use chrono::Duration;
 use rppal::gpio::{Gpio, InputPin, Level, OutputPin};
 
 pub struct Actuador {
@@ -132,7 +131,7 @@ impl Actuador {
             return pulses;
         }
         
-        self.flowmeter.unwrap().set_async_interrupt(rppal::gpio::Trigger::FallingEdge, || {
+        self.flowmeter.unwrap().set_async_interrupt(rppal::gpio::Trigger::FallingEdge, pulses || {
             pulses += 1;
         });
         sleep(Duration::from_secs(1));
