@@ -166,7 +166,7 @@ fn main() {
                 });
                 client_publisher.lock().unwrap().publish("logs", log_data.to_string().as_str());
             }
-            for actuador in actuadores_publisher.lock().unwrap().iter() {
+            for actuador in actuadores_publisher.lock().unwrap().iter_mut() {
                 let timestamp = create_unix_timestamp();
                 let data = actuador.get_current_flow();
                 if data == -1 {
