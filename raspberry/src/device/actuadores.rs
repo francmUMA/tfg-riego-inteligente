@@ -1,4 +1,7 @@
-use rppal::gpio::{Gpio, OutputPin};
+use std::time::Instant;
+
+use chrono::Duration;
+use rppal::gpio::{Gpio, InputPin, Level, OutputPin};
 
 pub struct Actuador {
     id: String,
@@ -10,7 +13,8 @@ pub struct Actuador {
     longitud: Option<f64>,
     status: u8,
     name: String,
-    active_program: Option<String>
+    active_program: Option<String>,
+    flowmeter: Option<InputPin>
 }
 
 use serde_json::Value;
@@ -34,8 +38,10 @@ impl Actuador {
         let mut longitud_value: Option<f64> = None;
         let mut status_value: u8 = 0;
         let mut active_program_val: Option<String> = None;
+        let mut flowmeter: Option<InputPin> = None;
         if device_pin.is_u64() {
             device_gpio = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_output());
+            flowmeter = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8 + 1).unwrap().into_input());
         }
         if area.is_string() {
             area_value = Some(area.to_string());
@@ -52,6 +58,8 @@ impl Actuador {
         if active_program.is_string() {
             active_program_val = Some(active_program.as_str().unwrap().to_string());
         }
+
+
         Actuador {
             id,
             device,
@@ -62,7 +70,8 @@ impl Actuador {
             longitud: longitud_value,
             status: status_value,
             name,
-            active_program: active_program_val
+            active_program: active_program_val,
+            flowmeter
         }
     }
 
@@ -100,11 +109,13 @@ impl Actuador {
 
     pub fn change_pin(&mut self, pin: u8) -> bool {
         self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_output());
+        self.flowmeter = Some(Gpio::new().unwrap().get(pin + 1).unwrap().into_input());
         true
     }
 
     pub fn clean_pin(&mut self) {
         self.device_pin = None;
+        self.flowmeter = None;
     }
 
     pub fn set_active_program(&mut self, program: String) {
@@ -116,7 +127,18 @@ impl Actuador {
     }
 
     pub fn get_current_flow(&self) -> i64 {
-        0
+        let mut pulses = 0;
+        if self.flowmeter.is_none() {
+            return pulses;
+        }
+        let start = Instant::now();
+        while start.elapsed() < Duration::milliseconds(1000) {
+            if self.flowmeter.unwrap().poll_interrupt(Level::High, Duration::milliseconds(1000)) {
+                pulses += 1;
+            }
+            
+        }
+        pulses / 7.5 as i64
     }
 }
 
