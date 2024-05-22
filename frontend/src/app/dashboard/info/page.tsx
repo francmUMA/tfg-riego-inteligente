@@ -61,7 +61,13 @@ export default function Page (){
                         </Suspense>
                     </div>
                     <div id="chart-temp" className="border w-full h-full min-h-52 flex flex-col items-center shadow-md rounded-md overflow-hidden">
-                        <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">Temperatura</h1>
+                        <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">{
+                            type == 0 || type == 1 
+                                ? "Temperatura"
+                                : type == 2 
+                                    ? "Caudal (L/min)"
+                                    : ""
+                        }</h1>
                         <Suspense>
                             {   
                                 type == 0 && elem !== undefined

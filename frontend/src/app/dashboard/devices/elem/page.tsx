@@ -23,10 +23,9 @@ import { IoIosCellular } from "react-icons/io";
 import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
 import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
-import { AddFlowmeterDialog } from "@/src/app/ui/dashboard/elem/AddFlowmeterDialog";
-import { FlowmeterInfo } from "@/src/app/ui/dashboard/elem/FlowmeterInfo";
 import { LogInfo } from "@/src/app/ui/dashboard/info/LogInfo";
 import { MdOutlineAddchart } from "react-icons/md";
+import { GiWateringCan } from "react-icons/gi"
 
 
 export default function Page() {
@@ -709,7 +708,7 @@ export default function Page() {
                                                                 <FaFaucetDrip size={20} className="w-9 text-indigo-600"></FaFaucetDrip>
                                                                 {actuador.name}
                                                             </div>
-                                                            <div className="px-3 w-48 h-full flex gap-2 items-center">
+                                                            <div className="px-3 h-full flex gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorAreaDialogButton(index)} className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
                                                                 </button>
@@ -723,7 +722,7 @@ export default function Page() {
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorPinDialogButton(index)} 
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
@@ -733,6 +732,13 @@ export default function Page() {
                                                                         ? "Desconectado"
                                                                         : actuador.device_pin
                                                                 }
+                                                            </div>
+                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
+                                                                <button
+                                                                    onClick={() => openChartDialog(actuador.id, 4)}
+                                                                    className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                                    <GiWateringCan  size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                </button>
                                                             </div>
                                                             <button onClick={() => handleActuadorMode(index)} className="w-16 h-5 flex items-center">
                                                                 {

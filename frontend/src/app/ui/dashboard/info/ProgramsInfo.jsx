@@ -49,7 +49,7 @@ export const ProgramsInfo = ({elem, associate, setAssociate}) => {
                         <div key={index} className={`w-full h-12 flex flex-row items-center gap-x-3 px-2 overflow-x-auto ${
                             index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
                         }`}>
-                            <p className="w-full h-full flex items-center justify-start">{program.name}</p>
+                            <p className="w-full h-full flex items-center justify-start font-semibold">{program.name}</p>
                             <p className="min-w-10  h-full flex items-center justify-start">
                                 {
                                     timestampToTime(program.startTime)
@@ -61,25 +61,25 @@ export const ProgramsInfo = ({elem, associate, setAssociate}) => {
                             </div>
                             <div className="h-8 flex items-center justify-start border rounded-md bg-white">
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
-                                    program.days >> 6 && 'bg-indigo-500 text-white'
+                                    (program.days & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>L</p>
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
-                                    (program.days >> 5 & 0x01) && 'bg-indigo-500 text-white'
+                                    (program.days >> 1 & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>M</p>
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
-                                    (program.days >> 4 & 0x01) && 'bg-indigo-500 text-white'
+                                    (program.days >> 2 & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>X</p>
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
                                     (program.days >> 3 & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>J</p>
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
-                                    (program.days >> 2 & 0x01) && 'bg-indigo-500 text-white'
+                                    (program.days >> 4 & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>V</p>
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
-                                    (program.days >> 1 & 0x01) && 'bg-indigo-500 text-white'
+                                    (program.days >> 5 & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>S</p>
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
-                                    (program.days & 0x01) && 'bg-indigo-500 text-white'
+                                    program.days >> 6 && 'bg-indigo-500 text-white'
                                 }`}>D</p>
                             </div>
                             <button onClick={
