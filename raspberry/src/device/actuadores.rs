@@ -128,18 +128,18 @@ impl Actuador {
     pub fn get_current_flow(&mut self) -> i64 {
         let mut pulses = Arc::new(0);
         if self.flowmeter.is_none() {
-            return pulses;
+            return *pulses;
         }
         let pulses_clone =Arc::clone(&pulses);
         self.flowmeter.as_mut().unwrap().set_async_interrupt(rppal::gpio::Trigger::FallingEdge, move |_| {
-            pulses_clone += 1;
+            *pulses_clone += 1;
         });
 
         sleep(Duration::from_secs(1));
-        println!("Pulses: {}", pulses);
+        println!("Pulses: {}", *pulses);
         self.flowmeter.as_mut().unwrap().clear_async_interrupt();
         
-        pulses / 7.5 as i64
+        (*pulses / 7.5) as i64
     }
     
 }
