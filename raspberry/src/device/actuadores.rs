@@ -132,6 +132,7 @@ impl Actuador {
         }
         
         self.flowmeter.as_mut().unwrap().set_async_interrupt(rppal::gpio::Trigger::FallingEdge, move |_| {
+            println!("Pulse detected");
             pulses += 1;
         });
 
