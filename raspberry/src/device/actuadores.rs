@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::{thread::sleep, time::{Duration, Instant}};
 
 use chrono::Duration;
 use rppal::gpio::{Gpio, InputPin, Level, OutputPin};
@@ -131,13 +131,13 @@ impl Actuador {
         if self.flowmeter.is_none() {
             return pulses;
         }
-        let start = Instant::now();
-        while start.elapsed() < Duration::milliseconds(1000) {
-            if self.flowmeter.unwrap().poll_interrupt(Level::High, Duration::milliseconds(1000)) {
-                pulses += 1;
-            }
-            
-        }
+        
+        self.flowmeter.unwrap().set_async_interrupt(rppal::gpio::Trigger::FallingEdge, || {
+            pulses += 1;
+        });
+        sleep(Duration::from_secs(1));
+        self.flowmeter.unwrap().clear_async_interrupt();
+        
         pulses / 7.5 as i64
     }
 }
