@@ -125,7 +125,7 @@ impl Actuador {
         self.active_program = Some(program);
     }
 
-    pub fn get_current_flow(&self) -> i64 {
+    pub fn get_current_flow(&mut self) -> i64 {
         let mut pulses = 0;
         if self.flowmeter.is_none() {
             return pulses;
