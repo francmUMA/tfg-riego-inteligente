@@ -1,4 +1,4 @@
-use std::{sync::Arc, thread::sleep, time::{Duration, Instant}};
+use std::{sync::{Arc, Mutex}, thread::sleep, time::{Duration, Instant}};
 
 use rppal::gpio::{Gpio, InputPin, Level, OutputPin};
 
@@ -126,20 +126,21 @@ impl Actuador {
     }
 
     pub fn get_current_flow(&mut self) -> i64 {
-        let mut pulses = Arc::new(0);
+        let mut pulses = Arc::new(Mutex::new(0));
         if self.flowmeter.is_none() {
-            return *pulses;
+            return *pulses.lock().unwrap() as i64;
         }
-        let pulses_clone =Arc::clone(&pulses);
+        let mut pulses_clone =Arc::clone(&pulses);
         self.flowmeter.as_mut().unwrap().set_async_interrupt(rppal::gpio::Trigger::FallingEdge, move |_| {
-            *pulses_clone += 1;
+            let mut num = pulses_clone.lock().unwrap();
+            *num += 1;
         });
 
         sleep(Duration::from_secs(1));
         println!("Pulses: {}", *pulses);
         self.flowmeter.as_mut().unwrap().clear_async_interrupt();
         
-        (*pulses as f32 / 7.5) as i64
+        (*pulses.lock().unwrap() as f32 / 7.5) as i64
     }
     
 }
