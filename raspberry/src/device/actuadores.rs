@@ -139,8 +139,9 @@ impl Actuador {
         sleep(Duration::from_secs(1));
         println!("Pulses: {}", *pulses.lock().unwrap());
         self.flowmeter.as_mut().unwrap().clear_async_interrupt();
+        let res = *pulses.lock().unwrap();
         
-        (*pulses.lock().unwrap() as f32 / 7.5) as i64
+        (res as f32 / 7.5) as i64
     }
     
 }
