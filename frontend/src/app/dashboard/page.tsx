@@ -11,6 +11,7 @@ import {SensorChart} from "../ui/dashboard/SensorChart"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { notify } from "../lib/notify"
+import { CustomTable } from "../ui/dashboard/Table"
 
 
 export default function Page() {
@@ -46,14 +47,15 @@ export default function Page() {
                 </section>
                 <section id="actuadores-sensores" className="h-full w-full flex flex-row gap-x-3 justify-center items-center">
                     <div id="actuadores-info" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
-                        <ActuadoresInfo areas={undefined}/>
+                        {/* <ActuadoresInfo areas={undefined}/> */}
+                        <CustomTable />
                     </div>
                     <div id="clima-imfo" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
                         <SensorsInfo />
                     </div>
                 </section>
-                <section className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center overflow-hidden">
-                        <SensorChart className="w-full h-full flex items-center justify-center" id={"f692dcb3-7a9b-4ce1-a5f8-1c7a62adac58"}/>
+                <section className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full overflow-hidden">
+                        <CustomTable />
                 </section>
             </div>
         </main>
