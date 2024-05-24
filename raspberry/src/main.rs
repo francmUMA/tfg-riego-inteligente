@@ -212,9 +212,11 @@ fn main() {
                 println!("Gestionando timers");
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
                     if timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuator.get_id()).is_some() {
+                        println!("El actuador {} ya tiene un timer activo", actuator.get_id());
                         continue;
                     }
                     if actuator.get_active_program().is_none() {
+                        println!("No hay programa activo en el actuador {}", actuator.get_id());
                         continue;
                     }
                     let programs = programs_manager.lock().unwrap();
