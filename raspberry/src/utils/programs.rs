@@ -95,10 +95,12 @@ impl Program {
                                                                         chrono::Duration::from_std(Duration::from_millis(self.start_time + 3600*1000)).unwrap();
         let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
         let end_time_date = start_time_date + chrono::Duration::from_std(Duration::from_secs(self.duration)).unwrap();
-        println!("Hora actual: {}", datetime.to_string());
         println!("Hora de inicio: {}", start_time_date.to_string());
         println!("Hora de fin: {}", end_time_date.to_string());
         
+        if (datetime >= start_time_date && datetime <= end_time_date) {
+            return true;
+        }
         return false;
     }
 
