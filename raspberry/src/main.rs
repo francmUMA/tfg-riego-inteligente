@@ -211,6 +211,7 @@ fn main() {
                 }
                 println!("Gestionando timers");
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
+                    println!("Gestionando actuador: {}", actuator.get_id());
                     if timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuator.get_id()).is_some() {
                         println!("El actuador {} ya tiene un timer activo", actuator.get_id());
                         continue;
