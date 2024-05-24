@@ -267,7 +267,7 @@ fn main() {
                 continue;
             }
             actuator.as_mut().unwrap().close();
-            println!("Actuador cerrado: {}", actuator.get_id());
+            println!("Actuador cerrado: {}", actuator.unwrap().get_id());
         }
     });
     
