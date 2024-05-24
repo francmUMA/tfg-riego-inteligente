@@ -228,6 +228,7 @@ fn main() {
                     }
                     let program = program.unwrap();
                     if !program.irrigate_now(now){
+                        println!("No se debe regar hoy");
                         continue;
                     }
 
