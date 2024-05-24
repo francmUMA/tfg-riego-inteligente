@@ -247,6 +247,8 @@ fn main() {
         });
     });
 
+    let actuadores_receiver = Arc::clone(&actuadores);
+
     thread::spawn(move || {
         let receiver = rx;
         loop {
@@ -259,6 +261,14 @@ fn main() {
             let timer_index = timer_index.unwrap();
             let timer = timers_list_clone.lock().unwrap().remove(timer_index);
             println!("Timer finalizado: {}", timer.get_id());
+            let actuator = actuadores_receiver.lock().unwrap().iter_mut().find(|a| a.get_id() == timer.get_actuador_id());
+            if actuator.is_none() {
+                println!("No se ha encontrado el actuador");
+                continue;
+            }
+            let actuator = actuator.unwrap();
+            actuator.close();
+            println!("Actuador cerrado: {}", actuator.get_id());
         }
     });
     
