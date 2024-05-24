@@ -261,13 +261,13 @@ fn main() {
             let timer_index = timer_index.unwrap();
             let timer = timers_list_clone.lock().unwrap().remove(timer_index);
             println!("Timer finalizado: {}", timer.get_id());
-            let mut actuator = actuadores_receiver.lock().unwrap().iter_mut().find(|a| a.get_id() == timer.get_actuador_id());
-            if actuator.is_none() {
+            if let Some(actuator) = actuadores_receiver.lock().unwrap().iter_mut().find(|a| a.get_id() == timer.get_actuador_id()) {
+                actuator.close();
+                println!("Actuador cerrado: {}", actuator..get_id());
+            } else {
                 println!("No se ha encontrado el actuador");
                 continue;
             }
-            actuator.as_mut().unwrap().close();
-            println!("Actuador cerrado: {}", actuator.unwrap().get_id());
         }
     });
     
