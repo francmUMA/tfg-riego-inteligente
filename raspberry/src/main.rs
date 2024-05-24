@@ -263,7 +263,7 @@ fn main() {
             println!("Timer finalizado: {}", timer.get_id());
             if let Some(actuator) = actuadores_receiver.lock().unwrap().iter_mut().find(|a| a.get_id() == timer.get_actuador_id()) {
                 actuator.close();
-                println!("Actuador cerrado: {}", actuator..get_id());
+                println!("Actuador cerrado: {}", actuator.get_id());
             } else {
                 println!("No se ha encontrado el actuador");
                 continue;
