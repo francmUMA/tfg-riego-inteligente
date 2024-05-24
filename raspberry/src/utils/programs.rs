@@ -87,6 +87,7 @@ impl Program {
             Weekday::Sun => self.days & 0b01000000 >> 6,
         };
         if (irrigate_day == 0) {
+            println!("{}",self.days);
             return false;
         }
         
