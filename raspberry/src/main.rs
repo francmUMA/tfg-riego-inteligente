@@ -209,6 +209,7 @@ fn main() {
                 while actuadores_manager.lock().unwrap().is_empty(){
                     sleep(Duration::from_secs(1));
                 }
+                println!("Gestionando timers");
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
                     if timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuator.get_id()).is_some() {
                         continue;
