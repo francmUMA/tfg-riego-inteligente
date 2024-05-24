@@ -240,6 +240,7 @@ fn main() {
                     tokio::spawn(async move {
                         init_timer(id,tx_clone, duration).await;
                     });
+                    actuator.open();
                 }
                 sleep(Duration::from_secs(30));
             }
