@@ -89,5 +89,5 @@ for actuador in actuadores:
                     else:
                         open(actuador['id'])
     else:
-        pass  
+        continue  
 

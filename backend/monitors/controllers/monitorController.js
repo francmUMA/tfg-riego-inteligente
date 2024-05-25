@@ -8,6 +8,7 @@ import { v1 } from 'uuid';
 import sequelize from 'sequelize';
 import { Op } from 'sequelize';
 import actuadoresModel from '../../actuadores/models/actuadoresModel.js';
+import e from 'cors';
 
 /**
  * 
@@ -608,5 +609,63 @@ export const getDeviceTemperatureValues = async (req, res) => {
         res.status(200).send(values)
     } catch (error) {
         res.status(500).send("Error al obtener los valores")
+    }
+}
+
+/**
+ * @description Obtiene el valor promedio de la temperatura de un área
+ * @param areaId identificador del device
+ * @returns valor promedio de los datos de la temperatura del area
+ */
+export const getAreaMeanTemperature = async (req, res) => {
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (!req.params.areaId) {
+        res.status(400).send("Falta el id del área")
+        return
+    }
+
+    if (!validate(req.params.areaId)) {
+        res.status(400).send("Id de área no válido")
+        return
+    }
+
+    try {
+        // Hay que tomar los sensores pertenecientes a esa zona
+        let sensors = await sensorsModel.findAll({ where: { area: req.params.areaId } })
+        if (sensors === null) {
+            res.status(404).send("Sensores no encontrados")
+            return
+        }
+
+        // Para cada sensor, obtener el último valor de la temperatura
+        let values = []
+        for (let i = 0; i < sensors.length; i++) {
+            let value = await monitorModel.findOne({ where: { sensorCode: sensors[i].id }, order: [['time', 'DESC']] })
+            if (value !== null) {
+                values.push(value)
+            }
+        }
+
+        // Calcular la media
+        let sum = 0
+        for (let i = 0; i < values.length; i++) {
+            sum += values[i]
+        }
+        let mean = sum / values.length
+        res.status(200).send(mean)
+    } catch (error) {
+        res.status(500).send(error.message)
     }
 }
