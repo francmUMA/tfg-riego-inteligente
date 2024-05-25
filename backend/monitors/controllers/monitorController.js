@@ -653,9 +653,11 @@ export const getAreaMeanTemperature = async (req, res) => {
         let values = []
         for (let i = 0; i < sensors.length; i++) {
             let value = await monitorModel.findOne({ where: { 
-                sensorCode: sensors[i].id },
-                type: 0, 
-                order: [['time', 'DESC']] })
+                sensorCode: sensors[i].id,
+                type: 0
+            },
+            order: [['time', 'DESC']] })
+
             if (value !== null) {
                 values.push(value.value)
             }
@@ -713,16 +715,16 @@ export const getAreaMeanHumidity = async (req, res) => {
         // Para cada sensor, obtener el último valor de la temperatura
         let values = []
         for (let i = 0; i < sensors.length; i++) {
-            let value = await monitorModel.findAll({ where: { 
-                sensorCode: sensors[i].id },
-                type: 2,
-                order: [['time', 'DESC']]
+            let value = await monitorModel.findOne({ where: { 
+                sensorCode: sensors[i].id,
+                type: 2 
+            },
+            order: [['time', 'DESC']]
             })
             if (value !== null) {
                 values.push(value.value)
             }
         }
-        console.log(values)
 
         // Calcular la media
         let sum = 0
