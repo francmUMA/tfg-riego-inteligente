@@ -28,9 +28,6 @@ def get_actuadores():
     data = res.json()
     return data
 
-def get_weather_prediction(latitud, longitud):
-    pass
-
 def get_temperature(area):
     try:
         res = requests.get(f'{API_URL}/monitor/temperature/area/mean/{area}', 

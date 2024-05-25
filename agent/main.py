@@ -1,6 +1,6 @@
 import datetime
 from utils.actuadores import *
-from utils.weather import near_rain
+from utils.weather import *
 
 
 actuadores = get_actuadores()
@@ -89,5 +89,5 @@ for actuador in actuadores:
                     else:
                         open(actuador['id'])
     else:
-        continue  
+        continue   
 
