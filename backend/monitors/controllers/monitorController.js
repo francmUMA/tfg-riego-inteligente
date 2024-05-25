@@ -843,7 +843,7 @@ export const getAreaMeanSoilHumidity = async (req, res) => {
         for (let i = 0; i < sensors.length; i++) {
             let value = await monitorModel.findOne({ where: { 
                 sensorCode: sensors[i].id,
-                type: 4 
+                type: 3 
             },
             order: [['time', 'DESC']]
             })

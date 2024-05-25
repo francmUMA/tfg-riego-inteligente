@@ -64,10 +64,36 @@ def get_humidity(area):
         return res.json()['mean']
 
 def get_soil_temperature(area):
-    return 0
+            try:
+                res = requests.get(f'{API_URL}/monitor/soilTemp/area/mean/{area}', 
+                            headers={
+                                'Content-Type': 'application/json',
+                                'Authorization': f'Bearer {token}'
+                            })
+            except requests.exceptions.RequestException as e:
+                print('Error al solicitar la humedad')
+                return 0
+            if res.status_code != 200:
+                print('Error al solicitar la humedad. Code -> ' + str(res.status_code))
+                return 0
+            print(res.json()['mean'])
+            return res.json()['mean']
 
 def get_soil_humidity(area):
-    return 0
+            try:
+                res = requests.get(f'{API_URL}/monitor/soilHum/area/mean/{area}', 
+                            headers={
+                                'Content-Type': 'application/json',
+                                'Authorization': f'Bearer {token}'
+                            })
+            except requests.exceptions.RequestException as e:
+                print('Error al solicitar la humedad')
+                return 0
+            if res.status_code != 200:
+                print('Error al solicitar la humedad. Code -> ' + str(res.status_code))
+                return 0
+            print(res.json()['mean'])
+            return res.json()['mean']
 
 def open(actuador_id):
     print(f'Abriendo actuador {actuador_id}')
