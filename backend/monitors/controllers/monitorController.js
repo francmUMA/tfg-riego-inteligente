@@ -722,6 +722,7 @@ export const getAreaMeanHumidity = async (req, res) => {
                 values.push(value.value)
             }
         }
+        console.log(values)
 
         // Calcular la media
         let sum = 0

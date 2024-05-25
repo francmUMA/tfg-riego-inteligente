@@ -45,10 +45,23 @@ def get_temperature(area):
         print('Error al solicitar la temperatura. Code -> ' + str(res.status_code))
         return 0
     print(res.json()['mean'])
-    return 0
+    return res.json()['mean']
 
 def get_humidity(area):
-    return 0
+        try:
+            res = requests.get(f'{API_URL}/monitor/humidity/area/mean/{area}', 
+                            headers={
+                                'Content-Type': 'application/json',
+                                'Authorization': f'Bearer {token}'
+                            })
+        except requests.exceptions.RequestException as e:
+            print('Error al solicitar la humedad')
+            return 0
+        if res.status_code != 200:
+            print('Error al solicitar la humedad. Code -> ' + str(res.status_code))
+            return 0
+        print(res.json()['mean'])
+        return res.json()['mean']
 
 def get_soil_temperature(area):
     return 0
