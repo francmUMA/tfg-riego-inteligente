@@ -657,12 +657,14 @@ export const getAreaMeanTemperature = async (req, res) => {
                 values.push(value)
             }
         }
+        console.log(values)
 
         // Calcular la media
         let sum = 0
         for (let i = 0; i < values.length; i++) {
             sum += values[i]
         }
+        console.log(sum)
         let mean = sum / values.length
         res.status(200).send({ mean: mean })
     } catch (error) {

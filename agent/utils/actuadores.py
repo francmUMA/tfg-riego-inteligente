@@ -42,9 +42,9 @@ def get_temperature(area):
         print('Error al solicitar la temperatura')
         return 0
     if res.status_code != 200:
-        print('Error al solicitar la temperatura')
+        print('Error al solicitar la temperatura. Code -> ' + str(res.status_code))
         return 0
-    print(res.json())
+    print(res.json()['mean'])
     return 0
 
 def get_humidity(area):
