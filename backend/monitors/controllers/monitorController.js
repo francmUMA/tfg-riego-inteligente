@@ -654,7 +654,7 @@ export const getAreaMeanTemperature = async (req, res) => {
         for (let i = 0; i < sensors.length; i++) {
             let value = await monitorModel.findOne({ where: { sensorCode: sensors[i].id }, order: [['time', 'DESC']] })
             if (value !== null) {
-                values.push(value)
+                values.push(value.value)
             }
         }
         console.log(values)
