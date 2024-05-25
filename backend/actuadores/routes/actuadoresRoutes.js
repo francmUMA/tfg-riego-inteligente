@@ -11,11 +11,13 @@ import {
     updateActuadorStatus, 
     updateActuadorName, 
     getUserActuadores,
+    getAllAutoActuadores,
 } from "../controllers/actuadoresController.js"
 
 const router = express.Router();
 
 router.get("/all", getUserActuadores)
+router.get("/agent/all", getAllAutoActuadores)
 router.get("/:device", getActuadores)
 router.post("/:device", addActuador)
 // router.delete("/flowmeter", deleteActuadorFlowmeter)
