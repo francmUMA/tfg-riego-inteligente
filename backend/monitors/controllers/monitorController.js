@@ -664,7 +664,7 @@ export const getAreaMeanTemperature = async (req, res) => {
             sum += values[i]
         }
         let mean = sum / values.length
-        res.status(200).send(mean)
+        res.status(200).send({ mean: mean })
     } catch (error) {
         res.status(500).send(error.message)
     }

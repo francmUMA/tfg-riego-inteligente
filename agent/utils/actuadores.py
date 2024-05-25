@@ -32,11 +32,15 @@ def get_weather_prediction(latitud, longitud):
     pass
 
 def get_temperature(area):
-    res = requests.get(f'{API_URL}/monitor/temperature/area/mean/{area}', 
-                        headers={
-                            'Content-Type': 'application/json',
-                            'Authorization': f'Bearer {token}'
-                        })
+    try:
+        res = requests.get(f'{API_URL}/monitor/temperature/area/mean/{area}', 
+                            headers={
+                                'Content-Type': 'application/json',
+                                'Authorization': f'Bearer {token}'
+                            })
+    except requests.exceptions.RequestException as e:
+        print('Error al solicitar la temperatura')
+        return 0
     if res.status_code != 200:
         print('Error al solicitar la temperatura')
         return 0
