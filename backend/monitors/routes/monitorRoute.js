@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAreaMeanHumidity, getAreaMeanTemperature, getDeviceTemperatureValues, getSensorLast24hValuesFlow, getSensorLast24hValuesHum, getSensorLast24hValuesSoilHum, getSensorLast24hValuesSoilTemp, getSensorLast24hValuesTemp, getSensorValue, get_values_by_device } from '../controllers/monitorController.js'
+import { getAreaMeanHumidity, getAreaMeanSoilHumidity, getAreaMeanSoilTemp, getAreaMeanTemperature, getDeviceTemperatureValues, getSensorLast24hValuesFlow, getSensorLast24hValuesHum, getSensorLast24hValuesSoilHum, getSensorLast24hValuesSoilTemp, getSensorLast24hValuesTemp, getSensorValue, get_values_by_device } from '../controllers/monitorController.js'
 
 const router = express.Router()
 router.get('/all/:id', get_values_by_device)
@@ -12,5 +12,7 @@ router.get('/sensor/last24/flow/:id', getSensorLast24hValuesFlow)
 router.get('/temperature/all/:deviceId', getDeviceTemperatureValues)
 router.get('/temperature/area/mean/:areaId', getAreaMeanTemperature)
 router.get('/humidity/area/mean/:areaId', getAreaMeanHumidity)
+router.get('/soilTemp/area/mean/:areaId', getAreaMeanSoilTemp)
+router.get('/soilHum/area/mean/:areaId', getAreaMeanSoilHumidity)
 
 export default router
