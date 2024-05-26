@@ -13,12 +13,13 @@ import { Suspense, useEffect, useState } from "react";
 
 import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
-import { FaTemperatureArrowDown, FaTemperatureArrowUp, FaTemperatureQuarter, FaWater } from "react-icons/fa6";
+import { FaTemperatureArrowDown, FaTemperatureArrowUp, FaWater } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
 import { FaFaucetDrip } from "react-icons/fa6";
 import { FaRobot } from "react-icons/fa";
-import { FaRegTrashAlt, FaChartLine } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { IoIosCellular } from "react-icons/io";
+import { PiUmbrellaDuotone } from "react-icons/pi"
 
 import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
@@ -26,6 +27,7 @@ import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
 import { LogInfo } from "@/src/app/ui/dashboard/info/LogInfo";
 import { MdOutlineAddchart } from "react-icons/md";
 import { GiWateringCan } from "react-icons/gi"
+import Checkbox from "@/src/app/ui/Checkbox";
 
 
 export default function Page() {
@@ -739,6 +741,12 @@ export default function Page() {
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <GiWateringCan  size={24} className="w-9 px-2 text-indigo-600"/>
                                                                 </button>
+                                                            </div>
+                                                            <div>
+                                                                <label className="w-full h-full flex justify-start items-center gap-2">
+                                                                    <PiUmbrellaDuotone className="text-indigo-600" size={24}/>
+                                                                    <Checkbox active={false} onChange={console.log("indoor")}/>
+                                                                </label>
                                                             </div>
                                                             <button onClick={() => handleActuadorMode(index)} className="w-16 h-5 flex items-center">
                                                                 {
