@@ -1,7 +1,6 @@
 import actuadoresModel from "../models/actuadoresModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
 import areasModel from "../../areas/models/areasModel.js"
-import sensorModel from "../../sensors/models/sensorsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import { v4, validate } from "uuid"
 import { publish_msg } from "../../mqtt.js"
@@ -851,4 +850,74 @@ export const getAllAutoActuadores = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * @description Cambia el sitio del actuadore, es decir, indoor/outdoor
+ * @param indoor 0/1 0 -> outdoor, 1 -> indoor
+ * @param id del actuador
+ * @returns 200 si todo ha ido bien, 400 si hay algún error en los datos, 404 si no se encuentra el actuador, 500 si hay un error en la base de datos
+ */
+
+export const updateActuadorIndoor = async (req, res) => {
+    //------------------------------------- Validar token ---------------------------------------------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------------------------------------------------------
+    //------------------------------------- Validar datos ---------------------------------------------------------
+    if (req.body.id === undefined || req.body.id === null || req.body.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.body.id)) {
+        res.status(400).send("Invalid actuador")
+        return
+    }
+
+    if (req.body.indoor === undefined || req.body.indoor === null || req.body.indoor > 1 || req.body.indoor < 0) {
+        res.status(400).send("Missing indoor or bad indoor")
+        return
+    }
+    // ------------------------------------ Comprobar si el actuador existe ----------------------------------------
+    let actuador
+    try {
+        actuador = await actuadoresModel.findOne({ where: { id: req.body.id } })
+        if (actuador === null) {
+            res.status(404).send("Actuator not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ----------------------------------- Comprobar que el actuador pertenezca al usuario ---------------------------
+    let device
+    try {
+        device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+    // ------------------------------------ Actualizar Indoor ---------------------------------------------------------
+    try {
+        actuador.indoor = req.body.indoor
+        actuador.save()
+        res.status(200).send("Indoor updated")
+    } catch (error){
+        res.status(500).send(error.message)
+    }
+}
+
 

@@ -37,6 +37,11 @@ export default db.define("Actuadores", {
     },
     activeProgram: {
         type: DataTypes.STRING
-    }
+    },
+    indoor: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0
+    },
 
 })

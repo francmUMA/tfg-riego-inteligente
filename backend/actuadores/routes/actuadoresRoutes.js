@@ -12,6 +12,7 @@ import {
     updateActuadorName, 
     getUserActuadores,
     getAllAutoActuadores,
+    updateActuadorIndoor,
 } from "../controllers/actuadoresController.js"
 
 const router = express.Router();
@@ -28,5 +29,6 @@ router.put("/device", updateActuadorDevice)
 router.put("/position", updateActuadorPosition)
 router.put("/status", updateActuadorStatus)
 router.put("/name", updateActuadorName)
+router.put("/indoor", updateActuadorIndoor)
 
 export default router;
