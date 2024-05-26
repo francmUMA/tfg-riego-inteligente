@@ -8,17 +8,6 @@ from sys import exit
 from utils.actuadores import *
 from utils.weather import *
 
-actuadores = get_actuadores()
-if actuadores is None:
-    print('Error al obtener los actuadores')
-    exit(1)
-
-# Filtrar actuadores que no tienen posición o área asignada
-actuadores = filter(lambda x:
-                    x['Latitud'] is not None and
-                    x['Longitud'] is not None and
-                    x['area'] is not None, actuadores)
-
 # Definición de los valores de comparación
 TEMP_HIGH_THRESHOLD = 30
 TEMP_LOW_THRESHOLD = 10
@@ -39,6 +28,16 @@ HOUR_NORMAL_LOW_THRESHOLD = 9
 current_hour = datetime.datetime.now().hour
 
 while True:
+    actuadores = get_actuadores()
+    if actuadores is None:
+        print('Error al obtener los actuadores')
+        exit(1)
+
+    # Filtrar actuadores que no tienen posición o área asignada
+    actuadores = filter(lambda x:
+                        x['Latitud'] is not None and
+                        x['Longitud'] is not None and
+                        x['area'] is not None, actuadores)
     print('Comprobando actuadores...')
     for actuador in actuadores:
         # Obtener predicción de lluvia
