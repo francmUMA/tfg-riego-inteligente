@@ -105,7 +105,7 @@ pub fn get_esp32_info(id: String, payload: String) -> ESP32info {
     let analog = json_payload["ANALOG"].as_object().unwrap();
     let am3201 = json_payload["AM2301"].as_object().unwrap();
     let mut soil_hum = analog["A1"].as_u64().unwrap_or_else(|| 0) as u32;
-    soil_hum = ((3876 - soil_hum) as f32/(3876-1100) as f32)*100 as u32;
+    soil_hum = (((3876 - soil_hum) as f32/(3876-1100) as f32)*100 as f32) as u32;
     let temp = am3201["Temperature"].as_f64().unwrap_or_else(|| 0.0);
     let hum = am3201["Humidity"].as_f64().unwrap_or_else(|| 0.0);
     let soil_temp = 0;
