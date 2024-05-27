@@ -49,7 +49,7 @@ while True:
         temperature = get_temperature(actuador['area'])
 
         # Obtener humedad promedio del área de cultivo
-        humidity = get_humidity(actuador['area'])
+        # humidity = get_humidity(actuador['area'])
 
         # Obtener temperatura de suelo promedio del área de cultivo
         # soil_temperature = get_soil_temperature(actuador['area'])
@@ -59,6 +59,7 @@ while True:
 
         # Si la predicción del clima indica lluvia, continuar al siguiente actuador
         if near_rain(weather_prediction):
+            close(actuador['id'])
             continue
 
         # Comprobar si la humedad de suelo está por debajo del umbral
@@ -78,7 +79,7 @@ while True:
                     else:
                         open(actuador['id'])
             else:
-                if humidity > HUMIDITY_HIGH_THRESHOLD:
+                if soil_humidity > SOIL_HUMIDITY_HIGH_THRESHOLD:
                     continue
                 else:
                     if temperature > TEMP_HIGH_THRESHOLD:
@@ -96,6 +97,29 @@ while True:
                         else:
                             open(actuador['id'])
         else:
-            continue
+            if soil_humidity > SOIL_HUMIDITY_HIGH_THRESHOLD:
+                close(actuador['id'])
+            else:
+                if soil_humidity < SOIL_HUMIDITY_HIGH_THRESHOLD and soil_humidity > SOIL_HUMIDITY_LOW_THRESHOLD:
+                    if temperature > TEMP_HIGH_THRESHOLD:
+                        if current_hour > HOUR_CRITICAL_LOW_THRESHOLD and current_hour < HOUR_CRITICAL_HIGH_THRESHOLD:
+                            close(actuador['id'])
+                        else:
+                            if current_hour > HOUR_NORMAL_LOW_THRESHOLD and current_hour < HOUR_CRITICAL_LOW_THRESHOLD:
+                                close(actuador['id'])
+                            else:
+                                continue
+                    else:
+                        if current_hour > HOUR_CRITICAL_LOW_THRESHOLD and current_hour < HOUR_CRITICAL_HIGH_THRESHOLD:
+                            close(actuador['id'])
+                        else:
+                            continue
+                else:
+                    if temperature > TEMP_HIGH_THRESHOLD:
+                        if current_hour > HOUR_CRITICAL_LOW_THRESHOLD and current_hour < HOUR_CRITICAL_HIGH_THRESHOLD:
+                            close(actuador['id'])
+                        else:
+                            continue
+                    else:
+                        continue
     sleep(60)
-    

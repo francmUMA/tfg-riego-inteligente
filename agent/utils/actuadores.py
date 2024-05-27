@@ -94,3 +94,6 @@ def get_soil_humidity(area):
 
 def open(actuador_id):
     print(f'Abriendo actuador {actuador_id}')
+
+def close(actuador_id):
+    print(f'Cerrando actuador {actuador_id}')
