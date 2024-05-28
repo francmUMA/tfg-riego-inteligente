@@ -29,7 +29,7 @@ current_hour = datetime.datetime.now().hour
 
 while True:
     actuadores = get_actuadores()
-    if actuadores is None:
+    if actuadores is None or len(actuadores) == 0:
         print('Error al obtener los actuadores')
         exit(1)
 
