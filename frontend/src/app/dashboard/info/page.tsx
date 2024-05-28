@@ -2,7 +2,7 @@
 import { ToastContainer } from "react-toastify";
 import { MdMoreTime } from "react-icons/md"
 import { ElemSelector } from "../../ui/dashboard/info/ElemSelector";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
@@ -23,6 +23,10 @@ export default function Page (){
     const [elem, setElem] = useState(undefined)
     const [type, setType] = useState(undefined)
     const [associate, setAssociate] = useState(false)
+    const [updatePrograms, setUpdatePrograms] = useState(false)
+    const [updateActuador, setUpdateActuador] = useState(false)
+
+    useEffect(() => {}, [elem, type, associate])
 
     const [IsOpenAddProgramDialog, setOpenAddProgramDialog] = useState(false)
     const closeAddProgramDialog = () => setOpenAddProgramDialog(false)
@@ -31,7 +35,7 @@ export default function Page (){
     return (
         <main className="w-full h-full overflow-auto">
             <ToastContainer />
-            <AddProgramDialog open={IsOpenAddProgramDialog} onClose={closeAddProgramDialog}/>
+            <AddProgramDialog setUpdateProgram={setUpdatePrograms} open={IsOpenAddProgramDialog} onClose={closeAddProgramDialog}/>
             <section className="w-full h-full flex flex-col lg:flex-row gap-3">
                 <div id="elems-info" className="w-full h-full flex flex-col gap-y-3 justify-start items-center overflow-y-auto">
                     <div id="selector" className="w-full flex justify-start items-center">
@@ -44,7 +48,7 @@ export default function Page (){
                             {
                                 type == 0 ? <DeviceInfo  device={elem}/>
                                 : type == 1 ? <SensorInfo sensor={elem}/>
-                                : type == 2 ? <ActuadorInfo actuador={elem} />
+                                : type == 2 ? <ActuadorInfo setUpdate={setUpdateActuador} update={updateActuador} actuador={elem} />
                                 : <></>
                             }
                         </Suspense>
@@ -119,7 +123,7 @@ export default function Page (){
                     </div>
                     <div id="programs" className="border w-full h-full shadow-md rounded-md">
                         <Suspense>
-                            <ProgramsInfo setAssociate={setAssociate} associate={associate} elem={elem}/>
+                            <ProgramsInfo setUpdateActuador={setUpdateActuador} updateProgram={updatePrograms} setUpdateProgram={setUpdatePrograms} setAssociate={setAssociate} associate={associate} elem={elem}/>
                         </Suspense>
                     </div>
                     <div id="logs" className="border w-full h-full max-h-[420px] shadow-md rounded-md">

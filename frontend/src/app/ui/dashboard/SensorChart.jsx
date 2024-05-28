@@ -51,7 +51,13 @@ export const SensorChart = props => {
 
     useEffect(() => {
         const token = getCookie('token');
-        fetchSensorData(id, type, token)
+		fetchSensorData(id, type, token)
+		const interval = setInterval(() => {
+			fetchSensorData(id, type, token)
+		}, 5000)
+		return () => {
+			clearInterval(interval)
+		}
     }, [id])
 
 	useEffect(

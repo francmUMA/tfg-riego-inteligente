@@ -6,8 +6,16 @@ import { PiPlantDuotone } from "react-icons/pi"
 import { GiPlantWatering } from "react-icons/gi"
 import { IoTimeOutline } from "react-icons/io5"
 import { getProgramName } from "@/src/app/lib/programUtils";
+import { useEffect } from "react";
 
-export const ActuadorInfo =  ({actuador}) => {
+export const ActuadorInfo =  ({setUpdate, update, actuador}) => {
+
+
+    useEffect(() => {
+        if (update) {
+            setUpdate(false)
+        }
+    }, [update])
 
     return(
         <div className="w-full h-full justify-center items-center grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 overflow-y-auto">

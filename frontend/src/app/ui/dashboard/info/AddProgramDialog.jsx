@@ -3,7 +3,7 @@ import { Dialog, DialogTitle } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { addProgram, timestampToTime } from '@/src/app/lib/programUtils'
 
-export const AddProgramDialog = ({ open, onClose }) => {
+export const AddProgramDialog = ({setUpdateProgram ,open, onClose }) => {
 
     const [emptyName, setEmptyName] = useState(true)
     const [validName, setValidName] = useState(false)
@@ -66,6 +66,7 @@ export const AddProgramDialog = ({ open, onClose }) => {
             })
             if (res) {
                 notify('Programa creado', 'success')
+                setUpdateProgram(true)
                 onClose()
             } else {
                 notify('Error al crear el programa', 'error')

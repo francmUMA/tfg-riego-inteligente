@@ -4,7 +4,7 @@ import { FaRegTrashAlt, FaRegEdit } from "react-icons/fa"
 import { FiClock } from "react-icons/fi"
 import { CiSquarePlus } from "react-icons/ci"
 
-export const ProgramsInfo = ({elem, associate, setAssociate}) => {
+export const ProgramsInfo = ({setUpdateActuador,updateProgram, setUpdateProgram, elem, associate, setAssociate}) => {
 
     const [programs, setPrograms] = useState([])
 
@@ -17,11 +17,13 @@ export const ProgramsInfo = ({elem, associate, setAssociate}) => {
         if (elem !== undefined && elem.activeProgram == null){
             let res = await associateProgram(programs[index].id, elem.id)
             if (res) {
+                setUpdateActuador(true)
                 setAssociate(false)
             }
         } else if (elem !== undefined && elem.activeProgram !== null) {
             let res = await disassociateProgram(elem.id, elem.activeProgram)
             if (res) {
+                setUpdateActuador(true)
                 setAssociate(false)
             }
         }
@@ -37,6 +39,13 @@ export const ProgramsInfo = ({elem, associate, setAssociate}) => {
     useEffect(() => {
         fetchPrograms()
     }, [elem])
+
+    useEffect(() => {
+        if (updateProgram) {
+            fetchPrograms()
+            setUpdateProgram(false)
+        }
+    }, [updateProgram])
     return (
         <main className="w-full h-full flex flex-col items-center">
             <h1 className="w-full h-12 flex justify-center items-center text-lg text-slate-400">
