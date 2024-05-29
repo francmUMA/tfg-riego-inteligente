@@ -7,13 +7,22 @@ import { GiPlantWatering } from "react-icons/gi"
 import { IoTimeOutline } from "react-icons/io5"
 import { getProgramName } from "@/src/app/lib/programUtils";
 import { useEffect } from "react";
+import { getActuadorInfo } from "@/src/app/lib/actuadorUtils";
+import { getCookie } from "cookies-next";
 
-export const ActuadorInfo =  ({setUpdate, update, actuador}) => {
+export const ActuadorInfo =  ({setUpdate, update, actuador, setActuador}) => {
+
+    const fetchActuador = async () => {
+        const token = getCookie('token')
+        let info = await getActuadorInfo(actuador.id, token)
+        if (info != undefined) setActuador(info)
+    }
 
 
     useEffect(() => {
         if (update) {
             setUpdate(false)
+            fetchActuador()
         }
     }, [update])
 

@@ -28,6 +28,7 @@ import { LogInfo } from "@/src/app/ui/dashboard/info/LogInfo";
 import { MdOutlineAddchart } from "react-icons/md";
 import { GiWateringCan } from "react-icons/gi"
 import Checkbox from "@/src/app/ui/Checkbox";
+import { SensorChart } from "@/src/app/ui/dashboard/SensorChart";
 
 
 export default function Page() {
@@ -846,7 +847,7 @@ export default function Page() {
                         <div className="w-full h-full flex flex-col items-center border rounded-md shadow-md">
                             <h1 className="w-full h-12 text-lg text-center text-slate-400">Temperatura</h1>
                             <Suspense>
-                                <ChartComponent className="w-full h-full" id={deviceId}/>
+                                <SensorChart className="w-full h-full" type={5} id={deviceId}/>
                             </Suspense>
                         </div>
                         <div className="w-full h-full flex items-center border shadow-md rounded-md">

@@ -4,13 +4,14 @@ import { FaLink, FaLinkSlash } from "react-icons/fa6"
 import { MdCancel } from "react-icons/md"
 
 
-export const AssociateButton = ({elem, type, setAssocProgram, assocProgram}) => {
+export const AssociateButton = ({setUpdate, elem, type, setAssocProgram, assocProgram}) => {
 
     const unlinkProgram = async () => {
         if (elem !== undefined){
             let res = await disassociateProgram(elem.id, elem.activeProgram)
             if (res) {
                 setAssocProgram(false)
+                setUpdate(true)
             }
         } else {
             notify('error', 'No se pudo desasociar el programa')

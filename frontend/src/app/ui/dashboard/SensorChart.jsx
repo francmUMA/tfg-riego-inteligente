@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getSensorLast24hValuesHum, getSensorLast24hValuesSoilHum, getSensorLast24hValuesSoilTemp, getSensorLast24hValuesTemp } from '../../lib/sensorsUtils';
 import { getCookie } from 'cookies-next';
 import { getSensorLast24hValuesFlow } from '../../lib/actuadorUtils';
+import { getTemperatureValues } from '../../lib/devicesUtils';
 
 export const SensorChart = props => {
 	const {
@@ -33,7 +34,9 @@ export const SensorChart = props => {
 						? await getSensorLast24hValuesSoilHum(id, token)
 						: type == 4
 							? await getSensorLast24hValuesFlow(id, token)
-							: []
+							: type == 5
+								? await getTemperatureValues(id)
+								: []
         if (newData !== undefined) {
             //Ordenar los datos por fecha
             newData = newData.sort((a, b) => {
@@ -46,18 +49,57 @@ export const SensorChart = props => {
 				))
 			)
             setData(newData)
+			return newData
         }
+		return []
     }
+
+	const updateData = async (id,type,lineSeries) => {
+		const token = getCookie('token');
+		let newData = type == 0 
+			? await getSensorLast24hValuesTemp(id, token) 
+			: type == 1 
+				? await getSensorLast24hValuesSoilTemp(id, token)
+				: type == 2
+					? await getSensorLast24hValuesHum(id, token)
+					: type == 3
+						? await getSensorLast24hValuesSoilHum(id, token)
+						: type == 4
+							? await getSensorLast24hValuesFlow(id, token)
+							: type == 5 
+								? await getTemperatureValues(id)
+								: []
+        if (newData !== undefined) {
+            //Ordenar los datos por fecha
+            newData = newData.sort((a, b) => {
+                return a.time - b.time
+            })
+			// Elimina los datos con el mismo timestamp
+			newData = newData.filter((value, index, self) =>
+				index === self.findIndex((t) => (
+					t.time === value.time
+				))
+			)
+			// Elimina los datos que ya estan en la grafica
+			newData = newData.filter((value) => {
+				return data.findIndex((data) => data.time == value.time) == -1
+			})
+			// Si no hay nuevos datos, no hacer nada
+			if (newData.length == 0) return
+			// Si hay nuevos datos, quedarnos con el atributo time y value
+			newData = newData.map((value) => {
+				return { time: value.time, value: value.value }
+			})
+			lineSeries.update({
+				time: newData[newData.length - 1].time,
+				value: newData[newData.length - 1].value
+			})
+		}
+	}
 
     useEffect(() => {
         const token = getCookie('token');
 		fetchSensorData(id, type, token)
-		const interval = setInterval(() => {
-			fetchSensorData(id, type, token)
-		}, 5000)
-		return () => {
-			clearInterval(interval)
-		}
     }, [id])
 
 	useEffect(
@@ -110,8 +152,12 @@ export const SensorChart = props => {
 			});
 
 			newSeries.setData(data);
+			const interval = setInterval(() => {
+				updateData(id,type, newSeries)
+			}, 10000)
 
 			return () => {
+				clearInterval(interval)
 				chart.remove();
 			};
 		},
