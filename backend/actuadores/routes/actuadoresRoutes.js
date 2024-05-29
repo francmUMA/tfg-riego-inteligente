@@ -19,7 +19,7 @@ import {
 const router = express.Router();
 
 router.get("/all", getUserActuadores)
-rou+ter.get("/one/:id", getActuador)
+router.get("/one/:id", getActuador)
 router.get("/agent/all", getAllAutoActuadores)
 router.get("/:device", getActuadores)
 router.post("/:device", addActuador)
