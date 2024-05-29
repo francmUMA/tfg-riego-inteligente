@@ -920,4 +920,54 @@ export const updateActuadorIndoor = async (req, res) => {
     }
 }
 
+/**
+ * @description GET de actuadores por id
+ * @param id del actuador
+ * @returns 200 si todo ha ido bien, 400 si hay algún error en los datos, 404 si no se encuentra el actuador, 500 si hay un error en la base de datos
+ */
+
+export const getActuador = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid actuador")
+        return
+    }
+
+    try {
+        let actuador = await actuadoresModel.findOne({ where: { id: req.params.id } })
+        if (actuador === null) {
+            res.status(404).send("Actuator not found")
+            return
+        }
+
+        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+
+        res.status(200).send(actuador)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
 
