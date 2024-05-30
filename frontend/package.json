@@ -28,6 +28,7 @@
     "react-select": "^5.8.0",
     "react-toastify": "^10.0.5",
     "react-virtuoso": "^4.7.10",
+    "recharts": "^2.12.7",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5",
     "toastify-js": "^1.12.0",

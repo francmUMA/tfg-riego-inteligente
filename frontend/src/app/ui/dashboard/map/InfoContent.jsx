@@ -66,7 +66,7 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensor
     return (
         <div id="main" className="flex flex-col w-full">
             <header id="buttons" className="w-full pt-1 flex flex-row gap-x-2 items-center">
-                <p className="flex text-2xl w-full font-bold justify-center items-center">{elem.name}</p>
+                <p className="flex text-2xl w-full font-bold items-center">{elem.name}</p>
                 <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
                     {
                         type == 2 && 

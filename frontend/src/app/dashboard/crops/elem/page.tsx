@@ -12,7 +12,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { DeleteCropDialog } from "@/src/app/ui/dashboard/crop/DeleteCropDialog";
 import { MdAddLocationAlt } from "react-icons/md";
 import { AddAreaDialog } from "@/src/app/ui/dashboard/crop/AddAreaDialog";
-import SensorsInfo from "@/src/app/ui/dashboard/SensorsInfo";
+import { CropHumBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -148,11 +148,14 @@ export default function Page ({ }) {
             </section>
             <section className="w-full h-full flex flex-row gap-x-2">
                 <div className="w-full h-full border shadow-md rounded-md">
-                    <ActuadoresInfo areas={cropAreas}/>
-                </div>   
-                <div className="h-full w-1/2 border rounded-md shadow-md">
-                    
+                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
                 </div>
+                <div className="w-full h-full border shadow-md rounded-md">
+                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                </div>   
+                <div className="w-full h-full border shadow-md rounded-md">
+                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                </div>      
             </section>
         </main>
     )

@@ -1,3 +1,5 @@
+import { getCookie } from "cookies-next"
+
 export interface Area {
     id: string,
     name: string,
@@ -79,6 +81,23 @@ export async function getArea(id:string, token: string) {
         }
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas/" + id, options)
+    if (request.status === 200) {
+        return request.json()
+    } else {
+        return undefined
+    }
+}
+
+export async function getMeanHumArea(id: string) {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/humidity/area/mean/" + id, options)
     if (request.status === 200) {
         return request.json()
     } else {

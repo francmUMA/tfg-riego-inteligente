@@ -36,9 +36,9 @@ export const AssociateButton = ({setUpdate, elem, type, setAssocProgram, assocPr
             }
             {
                 assocProgram == false
-                    ? elem !== undefined && elem.activeProgram == null
-                        ? 'Asociar Programa'
-                        : 'Desasociar Programa'
+                    ? elem !== undefined && elem.activeProgram != null
+                        ? 'Desasociar Programa'
+                        : 'Asociar Programa'
                     : 'Cancelar'
             }
             
