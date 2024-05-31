@@ -4,7 +4,7 @@ import ActuadoresInfo from "@/src/app/ui/dashboard/ActuadoresInfo";
 import { RotateIconUpdateButton } from "@/src/app/ui/dashboard/RotateIconUpdateButton";
 import { CropMap } from "@/src/app/ui/dashboard/crop/CropMap";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { PiPlant,PiPolygon } from "react-icons/pi"
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { HiMiniCpuChip } from "react-icons/hi2";
@@ -12,7 +12,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { DeleteCropDialog } from "@/src/app/ui/dashboard/crop/DeleteCropDialog";
 import { MdAddLocationAlt } from "react-icons/md";
 import { AddAreaDialog } from "@/src/app/ui/dashboard/crop/AddAreaDialog";
-import { CropHumBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
+import { CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -93,7 +93,7 @@ export default function Page ({ }) {
     }, [])
 
     return (
-        <main className="w-full h-full flex flex-col gap-y-2">
+        <main className="w-full h-full flex flex-col gap-y-2 overflow-scroll">
             {DeleteCropDialog(IsOpenDeleteCropDialog,closeDeleteCropDialog, deleteCropFunction)}
             {AddAreaDialog(IsOpenAddAreaDialog,closeAddAreaDialog, crop !== undefined && crop.id)}
             <header className="flex flex-row w-full gap-x-2">
@@ -118,9 +118,11 @@ export default function Page ({ }) {
                     <MdAddLocationAlt size={24} className="w-6"/>
                 </button>
             </header>
-            <section className="w-full h-full flex flex-row gap-x-2">
+            <section className="w-full h-full min-h-96 flex flex-row gap-x-2">
                 <div id="map" className="w-full h-full rounded-md shadow-md overflow-hidden">
-                    <CropMap areas={cropAreas} crop={crop} devices={cropDevices} actuadores={cropActuadores} sensors={cropSensors}/>
+                    <Suspense>
+                        <CropMap areas={cropAreas} crop={crop} devices={cropDevices} actuadores={cropActuadores} sensors={cropSensors}/>
+                    </Suspense>
                 </div>
                 <div id="info" className="w-1/5 flex flex-col justify-center gap-y-2">
                     <div className="w-full h-20 border shadow-md flex flex-row hover:border-indigo-600 transition ease-in-out duration-150 gap-x-4 items-center justify-center rounded-md">
@@ -146,16 +148,27 @@ export default function Page ({ }) {
                     </div>
                 </div>
             </section>
-            <section className="w-full h-full flex flex-row gap-x-2">
+            <section className="w-full h-full min-h-80 flex flex-row gap-x-2">
                 <div className="w-full h-full border shadow-md rounded-md">
                     <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
                 </div>
                 <div className="w-full h-full border shadow-md rounded-md">
-                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                    <CropTempBarChart crop={crop !== undefined ? crop.id : undefined}/>
                 </div>   
                 <div className="w-full h-full border shadow-md rounded-md">
-                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                    <CropSoilHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                </div> 
+                <div className="w-full h-full border shadow-md rounded-md">
+                    <CropSoilTempBarChart crop={crop !== undefined ? crop.id : undefined}/>
                 </div>      
+            </section>
+            <section id="actuadores-caudal" className="w-full h-full flex justify-center items-center flex-row gap-x-2">
+                <div className="w-full h-full border shadow-md rounded-md">
+                    <ActuadoresInfo showStatus={false} areas={cropAreas} filter={"status-on"}/>
+                </div>
+                <div className="w-2/3 h-full min-h-80 border shadow-md rounded-md">
+                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                </div>
             </section>
         </main>
     )

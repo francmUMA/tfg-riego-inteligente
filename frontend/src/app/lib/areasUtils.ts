@@ -104,3 +104,54 @@ export async function getMeanHumArea(id: string) {
         return undefined
     }
 }
+
+export async function getMeanTempArea(id: string) {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/temperature/area/mean/" + id, options)
+    if (request.status === 200) {
+        return request.json()
+    } else {
+        return undefined
+    }
+}
+
+export async function getMeanSoilTempArea(id: string) {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/soilTemp/area/mean/" + id, options)
+    if (request.status === 200) {
+        return request.json()
+    } else {
+        return undefined
+    }
+}
+
+export async function getMeanSoilHumArea(id: string) {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/soilHum/area/mean/" + id, options)
+    if (request.status === 200) {
+        return request.json()
+    } else {
+        return undefined
+    }
+}

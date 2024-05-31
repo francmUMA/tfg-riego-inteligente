@@ -3,7 +3,7 @@ import React, { PureComponent, use } from 'react';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Curve } from 'recharts';
 import { Suspense, useEffect, useState } from 'react';
 import { getCropAreas } from '@/src/app/lib/cropUtils';
-import { getMeanHumArea } from '@/src/app/lib/areasUtils';
+import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea } from '@/src/app/lib/areasUtils';
 
 // const data = [
 //   {
@@ -51,8 +51,8 @@ export class CustomBarChart extends PureComponent{
           data={data}
           margin={{
             top: 5,
-            right: 30,
-            left: 20,
+            right: 10,
+            left: 10,
             bottom: 5,
           }}
         >
@@ -68,15 +68,13 @@ export class CustomBarChart extends PureComponent{
 }
 
 export const CropHumBarChart = ({crop}) => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState([])
 
-    const fetchHumidityAreaInfo = async () => {
+    const fetchInfo = async () => {
         const areas = await getCropAreas(crop)
-        console.log(areas)
         let resData = []
         for (let area of areas){
             let meanHum = await getMeanHumArea(area.id)
-            console.log(meanHum)
             if (meanHum !== undefined && meanHum.mean != null){
                 resData.push({name: area.name, value: meanHum.mean})
             } else {
@@ -87,27 +85,133 @@ export const CropHumBarChart = ({crop}) => {
     }
 
     useEffect(() => {
-        if (crop !== undefined)
-            fetchHumidityAreaInfo()
-    }, [crop]);
-
-    useEffect(() => {
-        setInterval(() => {
-            if (crop !== undefined)
-                fetchHumidityAreaInfo()
-        }, 3000)
-
-        return () => {
-            clearInterval()
-        }
-    }, [])
+      if (crop !== undefined){
+          fetchInfo(crop)
+          const interval = setInterval(() => {
+            fetchInfo(crop)
+          }, 3000)
+          return () => clearInterval(interval)
+      }
+  }, [crop])
 
     return (
-        <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
-            <h1 className="w-full flex font-medium text-lg justify-center items-center">Humedad del cultivo</h1>
+        <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
+            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
             <Suspense>
                 <CustomBarChart data={data}/>
             </Suspense>
         </div>
     )
 }
+
+export const CropTempBarChart = ({crop}) => {
+  const [data, setData] = useState([])
+
+  const fetchInfo = async () => {
+      const areas = await getCropAreas(crop)
+      let resData = []
+      for (let area of areas){
+          let mean = await getMeanTempArea(area.id)
+          if (mean !== undefined && mean.mean != null){
+              resData.push({name: area.name, value: mean.mean})
+          } else {
+              resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+          }
+      }
+      setData(resData)
+  }
+
+  useEffect(() => {
+    if (crop !== undefined){
+        fetchInfo(crop)
+        const interval = setInterval(() => {
+          fetchInfo(crop)
+        }, 3000)
+        return () => clearInterval(interval)
+    }
+}, [crop])
+
+  return (
+      <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
+          <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Temperatura (ºC)</h1>
+          <Suspense>
+              <CustomBarChart data={data}/>
+          </Suspense>
+      </div>
+  )
+}
+
+export const CropSoilTempBarChart = ({crop}) => {
+  const [data, setData] = useState([])
+
+  const fetchInfo = async () => {
+      const areas = await getCropAreas(crop)
+      let resData = []
+      for (let area of areas){
+          let mean = await getMeanSoilTempArea(area.id)
+          if (mean !== undefined && mean.mean != null){
+              resData.push({name: area.name, value: mean.mean})
+          } else {
+              resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+          }
+      }
+      setData(resData)
+  }
+
+  useEffect(() => {
+    if (crop !== undefined){
+        fetchInfo(crop)
+        const interval = setInterval(() => {
+          fetchInfo(crop)
+        }, 3000)
+        return () => clearInterval(interval)
+    }
+}, [crop])
+
+  return (
+      <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
+          <h1 className="w-full flex font-medium  justify-center items-center text-slate-400">Temperatura de suelo (ºC)</h1>
+          <Suspense>
+              <CustomBarChart data={data}/>
+          </Suspense>
+      </div>
+  )
+}
+
+export const CropSoilHumBarChart = ({crop}) => {
+  const [data, setData] = useState([])
+
+  const fetchInfo = async () => {
+      const areas = await getCropAreas(crop)
+      let resData = []
+      for (let area of areas){
+          let mean = await getMeanSoilHumArea(area.id)
+          if (mean !== undefined && mean.mean != null){
+              resData.push({name: area.name, value: mean.mean})
+          } else {
+              resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+          }
+      }
+      setData(resData)
+  }
+
+  useEffect(() => {
+      if (crop !== undefined){
+          fetchInfo(crop)
+          const interval = setInterval(() => {
+            fetchInfo(crop)
+          }, 3000)
+          return () => clearInterval(interval)
+      }
+  }, [crop])
+
+  return (
+      <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
+          <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad de suelo (%RH)</h1>
+          <Suspense>
+              <CustomBarChart data={data}/>
+          </Suspense>
+      </div>
+  )
+}
+

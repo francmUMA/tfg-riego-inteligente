@@ -7,30 +7,32 @@ import { IoWaterOutline } from "react-icons/io5";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { FaRobot } from "react-icons/fa";
 
-const ActuadorInfo = ({ actuador, devices }) => {
+const ActuadorInfo = ({ actuador, devices, showStatus }) => {
     return(
         <main className="w-full h-full px-2 items-center flex flex-row gap-x-10 justify-center">
             <p className="font-semibold w-full flex flex-row gap-x-3 items-center justify-start">
-                <FaFaucetDrip size={18} className="text-indigo-600"/>
+                <FaFaucetDrip size={20} className="text-indigo-600"/>
                 {actuador.name}
             </p>
-            <p className="flex flex-row w-full justify-start items-center gap-x-2">
-                <IoWaterOutline size={18} className="text-indigo-600"/>
-                {actuador.status ? "Regando" : "Parado"}
-            </p> 
-            <p className="flex flex-row  w-full justify-start items-center gap-x-3">
-                <HiMiniCpuChip size={18} className="text-indigo-600"/>
-                {devices.find((device) => device.id == actuador.device)?.name}
-            </p> 
+            {
+                showStatus && <p className="flex flex-row w-full justify-start items-center gap-x-2">
+                    <IoWaterOutline size={20} className="text-indigo-600"/>
+                    {actuador.status ? "Regando" : "Parado"}
+                </p> 
+            } 
+            <div className="flex flex-row w-full justify-start items-center gap-x-3">
+                <HiMiniCpuChip size={20} className="text-indigo-600"/>
+                <p className="w-full h-full flex justify-start items-center">{devices[0].name}</p>
+            </div> 
             <p className="flex flex-row w-full justify-start items-center gap-x-3">
-                <FaRobot size={18} className="text-indigo-600"/>
+                <FaRobot size={20} className="text-indigo-600"/>
                 {actuador.mode ? "Automático" : "Manual"}
             </p>
         </main>
     )
 }
 
-export default function ActuadoresInfo({ areas }) {
+export default function ActuadoresInfo({ areas, filter, showStatus }) {
     const [actuadores, setActuadores] = useState([])
     const [devices, setDevices] = useState([])
 
@@ -48,7 +50,14 @@ export default function ActuadoresInfo({ areas }) {
             let deviceActuadores = await getActuadores(device.id, token)
             resActuadores.push(...deviceActuadores)
         }
-        setActuadores(resActuadores)
+        if (filter === undefined) {
+            setActuadores(resActuadores)
+            return   
+        }
+        if (filter == "status-on"){
+            setActuadores(resActuadores.filter((actuador) => actuador.status == true))
+            return
+        }
     }
 
     useEffect(() => {
@@ -85,7 +94,7 @@ export default function ActuadoresInfo({ areas }) {
                                 <div id={actuador.id} className={`w-full h-12 flex ${
                                     index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
                                     } flex-row items-center justify-center`}>
-                                    <ActuadorInfo actuador={actuador} devices={devices} />
+                                    <ActuadorInfo actuador={actuador} devices={devices} showStatus={showStatus}/>
                                 </div>
                             )
                         }
