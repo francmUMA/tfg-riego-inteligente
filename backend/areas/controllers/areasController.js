@@ -292,3 +292,58 @@ export const get_area = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * @description Actualiza el modo cubierto de un area
+ * @param id Identificador del area
+ * @param indoor Modo cubierto
+ * @returns 200 si se actualiza correctamente, 500 si hay un error
+ */
+
+export const updateIndoorArea = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // ----------------------------------------------------------
+    // ------------------- Validar datos -------------------------
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if(!validate(req.params.id)){
+        res.status(400).send("Invalid area")
+        return
+    }
+
+    if (req.body.indoor === undefined || req.body.indoor === null) {
+        res.status(400).send("Missing indoor or bad indoor")
+        return
+    }
+    if (req.body.indoor < 0 && req.body.indoor > 1) {
+        res.status(400).send("Invalid indoor")
+        return
+    }
+    let area = await areasModel.findOne({ where: { user: nif, id: req.params.id } })
+    if (area === null) {
+        res.status(404).send("Area not found")
+        return
+    }
+    // ------------------- Actualizar modo cubierto ---------------------------
+    try {
+        await areasModel.update({ indoor: req.body.indoor }, { where: { user: nif, id: req.params.id } })
+        res.status(200).send("Indoor updated")
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}

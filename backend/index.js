@@ -13,8 +13,8 @@ import cropRoutes from "./crops/routes/cropRoutes.js"
 import logRoutes from "./logs/routes/logRoutes.js"
 import programRoutes from "./programs/routes/programRoutes.js"
 import schedule from "node-schedule"
-import { checkDevices } from "./devices/controllers/deviceController.js";
 import { Worker } from 'worker_threads'
+import { updateActuadoresAccumulatedFlow } from "./actuadores/controllers/actuadoresController.js";
 
 const app = express();
 
@@ -57,7 +57,7 @@ app.listen(app.get("port"), () => {
 });
 
 // Ping a los dispositivos cada 5 minutos
-schedule.scheduleJob('* * * * *', checkDevices)
+schedule.scheduleJob('* * * * *', updateActuadoresAccumulatedFlow)
 
 
 

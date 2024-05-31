@@ -38,10 +38,9 @@ export default db.define("Actuadores", {
     activeProgram: {
         type: DataTypes.STRING
     },
-    indoor: {
-        type: DataTypes.TINYINT,
+    acumulatedFlow: {
+        type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0
-    },
-
+    }
 })

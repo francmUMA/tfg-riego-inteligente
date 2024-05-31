@@ -12,7 +12,6 @@ import {
     updateActuadorName, 
     getUserActuadores,
     getAllAutoActuadores,
-    updateActuadorIndoor,
     getActuador,
 } from "../controllers/actuadoresController.js"
 
@@ -31,6 +30,5 @@ router.put("/device", updateActuadorDevice)
 router.put("/position", updateActuadorPosition)
 router.put("/status", updateActuadorStatus)
 router.put("/name", updateActuadorName)
-router.put("/indoor", updateActuadorIndoor)
 
 export default router;
