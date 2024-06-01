@@ -6,6 +6,7 @@ import { v4, validate } from "uuid"
 import { publish_msg } from "../../mqtt.js"
 import { sendCommandToWorker } from "../../index.js"
 import monitorModel from "../../monitors/models/monitorModel.js"
+import { Op } from "sequelize"
 
 /**
  * 
