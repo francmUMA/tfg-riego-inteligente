@@ -107,6 +107,7 @@ impl Actuador {
     }
 
     pub fn change_pin(&mut self, pin: u8) -> bool {
+        self.clean_pin();
         self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_output());
         self.flowmeter = Some(Gpio::new().unwrap().get(pin + 1).unwrap().into_input());
         true
