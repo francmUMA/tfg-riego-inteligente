@@ -101,11 +101,6 @@ export default function Page() {
         const token = getCookie("token");
         // Eliminar el dispositivo
         let res = await deleteDevice(deviceId as string, token as string)
-        if (res) {
-            alert("Dispositivo eliminado correctamente")
-        } else {
-            alert("Error al eliminar el dispositivo")
-        }
 
         // Cerrar el diálogo
         closeDeleteDeviceDialog();

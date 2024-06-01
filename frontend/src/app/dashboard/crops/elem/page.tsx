@@ -148,6 +148,16 @@ export default function Page ({ }) {
                     </div>
                 </div>
             </section>
+            
+            <section id="actuadores-caudal" className="w-full h-full flex justify-center items-center flex-row gap-x-2">
+                <div className="w-full h-full border shadow-md rounded-md">
+                    <h1 className="w-full h-10 flex font-medium justify-center items-center text-slate-400">Actuadores regando</h1>
+                    <ActuadoresInfo showStatus={false} areas={cropAreas} filter={"status-on"}/>
+                </div>
+                <div className="w-2/3 h-full min-h-80 border shadow-md rounded-md">
+                    <ActuadorAccumulatedFlowBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                </div>
+            </section>
             <section className="w-full h-full min-h-80 flex flex-row gap-x-2">
                 <div className="w-full h-full border shadow-md rounded-md">
                     <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
@@ -161,14 +171,6 @@ export default function Page ({ }) {
                 <div className="w-full h-full border shadow-md rounded-md">
                     <CropSoilTempBarChart crop={crop !== undefined ? crop.id : undefined}/>
                 </div>      
-            </section>
-            <section id="actuadores-caudal" className="w-full h-full flex justify-center items-center flex-row gap-x-2">
-                <div className="w-full h-full border shadow-md rounded-md">
-                    <ActuadoresInfo showStatus={false} areas={cropAreas} filter={"status-on"}/>
-                </div>
-                <div className="w-2/3 h-full min-h-80 border shadow-md rounded-md">
-                    <ActuadorAccumulatedFlowBarChart crop={crop !== undefined ? crop.id : undefined}/>
-                </div>
             </section>
         </main>
     )

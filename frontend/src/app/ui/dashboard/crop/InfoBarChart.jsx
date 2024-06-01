@@ -2,7 +2,7 @@
 import React, { PureComponent } from 'react';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Curve } from 'recharts';
 import { Suspense, useEffect, useState } from 'react';
-import { getCropActuadores, getCropAreas } from '@/src/app/lib/cropUtils';
+import { getCropActuadores, getCropAreas, getCrops } from '@/src/app/lib/cropUtils';
 import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea } from '@/src/app/lib/areasUtils';
 
 export class CustomBarChart extends PureComponent{
@@ -36,14 +36,29 @@ export const CropHumBarChart = ({crop}) => {
     const [data, setData] = useState([])
 
     const fetchInfo = async () => {
-        const areas = await getCropAreas(crop)
         let resData = []
-        for (let area of areas){
-            let meanHum = await getMeanHumArea(area.id)
-            if (meanHum !== undefined && meanHum.mean != null){
-                resData.push({name: area.name, value: meanHum.mean})
-            } else {
-                resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+        if (crop == "all"){
+            const crops = await getCrops()
+            for (let crop of crops){
+                const areas = await getCropAreas(crop.id)
+                for (let area of areas){
+                    let mean = await getMeanHumArea(area.id)
+                    if (mean !== undefined && mean.mean != null){
+                        resData.push({name: area.name, value: mean.mean})
+                    } else {
+                        resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+                    }
+                }
+            }
+        } else {
+            const areas = await getCropAreas(crop)
+            for (let area of areas){
+                let mean = await getMeanHumArea(area.id)
+                if (mean !== undefined && mean.mean != null){
+                    resData.push({name: area.name, value: mean.mean})
+                } else {
+                    resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+                }
             }
         }
         setData(resData)
@@ -73,18 +88,33 @@ export const CropTempBarChart = ({crop}) => {
   const [data, setData] = useState([])
 
   const fetchInfo = async () => {
-      const areas = await getCropAreas(crop)
-      let resData = []
-      for (let area of areas){
-          let mean = await getMeanTempArea(area.id)
-          if (mean !== undefined && mean.mean != null){
-              resData.push({name: area.name, value: mean.mean})
-          } else {
-              resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
-          }
-      }
-      setData(resData)
-  }
+    let resData = []
+    if (crop == "all"){
+        const crops = await getCrops()
+        for (let crop of crops){
+            const areas = await getCropAreas(crop.id)
+            for (let area of areas){
+                let mean = await getMeanTempArea(area.id)
+                if (mean !== undefined && mean.mean != null){
+                    resData.push({name: area.name, value: mean.mean})
+                } else {
+                    resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+                }
+            }
+        }
+    } else {
+        const areas = await getCropAreas(crop)
+        for (let area of areas){
+            let mean = await getMeanTempArea(area.id)
+            if (mean !== undefined && mean.mean != null){
+                resData.push({name: area.name, value: mean.mean})
+            } else {
+                resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+            }
+        }
+    }
+    setData(resData)
+}
 
   useEffect(() => {
     if (crop !== undefined){
@@ -110,18 +140,33 @@ export const CropSoilTempBarChart = ({crop}) => {
   const [data, setData] = useState([])
 
   const fetchInfo = async () => {
-      const areas = await getCropAreas(crop)
-      let resData = []
-      for (let area of areas){
-          let mean = await getMeanSoilTempArea(area.id)
-          if (mean !== undefined && mean.mean != null){
-              resData.push({name: area.name, value: mean.mean})
-          } else {
-              resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
-          }
-      }
-      setData(resData)
-  }
+    let resData = []
+    if (crop == "all"){
+        const crops = await getCrops()
+        for (let crop of crops){
+            const areas = await getCropAreas(crop.id)
+            for (let area of areas){
+                let mean = await getMeanSoilTempArea(area.id)
+                if (mean !== undefined && mean.mean != null){
+                    resData.push({name: area.name, value: mean.mean})
+                } else {
+                    resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+                }
+            }
+        }
+    } else {
+        const areas = await getCropAreas(crop)
+        for (let area of areas){
+            let mean = await getMeanSoilTempArea(area.id)
+            if (mean !== undefined && mean.mean != null){
+                resData.push({name: area.name, value: mean.mean})
+            } else {
+                resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+            }
+        }
+    }
+    setData(resData)
+}
 
   useEffect(() => {
     if (crop !== undefined){
@@ -147,18 +192,33 @@ export const CropSoilHumBarChart = ({crop}) => {
   const [data, setData] = useState([])
 
   const fetchInfo = async () => {
-      const areas = await getCropAreas(crop)
-      let resData = []
-      for (let area of areas){
-          let mean = await getMeanSoilHumArea(area.id)
-          if (mean !== undefined && mean.mean != null){
-              resData.push({name: area.name, value: mean.mean})
-          } else {
-              resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
-          }
-      }
-      setData(resData)
-  }
+    let resData = []
+    if (crop == "all"){
+        const crops = await getCrops()
+        for (let crop of crops){
+            const areas = await getCropAreas(crop.id)
+            for (let area of areas){
+                let mean = await getMeanSoilHumArea(area.id)
+                if (mean !== undefined && mean.mean != null){
+                    resData.push({name: area.name, value: mean.mean})
+                } else {
+                    resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+                }
+            }
+        }
+    } else {
+        const areas = await getCropAreas(crop)
+        for (let area of areas){
+            let mean = await getMeanSoilHumArea(area.id)
+            if (mean !== undefined && mean.mean != null){
+                resData.push({name: area.name, value: mean.mean})
+            } else {
+                resData.push({name: area.name == null ? "Indefinido" : area.name, value: 0})
+            }
+        }
+    }
+    setData(resData)
+}
 
   useEffect(() => {
       if (crop !== undefined){

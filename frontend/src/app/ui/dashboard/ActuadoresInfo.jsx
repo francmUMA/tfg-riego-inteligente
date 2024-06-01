@@ -72,9 +72,6 @@ export default function ActuadoresInfo({ areas, filter, showStatus }) {
 
     return(
         <div className="w-full h-full flex flex-col justify-center items-center">
-            <header className="h-1/5 w-full flex items-center justify-center">
-                <h1 className="font-bold text-lg">Actuadores</h1>
-            </header>
             <main id="actuadores-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
                 {
                     actuadores.length > 0 && areas === undefined

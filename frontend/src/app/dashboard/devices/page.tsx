@@ -9,8 +9,6 @@ import { SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } 
 import { Dialog, DialogTitle } from "@mui/material"
 import { Area, getAreas } from "../../lib/areasUtils"
 import { IoIosAddCircleOutline } from "react-icons/io"
-import { ToastContainer } from "react-toastify"
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
     const [devices, setDevices] = useState([])
@@ -226,7 +224,6 @@ export default function Page() {
 
     return (
         <main className="h-full">
-            <ToastContainer />
             <div className="w-full h-full flex flex-col gap-y-2">
                 {AddDeviceDialog()}
                 <div className="">

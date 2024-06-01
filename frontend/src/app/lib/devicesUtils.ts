@@ -13,6 +13,7 @@ export async function getDevices (token: string) {
         let response = await request.json()
         return response
     } else {
+        notify("Error al obtener dispositivos", "error")
         return []
     }
 }
@@ -80,8 +81,10 @@ export async function updateDevicePosition (id: string, lat: number, lon: number
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/position", options)
     if (response.status == 200) {
+        notify("Posición actualizada", "success")
         return true
     } else {
+        notify("Error al actualizar posición", "error")
         return false
     }
 }
@@ -98,8 +101,10 @@ export async function updateDeviceIp (id: string, ip: string, token: string) {
 
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/ip", options)
     if (response.status == 200) {
+        notify("IP actualizada", "success")
         return true
     } else {
+        notify("Error al actualizar IP", "error")
         return false
     }
 }
@@ -113,8 +118,10 @@ export async function testDeviceConnection (id: string, token: string) {
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/test/" + id, options)
     if (response.status == 200) {
+        notify("Conexión exitosa", "success")
         return true
     } else {
+        notify("Error al conectar con dispositivo", "error")
         return false
     }
 }
@@ -131,24 +138,8 @@ export async function getDeviceInfo (id: string, token: string) {
         let data = await response.json()
         return data
     } else {
+        notify("Error al obtener información del dispositivo", "error")
         return undefined
-    }
-}
-
-export async function getDeviceCpuTemperature (id: string, token: string) {
-    let options = {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    }
-
-    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/cpu_temp/all/" + id, options)
-    if (response.status == 200) {
-        let data = await response.json()
-        return data
-    } else {
-        return []
     }
 }
 
