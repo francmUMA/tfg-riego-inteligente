@@ -926,8 +926,8 @@ export const updateActuadoresAccumulatedFlow = async () => {
             for (let j = 0; j < flowData.length; j++) {
                 lastMinuteFlow += flowData[j].value
             }
-            console.log(lastMinuteFlow)
-            actuadores[i].acumulatedFlow += (lastMinuteFlow / flowData.length)
+            let meanFlow = lastMinuteFlow / flowData.length
+            actuadores[i].acumulatedFlow += meanFlow
             actuadores[i].save()
         }
     } catch (error) {
