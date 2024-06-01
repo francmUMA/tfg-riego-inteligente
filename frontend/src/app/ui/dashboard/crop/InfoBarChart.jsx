@@ -1,44 +1,9 @@
 
-import React, { PureComponent, use } from 'react';
+import React, { PureComponent } from 'react';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Curve } from 'recharts';
 import { Suspense, useEffect, useState } from 'react';
-import { getCropAreas } from '@/src/app/lib/cropUtils';
+import { getCropActuadores, getCropAreas } from '@/src/app/lib/cropUtils';
 import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea } from '@/src/app/lib/areasUtils';
-
-// const data = [
-//   {
-//     name: 'Page A',
-//     uv: 30,
-
-//   },
-//   {
-//     name: 'Page B',
-//     uv: 50,
-
-//   },
-//   {
-//     name: 'Page C',
-//     uv: 60,
-
-//   },
-//   {
-//     name: 'Page D',
-//     uv: 10,
-//   },
-//   {
-//     name: 'Page E',
-//     uv: 90,
-//   },
-//   {
-//     name: 'Page F',
-//     uv: 25,
-
-//   },
-//   {
-//     name: 'Page G',
-//     uv: 90,
-//   },
-// ];
 
 export class CustomBarChart extends PureComponent{
 
@@ -86,9 +51,9 @@ export const CropHumBarChart = ({crop}) => {
 
     useEffect(() => {
       if (crop !== undefined){
-          fetchInfo(crop)
+          fetchInfo()
           const interval = setInterval(() => {
-            fetchInfo(crop)
+            fetchInfo()
           }, 3000)
           return () => clearInterval(interval)
       }
@@ -123,9 +88,9 @@ export const CropTempBarChart = ({crop}) => {
 
   useEffect(() => {
     if (crop !== undefined){
-        fetchInfo(crop)
+        fetchInfo()
         const interval = setInterval(() => {
-          fetchInfo(crop)
+          fetchInfo()
         }, 3000)
         return () => clearInterval(interval)
     }
@@ -160,9 +125,9 @@ export const CropSoilTempBarChart = ({crop}) => {
 
   useEffect(() => {
     if (crop !== undefined){
-        fetchInfo(crop)
+        fetchInfo()
         const interval = setInterval(() => {
-          fetchInfo(crop)
+          fetchInfo()
         }, 3000)
         return () => clearInterval(interval)
     }
@@ -197,9 +162,9 @@ export const CropSoilHumBarChart = ({crop}) => {
 
   useEffect(() => {
       if (crop !== undefined){
-          fetchInfo(crop)
+          fetchInfo()
           const interval = setInterval(() => {
-            fetchInfo(crop)
+            fetchInfo()
           }, 3000)
           return () => clearInterval(interval)
       }
@@ -214,4 +179,36 @@ export const CropSoilHumBarChart = ({crop}) => {
       </div>
   )
 }
+
+export const ActuadorAccumulatedFlowBarChart = ({crop}) => {
+    const [data, setData] = useState([])
+  
+    const fetchInfo = async () => {
+        let resData = []
+        let actuadores = await getCropActuadores(crop)
+        for (let actuador of actuadores){
+            resData.push({name: actuador.name, value: actuador.acumulatedFlow})
+        }
+        setData(resData)
+    }
+  
+    useEffect(() => {
+        if (crop !== undefined){
+            fetchInfo()
+            const interval = setInterval(() => {
+              fetchInfo()
+            }, 3000)
+            return () => clearInterval(interval)
+        }
+    }, [crop])
+  
+    return (
+        <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
+            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Cuadal Acumulador (L/min)</h1>
+            <Suspense>
+                <CustomBarChart data={data}/>
+            </Suspense>
+        </div>
+    )
+  }
 

@@ -1,4 +1,5 @@
 import { getCookie } from "cookies-next"
+import { getCropAreas } from "./cropUtils"
 
 export interface Actuador {
     id: string,
@@ -214,4 +215,5 @@ export const getActuadorInfo = async (id: string, token: string) => {
         return undefined
     }
 }
+
 

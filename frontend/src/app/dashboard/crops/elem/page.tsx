@@ -12,7 +12,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { DeleteCropDialog } from "@/src/app/ui/dashboard/crop/DeleteCropDialog";
 import { MdAddLocationAlt } from "react-icons/md";
 import { AddAreaDialog } from "@/src/app/ui/dashboard/crop/AddAreaDialog";
-import { CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
+import { ActuadorAccumulatedFlowBarChart, CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -167,7 +167,7 @@ export default function Page ({ }) {
                     <ActuadoresInfo showStatus={false} areas={cropAreas} filter={"status-on"}/>
                 </div>
                 <div className="w-2/3 h-full min-h-80 border shadow-md rounded-md">
-                    <CropHumBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                    <ActuadorAccumulatedFlowBarChart crop={crop !== undefined ? crop.id : undefined}/>
                 </div>
             </section>
         </main>
