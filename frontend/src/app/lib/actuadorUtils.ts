@@ -1,5 +1,6 @@
 import { getCookie } from "cookies-next"
 import { getCropAreas } from "./cropUtils"
+import { notify } from "./notify"
 
 export interface Actuador {
     id: string,
@@ -110,6 +111,7 @@ export async function updateActuadorPin(id: string, pin: number, token: string) 
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/actuadores/pin", options)
     if (request.status === 200) {
+        notify("Pin actualizado", "success")
         return true
     } else {
         return false

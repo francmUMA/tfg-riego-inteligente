@@ -6,19 +6,18 @@ import { FaRegAddressCard } from "react-icons/fa6"
 import { PiPlantDuotone } from "react-icons/pi"
 
 export const NormalInfo = ({Icon, info, description}) => {
-
     return(
-        <main className="w-full min-h-20 border flex flex-row gap-x-3 items-center justify-center shadow-md rounded-md">
+        <div className="w-full min-h-20 border flex flex-row gap-x-3 items-center justify-center shadow-md rounded-md">
             <Icon size={32} className="text-indigo-600"/>
             <div className="flex flex-col">
                 <p className="text-sm text-slate-400">{description}</p>
                 <p>{info}</p> 
             </div>
-        </main>
+        </div>
     )
 }
 
-const Connect = ({connect}) => {
+export const Connect = ({connect}) => {
     return(
         <main className="w-full min-h-20 border flex flex-row gap-x-3 items-center justify-center shadow-md rounded-md">
             <FaWifi size={32}  className="text-indigo-600"/>

@@ -5,11 +5,9 @@ import { useEffect } from "react"
 import { checkToken } from "../lib/token"
 import ClimaInfo from "../ui/dashboard/ClimaInfo"
 import DevicesInfo from "../ui/dashboard/DevicesInfo"
-import ActuadoresInfo from "../ui/dashboard/ActuadoresInfo"
 import SensorsInfo from "../ui/dashboard/SensorsInfo"
 import {SensorChart} from "../ui/dashboard/SensorChart"
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 import { notify } from "../lib/notify"
 import { CustomTable } from "../ui/dashboard/Table"
 
@@ -35,7 +33,6 @@ export default function Page() {
 
     return (
         <main className="h-full">
-            <ToastContainer />
             <div className="flex flex-col gap-3 h-full w-full">
                 <section className="w-full h-full flex flex-row gap-x-3 justify-center items-center">
                     <div id="devices-info" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">

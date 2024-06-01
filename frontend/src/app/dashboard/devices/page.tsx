@@ -2,10 +2,10 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { getDevices, checkIP, createDevice, deleteDevice, updateDeviceIp, testDeviceConnection, updateDeviceArea } from "../../lib/devicesUtils"
+import { getDevices, checkIP, createDevice } from "../../lib/devicesUtils"
 import { getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
-import { EllipsisVerticalIcon, SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
+import { SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } from "@heroicons/react/24/outline"
 import { Dialog, DialogTitle } from "@mui/material"
 import { Area, getAreas } from "../../lib/areasUtils"
 import { IoIosAddCircleOutline } from "react-icons/io"
@@ -37,16 +37,6 @@ export default function Page() {
         fetchDevices(token as string)
     }, [router])
 
-    const handleDeviceInfoButton = (device_index: any) => {
-        setShowDevicesInfo(showDevicesInfo.map((show, index) => {
-            console.log(device_index + " " + show)
-            if (index == device_index) {
-                return !show
-            }
-            else return show
-        })
-        )
-    }
 
     const DeviceInfo = (device: any) => {
         return (
@@ -193,17 +183,6 @@ export default function Page() {
         )
     }
 
-    const manageButton = (id: string) => {
-        return (
-            <div className="w-full h-full p-2 gap-4 flex flex-col justify-center items-center">
-                <button onClick={() => openUpdateAreaDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Ajustar posición</button>
-                <button onClick={() => openUpdateIpDialog(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Modificar IP</button>
-                <button onClick={() => testConnectionButton(id)} className="w-full h-full border bg-white text-gray-400 hover:bg-gray-50 rounded-md"> Test de conexion </button>
-                <button className="w-full h-full bg-red-200 border border-red-300 text-red-600 hover:bg-red-300 rounded-md"
-                    onClick={() => deleteDeviceButton(id)}> Eliminar dispositivo </button>
-            </div>
-        )
-    }
 
     const createDeviceButton = async () => {
         setEmptyName(true)
@@ -219,84 +198,7 @@ export default function Page() {
         }
     }
 
-    const deleteDeviceButton = async (id: string) => {
-        const token = getCookie("token")
-        let res = await deleteDevice(id, token as string)
-        if (res) {
-            fetchDevices(token as string)
-        } 
-    }
-    // ----------------------------- Update IP -----------------------------------------------------
-    const [newIp, setNewIp] = useState("")
-    const [validNewIp, setValidNewIp] = useState(false)
-    const [emptyNewIp, setEmptyNewIp] = useState(true)
-    const [IsOpenUpdateIpDialog, setIsOpenUpdateIpDialog] = useState(false)
 
-    const handleNewIP = (e: { target: { value: string } }) => {
-        if (e.target.value === '') {
-            setEmptyNewIp(true)
-            setValidNewIp(false)
-        } else {
-            setEmptyNewIp(false)
-            let check = checkIP(e.target.value as string)
-            if (check) {
-                setValidNewIp(true)
-                setNewIp(e.target.value)
-            } else {
-                setValidNewIp(false)
-            }
-        }
-    }
-
-    const openUpdateIpDialog = (id: string) => {
-        setIsOpenUpdateIpDialog(true)
-        setCurrentId(id)
-    }
-
-    const closeUpdateIpDialog = () => {
-        setIsOpenUpdateIpDialog(false)
-    }
-
-    const updateIpButton = async (id: string, ip: string) => {
-        setEmptyNewIp(true)
-        setValidNewIp(false)
-        const token = getCookie("token")
-        let res = await updateDeviceIp(id, ip, token as string)
-        if (res) {
-            alert("Dirección IP actualizada correctamente")
-        } else {
-            alert("No se ha podido actualizar el dispositivo")
-        }
-        closeUpdateIpDialog()
-    }
-
-    const UpdateIpDialog = () => {
-        return (
-            <Dialog open={IsOpenUpdateIpDialog} onClose={closeUpdateIpDialog}>
-                <DialogTitle className="w-full h-full border-b">Añade la información del dispositivo</DialogTitle>
-                <div className={`p-5 w-full h-full col-span-2 flex justify-center ${
-                    IsOpenUpdateIpDialog ? "flex flex-col gap-5 justify-center items-center" : "hidden"
-                    }`}>
-                    <div className="w-full h-full flex flex-col">
-                        <label className="font-medium">Nueva dirección IP</label>
-                        <input name="id" type="text" onChange={handleNewIP} onBlur={handleNewIP} placeholder="Nueva dirección IP" required
-                                    className={`transition easy-in-out duration-200
-                                    w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600
-                                    shadow-sm rounded-lg ${
-                                        emptyNewIp
-                                        ? "border-[#d6d3d1]"
-                                        : validNewIp
-                                            ? "border-green-500 text-[#22c55e] bg-gray-500/5"
-                                            : "border-red-500 text-red-500 bg-gray-500/5"
-                        }`}/>
-                    </div>
-                    <button onClick={() => updateIpButton(currentId, newIp)} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">Actualizar Dispositivo</button>
-                </div>
-            </Dialog>
-        )
-    }
-
-    // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
     const [rotation, setRotation] = useState(180)
     const updateDevicesButton = async () => {
@@ -312,19 +214,6 @@ export default function Page() {
         setRotation(rotation == 180 ? -180 : 180);
     }
 
-    //----------------------------------------------------------------------------------------------
-    // ----------------------------------- Test de Conexion Boton ----------------------------------
-    const testConnectionButton = async (id: string) => {
-        const token = getCookie("token")
-        let res = await testDeviceConnection(id, token as string)
-        if (res) {
-            alert("El dispositivo está conectado")
-            fetchDevices(token as string)
-        } else {
-            alert("El dispositivo no está conectado")
-        }
-    }
-    //----------------------------------------------------------------------------------------------
     // ----------------------------------- Boton para añadir un area -------------------------------
     const [areas, setAreas] = useState<[Area]>([{id: "", name: "", user: "", color: ""}])
 
@@ -334,76 +223,12 @@ export default function Page() {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // ------------------- Update Device Position -------------------
-    const [newArea, setNewArea] = useState(areas[0] === undefined ? "" : areas[0].id)
-    const [IsOpenUpdateAreaDialog, setIsOpenUpdateAreaDialog] = useState(false)
-    const [currentId, setCurrentId] = useState("")
-
-    const handleUpdateArea = async () => {
-        const token = getCookie("token");
-        let res = await updateDeviceArea(currentId, newArea, token as string)
-        if (res) {
-            alert("Zona actualizada correctamente")
-            let newDevices = await getDevices(token as string)
-            setDevices(newDevices)
-            closeUpdateAreaDialog()
-        } else {
-            alert("No se ha podido actualizar la zona")
-        }
-    }
-
-    const handleSelectNewArea = (e: any) => {
-        setNewArea(e.target.value)
-    }
-
-    const closeUpdateAreaDialog = async () => {
-        setIsOpenUpdateAreaDialog(false)
-        setNewArea(areas[0].id)
-    }
-
-    const openUpdateAreaDialog = (index: string) => {
-        setCurrentId(index)
-        setIsOpenUpdateAreaDialog(true)
-    }
-
-    const UpdateDeviceAreaDialog = () => {
-        return (
-            <Dialog open={IsOpenUpdateAreaDialog} onClose={closeUpdateAreaDialog}>
-                <DialogTitle className="w-full h-full border">Modifica la zona del sensor</DialogTitle>
-                <div className="flex flex-col justify-center items-center p-4 gap-4">
-                    <div className="w-full h-full">
-                        <label className="font-medium">Elige una zona</label>
-                    </div>
-                    <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                        <select className="w-full h-10" onChange={handleSelectNewArea}>
-                            {
-                                areas.map((area, index) => {
-                                    return (
-                                        <option key={index} value={area.id}>{area.name}</option>
-                                    )
-                                })
-                            }
-                        </select>
-                        <button onClick={handleUpdateArea} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                            <p>Actualizar Zona</p>
-                        </button>
-                    </div>
-                </div>
-            </Dialog>
-        )
-    }
-
-    // ---------------------------------------------------------------------------------------------
-
-    // ---------------------------------------------------------------------------------------------
 
     return (
         <main className="h-full">
             <ToastContainer />
             <div className="w-full h-full flex flex-col gap-y-2">
                 {AddDeviceDialog()}
-                {UpdateDeviceAreaDialog()}
-                {UpdateIpDialog()}
                 <div className="">
                     <div className="flex gap-3 justify-end flex-grow">
                         <button 
@@ -438,16 +263,11 @@ export default function Page() {
                                         href={showDevicesInfo[index] ? "/dashboard/devices/elem?id=" + devices.id : "#"}
                                         className=""
                                     >
-                                        {showDevicesInfo[index] ? DeviceInfo(devices) : manageButton(devices.id)}
+                                        {DeviceInfo(devices)}
                                     </Link>
                                 </div>
-                                <div className="w-full h-14 flex flex-row bg-white border-t">
-                                    <h1 className="w-full h-full flex px-4 font-medium text-lg justify-start items-center">{devices.name}</h1>
-                                    <button
-                                        onClick={() => handleDeviceInfoButton(index)}
-                                        className="h-full flex justify-end items-center px-4 border-l rounded-md hover:bg-gray-100 transition ease-in-out duration-150">
-                                        <EllipsisVerticalIcon className="w-8" />
-                                    </button>
+                                <div className="w-full h-14 bg-white border-t">
+                                    <h1 className="w-full h-full flex px-4 text-lg justify-center items-center">{devices.name}</h1>
                                 </div>
                             </div>
                             

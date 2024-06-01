@@ -204,7 +204,7 @@ export const ActuadorAccumulatedFlowBarChart = ({crop}) => {
   
     return (
         <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
-            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Cuadal Acumulador (L/min)</h1>
+            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Caudal Acumulado (L/min)</h1>
             <Suspense>
                 <CustomBarChart data={data}/>
             </Suspense>

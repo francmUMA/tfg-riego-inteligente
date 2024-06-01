@@ -1,5 +1,4 @@
 'use client'
-import { ToastContainer } from "react-toastify";
 import { MdMoreTime } from "react-icons/md"
 import { ElemSelector } from "../../ui/dashboard/info/ElemSelector";
 import { Suspense, useEffect, useState } from "react";
@@ -11,7 +10,6 @@ import { SensorChart } from "../../ui/dashboard/SensorChart";
 import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
-import 'react-toastify/dist/ReactToastify.css';
 import { ProgramsInfo } from "../../ui/dashboard/info/ProgramsInfo";
 import { AssociateButton } from "../../ui/dashboard/info/AssociateButton";
 
@@ -33,7 +31,6 @@ export default function Page (){
     
     return (
         <main className="w-full h-full overflow-auto">
-            <ToastContainer />
             <AddProgramDialog setUpdateProgram={setUpdatePrograms} open={IsOpenAddProgramDialog} onClose={closeAddProgramDialog}/>
             <section className="w-full h-full flex flex-col lg:flex-row gap-3">
                 <div id="elems-info" className="w-full h-full flex flex-col gap-y-3 justify-start items-center overflow-y-auto">

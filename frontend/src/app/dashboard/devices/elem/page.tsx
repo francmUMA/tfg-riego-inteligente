@@ -1,8 +1,7 @@
 'use client'
-import { deleteDevice, getDeviceCpuTemperature, getDeviceInfo } from "@/src/app/lib/devicesUtils";
+import { deleteDevice, getDeviceInfo } from "@/src/app/lib/devicesUtils";
 import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors } from "@/src/app/lib/sensorsUtils";
 import { checkToken } from "@/src/app/lib/token";
-import { ChartComponent } from "@/src/app/ui/dashboard/devicesCharts";
 import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
 
 import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
@@ -643,7 +642,7 @@ export default function Page() {
                     </div>
                 </div>
                 <div id="datos" className="w-full h-full flex flex-col gap-3">
-                    <div id="info-general" className="w-full h-96 flex flex-row gap-3 items-center md:justify-center overflow-x-auto">
+                    <div id="info-general" className="w-full flex flex-row gap-3 items-center md:justify-center">
                         <div className="w-50 h-20 flex flex-row gap-4 px-5 items-center border shadow-md rounded-md">
                             <WifiIcon className="w-8 text-indigo-600"></WifiIcon>
                             <div className="flex flex-col justify-center">
