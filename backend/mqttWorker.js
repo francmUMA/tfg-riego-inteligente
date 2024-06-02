@@ -226,6 +226,7 @@ if (!isMainThread){
             let sensor = await sensorsModel.findOne({where: {id: message.toString()}})
             if (sensor != null){
                 sensor.available = 1
+                sensor.save()
                 return
             }
             console.log("Sensor descubierto -> " + message.toString())
