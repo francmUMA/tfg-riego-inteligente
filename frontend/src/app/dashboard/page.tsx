@@ -6,11 +6,10 @@ import { checkToken } from "../lib/token"
 import ClimaInfo from "../ui/dashboard/ClimaInfo"
 import DevicesInfo from "../ui/dashboard/DevicesInfo"
 import SensorsInfo from "../ui/dashboard/SensorsInfo"
-import {SensorChart} from "../ui/dashboard/SensorChart"
-
 import { notify } from "../lib/notify"
 import { CustomTable } from "../ui/dashboard/Table"
 import { CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "../ui/dashboard/crop/InfoBarChart"
+import ActuadoresInfo from "../ui/dashboard/ActuadoresInfo"
 
 
 export default function Page() {
@@ -45,7 +44,7 @@ export default function Page() {
                 </section>
                 <section id="actuadores-sensores" className="h-full w-full flex flex-row gap-x-3 justify-center items-center">
                     <div id="actuadores-info" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
-                        <CustomTable />
+                        <ActuadoresInfo areas={undefined} filter={undefined} showStatus={true}/>
                     </div>
                     <div id="clima-imfo" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
                         <SensorsInfo />

@@ -6,12 +6,12 @@ import { DeviceInfo } from "../../ui/dashboard/info/DeviceInfo";
 import { ActuadorInfo } from "../../ui/dashboard/info/ActuadorInfo";
 import { SensorInfo } from "../../ui/dashboard/info/SensorInfo";
 import { SensorChart } from "../../ui/dashboard/SensorChart";
-// import { RotateIconUpdateButton } from "../../ui/dashboard/RotateIconUpdateButton";
 import { ElemMap } from "../../ui/dashboard/info/ElemMap";
 import { LogInfo } from "../../ui/dashboard/info/LogInfo";
 import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
 import { ProgramsInfo } from "../../ui/dashboard/info/ProgramsInfo";
 import { AssociateButton } from "../../ui/dashboard/info/AssociateButton";
+import CircularIndeterminate from "../../ui/dashboard/info/CircularFallback";
 
 
 
@@ -40,7 +40,7 @@ export default function Page (){
                         </Suspense>
                     </div>
                     <div id="info" className="w-full">
-                        <Suspense>
+                        <Suspense fallback={<CircularIndeterminate />}>
                             {
                                 type == 0 ? <DeviceInfo  device={elem}/>
                                 : type == 1 ? <SensorInfo sensor={elem}/>

@@ -1,4 +1,4 @@
-import { NormalInfo, getCropName } from "./DeviceInfo";
+import { NormalInfo, getCropName, Connect } from "./DeviceInfo";
 import { TbDeviceWatchStats2 } from "react-icons/tb"
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { PiPlantDuotone } from "react-icons/pi"
@@ -17,6 +17,7 @@ export const SensorInfo =  ({sensor}) => {
             <NormalInfo description={"Cultivo"} Icon={PiPlantDuotone} info={
                 sensor !== undefined ? getCropName(sensor.area) : "Sin cultivo"
             } />
+            <Connect connect={sensor.available} />
         </div>
     )
 }

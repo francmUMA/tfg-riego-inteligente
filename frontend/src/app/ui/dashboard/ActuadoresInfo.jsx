@@ -15,10 +15,12 @@ const ActuadorInfo = ({ actuador, devices, showStatus }) => {
                 {actuador.name}
             </p>
             {
-                showStatus && <p className="flex flex-row w-full justify-start items-center gap-x-2">
-                    <IoWaterOutline size={20} className="text-indigo-600"/>
-                    {actuador.status ? "Regando" : "Parado"}
-                </p> 
+                showStatus 
+                    ?   <p className="flex flex-row w-full justify-start items-center gap-x-2">
+                            <IoWaterOutline size={20} className="text-indigo-600"/>
+                            {actuador.status ? "Regando" : "Parado"}
+                        </p>
+                    : <></>
             } 
             <div className="flex flex-row w-full justify-start items-center gap-x-3">
                 <HiMiniCpuChip size={20} className="text-indigo-600"/>

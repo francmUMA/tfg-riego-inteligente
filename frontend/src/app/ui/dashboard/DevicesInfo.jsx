@@ -46,8 +46,8 @@ export default function DevicesInfo({  }) {
 
     return(
         <div className="w-full h-full flex flex-col justify-center items-center">
-            <header className="h-1/5 w-full flex items-center justify-center">
-                <h1 className="font-bold text-lg">Dispositivos</h1>
+            <header className="h-1/6 w-full flex items-center justify-center">
+                <h1 className="text-slate-400">Dispositivos</h1>
             </header>
             <main id="devices-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
                 {
