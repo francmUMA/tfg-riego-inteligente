@@ -60,7 +60,7 @@ app.listen(app.get("port"), () => {
 
 schedule.scheduleJob('* * * * *', updateActuadoresAccumulatedFlow)
 schedule.scheduleJob('* * * * *', checkDevices)
-schedule.scheduleJob('* * * * *', checkSensors)
+setInterval(checkSensors, 58000)
 
 
 
