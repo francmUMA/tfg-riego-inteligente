@@ -15,6 +15,8 @@ import programRoutes from "./programs/routes/programRoutes.js"
 import schedule from "node-schedule"
 import { Worker } from 'worker_threads'
 import { updateActuadoresAccumulatedFlow } from "./actuadores/controllers/actuadoresController.js";
+import { checkDevices } from "./devices/controllers/deviceController.js";
+import { checkSensors } from "./sensors/controllers/sensorsController.js";
 
 const app = express();
 
@@ -56,8 +58,9 @@ app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);
 });
 
-// Ping a los dispositivos cada 5 minutos
 schedule.scheduleJob('* * * * *', updateActuadoresAccumulatedFlow)
+schedule.scheduleJob('* * * * *', checkDevices)
+schedule.scheduleJob('* * * * *', checkSensors)
 
 
 

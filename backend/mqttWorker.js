@@ -23,7 +23,8 @@ const registerSensor = async (sensorId) => {
         await sensorsModel.create({ 
             id: sensorId, 
             user: "00000000A",
-            name: "Unreg-" + sensorId.substring(0, 4)
+            name: "Unreg-" + sensorId.substring(0, 4),
+            available: 1,
         })
         return true
     } catch (error) {
@@ -224,6 +225,7 @@ if (!isMainThread){
             // Comprobar si el dispositivo de lectura ya existe
             let sensor = await sensorsModel.findOne({where: {id: message.toString()}})
             if (sensor != null){
+                sensor.available = 1
                 return
             }
             console.log("Sensor descubierto -> " + message.toString())

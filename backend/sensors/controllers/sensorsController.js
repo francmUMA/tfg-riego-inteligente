@@ -835,3 +835,16 @@ export const getSensor = async (req, res) => {
     }
 }
 
+export const checkSensors = async () => {
+    console.log("Checking sensors...")
+    let sensors = await sensorsModel.findAll()
+    for (let sensor of sensors) {
+        if (device.user != "00000000A") {
+            sensor.available = 0
+            sensor.save()
+        }
+    }
+
+    return true
+}
+
