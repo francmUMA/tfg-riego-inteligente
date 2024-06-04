@@ -4,6 +4,8 @@ import { TiWeatherSunny, TiWeatherNight, TiWeatherPartlySunny, TiWeatherShower }
 import { CiTempHigh } from "react-icons/ci"
 import { WiHumidity } from "react-icons/wi"
 import { PiCloudRainDuotone } from "react-icons/pi"
+import { Suspense } from "react"
+import CircularIndeterminate from "./info/CircularFallback"
 
 const WeatherIcon = ({weatherText, size}) => {
     return(
@@ -48,7 +50,7 @@ const ForecastInfo = ({weather}) => {
                 <p className="flex justify-center items-center">
                     <CiTempHigh size={23}/> {weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt(startIndex / 24)].hour[startIndex % 24].temp_c}
                 </p>
-                <p className="w-full w-full flex gap-x-1 items-center justify-center">
+                <p className="w-full. flex gap-x-1 items-center justify-center">
                     <PiCloudRainDuotone size={17} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt(startIndex / 24)].hour[startIndex % 24].chance_of_rain} %
                 </p>
             </div>
@@ -62,7 +64,7 @@ const ForecastInfo = ({weather}) => {
                 <p className="flex justify-center items-center">
                     <CiTempHigh size={23}/> {weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 1)/ 24)].hour[(startIndex + 1) % 24].temp_c}
                 </p>
-                <p className="w-full w-full flex gap-x-1 items-center justify-center">
+                <p className="w-full flex gap-x-1 items-center justify-center">
                     <PiCloudRainDuotone size={17} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 1)/ 24)].hour[(startIndex + 1) % 24].chance_of_rain} %
                 </p>
             </div>
@@ -76,7 +78,7 @@ const ForecastInfo = ({weather}) => {
                 <p className="flex justify-center items-center">
                     <CiTempHigh size={23}/> {weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 2)/ 24)].hour[(startIndex + 2) % 24].temp_c}
                 </p>
-                <p className="w-full w-full flex gap-x-1 items-center justify-center">
+                <p className="w-full flex gap-x-1 items-center justify-center">
                     <PiCloudRainDuotone size={17} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 2)/ 24)].hour[(startIndex + 2) % 24].chance_of_rain} %
                 </p>
             </div>
@@ -117,7 +119,6 @@ export default function ClimaInfo({  }) {
 
     const fetchWeather = async () => {
         let data = await getWeather()
-        console.log(data)
         if (data !== undefined) {
             setWeather(data)
         }
@@ -129,32 +130,35 @@ export default function ClimaInfo({  }) {
 
     return (
         <div className="w-full h-full flex flex-col text-white gap-y-3">
-            <section id="actual" className="w-full bg-indigo-500 rounded-md shadow-md h-full flex flex-row items-center justify-center p-3">
-                <div className="flex flex-col w-full justify-center items-center">
-                    <p className="w-full h-11 flex items-center justify-center text-[50px] font-bold"> 
-                        {weather !== undefined && weather.current !== undefined && weather.current.temp_c} ºC
-                    </p>
-                    <p className="text-slate-100">{weather !== undefined && weather.location !== undefined && weather.location.name + ", " + weather.location.country}</p>
-                </div>
-                <div className="w-full flex justify-center items-center">
-                    <WeatherIcon size={100} weatherText={weather !== undefined && weather.current !== undefined && weather.current.condition.text} />
-                </div>
-                <div className="w-full flex flex-col items-center justify-center">
-                    <p className="w-full text-xl flex items-center justify-center"> 
-                        <CiTempHigh size={23}/>{weather !== undefined && weather.current !== undefined && weather.current.feelslike_c} ºC
-                    </p>
-                    <p className="w-full w-full text-xl flex items-center justify-center"> 
-                        <WiHumidity size={23} />{weather !== undefined && weather.current !== undefined && weather.current.humidity} %
-                    </p>
-                    <p className="w-full w-full text-xl flex items-center justify-center">
-                        <PiCloudRainDuotone size={23} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[0].day.daily_chance_of_rain} %
-                    </p>
-                </div>
-                
-            </section>
-            <section className="w-full h-full bg-indigo-600 rounded-md shadow-md">
-                <ForecastInfo weather={weather}/>
-            </section> 
+            <Suspense fallback={<CircularIndeterminate/>}>
+                <section id="actual" className="w-full bg-indigo-500 rounded-md shadow-md h-full flex flex-row items-center justify-center p-3">
+                    <div className="flex flex-col w-full justify-center items-center">
+                        <p className="w-full h-11 flex items-center justify-center text-[50px] font-bold"> 
+                            {weather !== undefined && weather.current !== undefined && weather.current.temp_c} ºC
+                        </p>
+                        <p className="text-slate-100">{weather !== undefined && weather.location !== undefined && weather.location.name + ", " + weather.location.country}</p>
+                    </div>
+                    <div className="w-full flex justify-center items-center">
+                        <WeatherIcon size={100} weatherText={weather !== undefined && weather.current !== undefined && weather.current.condition.text} />
+                    </div>
+                    <div className="w-full flex flex-col items-center justify-center">
+                        <p className="w-full text-xl flex items-center justify-center"> 
+                            <CiTempHigh size={23}/>{weather !== undefined && weather.current !== undefined && weather.current.feelslike_c} ºC
+                        </p>
+                        <p className="w-full text-xl flex items-center justify-center"> 
+                            <WiHumidity size={23} />{weather !== undefined && weather.current !== undefined && weather.current.humidity} %
+                        </p>
+                        <p className="w-full text-xl flex items-center justify-center">
+                            <PiCloudRainDuotone size={23} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[0].day.daily_chance_of_rain} %
+                        </p>
+                    </div>
+                </section>
+            </Suspense>
+            <Suspense fallback={<CircularIndeterminate/>}>
+                <section className="w-full h-full bg-indigo-600 rounded-md shadow-md">
+                    <ForecastInfo weather={weather}/>
+                </section> 
+            </Suspense>
         </div>
     )
 }

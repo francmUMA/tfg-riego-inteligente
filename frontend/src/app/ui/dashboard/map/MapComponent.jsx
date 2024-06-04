@@ -11,12 +11,13 @@ import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtil
 import { deleteArea, getAreas } from '@/src/app/lib/areasUtils.ts';
 import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt, MdDone } from "react-icons/md";
 import { HiMiniCpuChip } from "react-icons/hi2";
-import { IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
-import { FaTemperatureQuarter, FaFaucetDrip } from "react-icons/fa6";
+import { FaFaucetDrip } from "react-icons/fa6";
 import InfoContent from './InfoContent.jsx';
 import { FaRegTrashAlt } from "react-icons/fa";
 import { ColorPicker } from './ColorPicker.jsx';
+import { Suspense } from 'react';
+import CircularIndeterminate from '../info/CircularFallback.jsx';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -552,214 +553,216 @@ const App = () => {
       {PlaceMarkerDialog()}
       {PlacePolygonDialog()}
       {displayMap && <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
-        <Map id='map' 
-          onClick={(e) => {
-            if (editMode && addMarkerMode && elemType !== undefined && elemId !== undefined && elemType >= 0 && elemType < 3) {
-              if (elemType == 0){
-                handlePlaceDeviceMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
-              } else if (elemType == 1){
-                handlePlaceSensorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
-              } else {
-                handlePlaceActuadorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
-              }
-            } else if (editMode && placePolygon && selectedArea !== undefined) {
-              handlePlacePolygonButton(selectedArea, e.detail.latLng.lat, e.detail.latLng.lng)
-            }
-            setAddMarkerMode(false)
-            setSelectedMarker(undefined)
-            setClickedArea(undefined)
-            setPlacePolygon(false)
-          }}
-         mapId={"880d1a58ffae37c1"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: centerLat, lng: centerLng}}>
-          {devices.map((device, index) => (
-            device.Latitud && device.Longitud &&
-            <div key={index}>
-              <Marker
-                key={device.id}
-                onClick={() => setSelectedMarker(index)}
-                icon={"/chip.svg"}
-                position={{lat: device.Latitud, lng: device.Longitud}}
-                draggable={editMode || (selectedMarker == index && editOneMarker == true)}
-                onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
-              >
-              </Marker>
-              { selectedMarker !== undefined && selectedMarker == index &&
-                <InfoWindow
-                  onCloseClick={() => setSelectedMarker(undefined)}
-                  position={{lat: device.Latitud + 0.00045, lng: device.Longitud}}>
-                    <InfoContent 
-                      elem={device} 
-                      area={areas.find((area) => area.id == device.area)}
-                      type={0}
-                      setEdit={setEditOneMarker}
-                      edit={editOneMarker}  
-                      setElems={setDevices}
-                      setActuadores={setActuadores}
-                      setSensors={setSensors}
-                    />
-                </InfoWindow>
-              }
-            </div>
-          ))}
-          {sensors.map((sensor, index) => (
-            sensor.Latitud && sensor.Longitud &&
-            <div key={devices.length + index}>
-              <Marker
-                clickable
-                onClick={() => setSelectedMarker(devices.length + index)}
-                key={sensor.id}
-                icon={"/humidity-percentage.svg"}
-                position={{lat: sensor.Latitud, lng: sensor.Longitud}}
-                draggable={editMode || (selectedMarker == (devices.length + index) && editOneMarker == true)}
-                onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
-                title={sensor.id}
-              >
-              </Marker>
-              { selectedMarker !== undefined && selectedMarker == (devices.length + index) &&
-                <InfoWindow
-                  onCloseClick={() => setSelectedMarker(undefined)}
-                  position={{lat: sensor.Latitud + 0.0001, lng: sensor.Longitud}}>
-                    {InfoContent({
-                      elem: sensor, 
-                      type: 1, 
-                      sensors: sensors,
-                      area: areas.find((area) => area.id == sensor.area), 
-                      setElems: setSensors, 
-                      setEdit: setEditOneMarker, 
-                      edit: editOneMarker,
-                      deviceName: devices.find((device) => device.id == sensor.device)?.name, 
-                      actuadores: actuadores}) }
-                </InfoWindow>
-              }
-            </div>
-          ))}
-          {actuadores.map((actuador, index) => (
-            actuador.Latitud && actuador.Longitud &&
-            <div key={devices.length + sensors.length + index}>
-              <Marker
-              clickable
-              onClick={() => setSelectedMarker(devices.length + sensors.length + index)}
-              key={actuador.id}
-              icon={"/faucet.svg"}
-              position={{lat: actuador.Latitud, lng: actuador.Longitud}}
-              draggable={editMode || (selectedMarker == (devices.length + sensors.length + index) && editOneMarker == true)}
-              onDragEnd={(e) => handleDragActuadorMarker(e, actuador.id)}
-              >
-              </Marker>
-              { selectedMarker !== undefined && selectedMarker == (devices.length + sensors.length + index) &&
-                <InfoWindow
-                  onCloseClick={() => setSelectedMarker(undefined)}
-                  position={{lat: actuador.Latitud + 0.00045, lng: actuador.Longitud}}>
-                    <InfoContent 
-                      elem={actuador} 
-                      actuadores={actuadores}
-                      area={areas.find((area) => area.id == actuador.area)}
-                      type={2}
-                      deviceName={devices.find((device) => device.id == actuador.device)?.name}
-                      setEdit={setEditOneMarker}
-                      edit={editOneMarker}  
-                      setElems={setActuadores}
-                    />
-                </InfoWindow>
-              }
-            </div>
-            
-          ))}
-          <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
-            <div id='add-marker-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button className={`${
-                !editMode && 'hidden' 
-              }
-              w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
-              rounded-md shadow-md`}
-              onClick={() => openPlaceMarkerDialog()}
-              >
-                <MdAddLocationAlt size={30} className='w-9'></MdAddLocationAlt>
-              </button>
-            </div>
-            <div id='add-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={openPlacePolygonDialog} 
-              className={
-                `${!editMode && 'hidden'} w-full h-full flex justify-center items-center bg-gray-50 
-                hover:bg-gray-200 rounded-md shadow-md`
-              }>
-                <MdOutlineAddLocation size={30} className='w-9'></MdOutlineAddLocation>
-              </button>
-            </div>
-            <div id='edit-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
-              <button onClick={handlePressEditButton} 
-              className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
-              rounded-md shadow-md'>
-                {
-                  editMode  
-                  ? <MdOutlineDownloadDone size={30} className='w-9'></MdOutlineDownloadDone>
-                  : <MdEditLocationAlt size={30} className='w-9'></MdEditLocationAlt>
+        <Suspense fallback={<CircularIndeterminate/>}>
+          <Map id='map' 
+            onClick={(e) => {
+              if (editMode && addMarkerMode && elemType !== undefined && elemId !== undefined && elemType >= 0 && elemType < 3) {
+                if (elemType == 0){
+                  handlePlaceDeviceMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
+                } else if (elemType == 1){
+                  handlePlaceSensorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
+                } else {
+                  handlePlaceActuadorMarkerButton(e.detail.latLng.lat, e.detail.latLng.lng)
                 }
-              </button>
-            </div>
-          </MapControl>
-          {
-            areas.map((area) => (
-              <div key={area.id}>
-                <PolygonComponent color={'#' + area.color} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
-                {
-                  clickedArea !== undefined && clickedArea == area.id && 
-                    <InfoWindow 
-                      position={{lat: clickedCoords.lat,  lng: clickedCoords.lng}}
-                      onCloseClick={() => { 
-                        setClickedArea(undefined)
-                        setClickedCoords(undefined)
-                        setSelectedArea(undefined)
-                        setEditOneArea(false)
-                      }}
-                    >
-                      <div>
-                        <header className='w-full h-full flex flex-row items-center gap-x-2'>
-                          <p className='text-2xl font-bold'>{area.name}</p>
-                          <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
-                            <button 
-                              onClick={() => {
-                                setEditOneArea(!editOneArea)
-                                setSelectedArea(area.id)
-                                handlePressEditButton()
-                              }}
-                              className="w-7 h-7 flex gap-2 text-indigo-600 justify-center items-center bg-gray-50 
-                                  hover:bg-gray-200 rounded-md shadow-md">
-                              {
-                                editOneArea && selectedArea !== undefined && selectedArea == area.id 
-                                  ?  <MdOutlineDownloadDone size={18}/> : <MdEditLocationAlt size={17}/>
-                              }
-                            </button>
-                            <ColorPicker area={area} areas={areas} setAreas={setAreas} />
-                            <button 
-                              onClick={() => {
-                                const token = getCookie('token')
-                                let res = deleteArea(area.id, token)
-                                if (res) {
-                                  let newAreas = []
-                                  for (let area of areas) {
-                                    if (area.id != area.id) {
-                                      newAreas.push(area)
-                                    }
-                                  }
-                                  setAreas(newAreas)
-                                  let newCoords = coords.filter(coord => coord.area != area.id)
-                                  setCoords(newCoords)
-                                }
-                              }}
-                              className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
-                                  hover:bg-gray-200 rounded-md shadow-md">
-                                  <FaRegTrashAlt size={17} />
-                            </button>
-                          </div>
-                        </header>
-                      </div>
-                    </InfoWindow>
+              } else if (editMode && placePolygon && selectedArea !== undefined) {
+                handlePlacePolygonButton(selectedArea, e.detail.latLng.lat, e.detail.latLng.lng)
+              }
+              setAddMarkerMode(false)
+              setSelectedMarker(undefined)
+              setClickedArea(undefined)
+              setPlacePolygon(false)
+            }}
+          mapId={"880d1a58ffae37c1"} disableDefaultUI  onCenterChanged={handleMoveCenter} defaultZoom={15} defaultCenter={{lat: centerLat, lng: centerLng}}>
+            {devices.map((device, index) => (
+              device.Latitud && device.Longitud &&
+              <div key={index}>
+                <Marker
+                  key={device.id}
+                  onClick={() => setSelectedMarker(index)}
+                  icon={"/chip.svg"}
+                  position={{lat: device.Latitud, lng: device.Longitud}}
+                  draggable={editMode || (selectedMarker == index && editOneMarker == true)}
+                  onDragEnd={(e) => handleDragDeviceMarker(e, device.id)}
+                >
+                </Marker>
+                { selectedMarker !== undefined && selectedMarker == index &&
+                  <InfoWindow
+                    onCloseClick={() => setSelectedMarker(undefined)}
+                    position={{lat: device.Latitud + 0.00045, lng: device.Longitud}}>
+                      <InfoContent 
+                        elem={device} 
+                        area={areas.find((area) => area.id == device.area)}
+                        type={0}
+                        setEdit={setEditOneMarker}
+                        edit={editOneMarker}  
+                        setElems={setDevices}
+                        setActuadores={setActuadores}
+                        setSensors={setSensors}
+                      />
+                  </InfoWindow>
                 }
               </div>
-            ))
-          }
-        </Map>
+            ))}
+            {sensors.map((sensor, index) => (
+              sensor.Latitud && sensor.Longitud &&
+              <div key={devices.length + index}>
+                <Marker
+                  clickable
+                  onClick={() => setSelectedMarker(devices.length + index)}
+                  key={sensor.id}
+                  icon={"/humidity-percentage.svg"}
+                  position={{lat: sensor.Latitud, lng: sensor.Longitud}}
+                  draggable={editMode || (selectedMarker == (devices.length + index) && editOneMarker == true)}
+                  onDragEnd={(e) => handleDragSensorMarker(e, sensor.id)}
+                  title={sensor.id}
+                >
+                </Marker>
+                { selectedMarker !== undefined && selectedMarker == (devices.length + index) &&
+                  <InfoWindow
+                    onCloseClick={() => setSelectedMarker(undefined)}
+                    position={{lat: sensor.Latitud + 0.0001, lng: sensor.Longitud}}>
+                      {InfoContent({
+                        elem: sensor, 
+                        type: 1, 
+                        sensors: sensors,
+                        area: areas.find((area) => area.id == sensor.area), 
+                        setElems: setSensors, 
+                        setEdit: setEditOneMarker, 
+                        edit: editOneMarker,
+                        deviceName: devices.find((device) => device.id == sensor.device)?.name, 
+                        actuadores: actuadores}) }
+                  </InfoWindow>
+                }
+              </div>
+            ))}
+            {actuadores.map((actuador, index) => (
+              actuador.Latitud && actuador.Longitud &&
+              <div key={devices.length + sensors.length + index}>
+                <Marker
+                clickable
+                onClick={() => setSelectedMarker(devices.length + sensors.length + index)}
+                key={actuador.id}
+                icon={"/faucet.svg"}
+                position={{lat: actuador.Latitud, lng: actuador.Longitud}}
+                draggable={editMode || (selectedMarker == (devices.length + sensors.length + index) && editOneMarker == true)}
+                onDragEnd={(e) => handleDragActuadorMarker(e, actuador.id)}
+                >
+                </Marker>
+                { selectedMarker !== undefined && selectedMarker == (devices.length + sensors.length + index) &&
+                  <InfoWindow
+                    onCloseClick={() => setSelectedMarker(undefined)}
+                    position={{lat: actuador.Latitud + 0.00045, lng: actuador.Longitud}}>
+                      <InfoContent 
+                        elem={actuador} 
+                        actuadores={actuadores}
+                        area={areas.find((area) => area.id == actuador.area)}
+                        type={2}
+                        deviceName={devices.find((device) => device.id == actuador.device)?.name}
+                        setEdit={setEditOneMarker}
+                        edit={editOneMarker}  
+                        setElems={setActuadores}
+                      />
+                  </InfoWindow>
+                }
+              </div>
+              
+            ))}
+            <MapControl  position={ControlPosition.RIGHT_BOTTOM}>
+              <div id='add-marker-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+                <button className={`${
+                  !editMode && 'hidden' 
+                }
+                w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+                rounded-md shadow-md`}
+                onClick={() => openPlaceMarkerDialog()}
+                >
+                  <MdAddLocationAlt size={30} className='w-9'></MdAddLocationAlt>
+                </button>
+              </div>
+              <div id='add-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+                <button onClick={openPlacePolygonDialog} 
+                className={
+                  `${!editMode && 'hidden'} w-full h-full flex justify-center items-center bg-gray-50 
+                  hover:bg-gray-200 rounded-md shadow-md`
+                }>
+                  <MdOutlineAddLocation size={30} className='w-9'></MdOutlineAddLocation>
+                </button>
+              </div>
+              <div id='edit-polygon-button' style={{ height: '50px', width: '60px' } } className='px-2.5 pb-2.5'>
+                <button onClick={handlePressEditButton} 
+                className='w-full h-full flex justify-center items-center bg-gray-50 hover:bg-gray-200 
+                rounded-md shadow-md'>
+                  {
+                    editMode  
+                    ? <MdOutlineDownloadDone size={30} className='w-9'></MdOutlineDownloadDone>
+                    : <MdEditLocationAlt size={30} className='w-9'></MdEditLocationAlt>
+                  }
+                </button>
+              </div>
+            </MapControl>
+            {
+              areas.map((area) => (
+                <div key={area.id}>
+                  <PolygonComponent color={'#' + area.color} area={area.id} editable={editMode || (editOneArea && selectedArea == area.id)} draggable={editMode} coords={filterCoords(area.id)} setClick={setClickedArea} setClickedCoords={setClickedCoords} />
+                  {
+                    clickedArea !== undefined && clickedArea == area.id && 
+                      <InfoWindow 
+                        position={{lat: clickedCoords.lat,  lng: clickedCoords.lng}}
+                        onCloseClick={() => { 
+                          setClickedArea(undefined)
+                          setClickedCoords(undefined)
+                          setSelectedArea(undefined)
+                          setEditOneArea(false)
+                        }}
+                      >
+                        <div>
+                          <header className='w-full h-full flex flex-row items-center gap-x-2'>
+                            <p className='text-2xl font-bold'>{area.name}</p>
+                            <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
+                              <button 
+                                onClick={() => {
+                                  setEditOneArea(!editOneArea)
+                                  setSelectedArea(area.id)
+                                  handlePressEditButton()
+                                }}
+                                className="w-7 h-7 flex gap-2 text-indigo-600 justify-center items-center bg-gray-50 
+                                    hover:bg-gray-200 rounded-md shadow-md">
+                                {
+                                  editOneArea && selectedArea !== undefined && selectedArea == area.id 
+                                    ?  <MdOutlineDownloadDone size={18}/> : <MdEditLocationAlt size={17}/>
+                                }
+                              </button>
+                              <ColorPicker area={area} areas={areas} setAreas={setAreas} />
+                              <button 
+                                onClick={() => {
+                                  const token = getCookie('token')
+                                  let res = deleteArea(area.id, token)
+                                  if (res) {
+                                    let newAreas = []
+                                    for (let area of areas) {
+                                      if (area.id != area.id) {
+                                        newAreas.push(area)
+                                      }
+                                    }
+                                    setAreas(newAreas)
+                                    let newCoords = coords.filter(coord => coord.area != area.id)
+                                    setCoords(newCoords)
+                                  }
+                                }}
+                                className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 
+                                    hover:bg-gray-200 rounded-md shadow-md">
+                                    <FaRegTrashAlt size={17} />
+                              </button>
+                            </div>
+                          </header>
+                        </div>
+                      </InfoWindow>
+                  }
+                </div>
+              ))
+            }
+          </Map>
+        </Suspense>
       </APIProvider>}
     </div>
   )

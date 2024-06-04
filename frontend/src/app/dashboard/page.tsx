@@ -7,7 +7,6 @@ import ClimaInfo from "../ui/dashboard/ClimaInfo"
 import DevicesInfo from "../ui/dashboard/DevicesInfo"
 import SensorsInfo from "../ui/dashboard/SensorsInfo"
 import { notify } from "../lib/notify"
-import { CustomTable } from "../ui/dashboard/Table"
 import { CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "../ui/dashboard/crop/InfoBarChart"
 import ActuadoresInfo from "../ui/dashboard/ActuadoresInfo"
 

@@ -129,13 +129,6 @@ export default function Page() {
     }
 
     //-----------------------------------------------------------------------
-    // ------------------------------ Graficos ------------------------------
-    const fallback_component = () => {
-        return (
-            <p>Loading...</p>
-        )
-    }
-    //---------------------------------------------------------------------------
     // ------------------------------ Sensores -----------------------------------
     const [deviceSensors, setDeviceSensors] = useState<[Sensor]>([{
         id: "", 
@@ -696,16 +689,16 @@ export default function Page() {
                                             {
                                                 deviceActuadores.map((actuador, index) => {
                                                     return (
-                                                        <div key={index} className={`w-dvw md:w-full h-12 flex flex-row gap-3 items-center justify-between ${
+                                                        <div key={index} className={`w-dvw md:w-full h-12 flex flex-row gap-3 items-center ${
                                                             index % 2 == 0
                                                                 ? "bg-blue-100"
                                                                 : "bg-gray-50"
                                                         }`}>
-                                                            <div className="px-3 w-28 h-full flex flex-row justify-between items-center">
+                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row items-center">
                                                                 <FaFaucetDrip size={20} className="w-9 text-indigo-600"></FaFaucetDrip>
                                                                 {actuador.name}
                                                             </div>
-                                                            <div className="px-3 h-full flex gap-2 items-center">
+                                                            <div className="px-3 w-full min-w-fit h-full flex gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorAreaDialogButton(index)} className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
                                                                 </button>
@@ -719,7 +712,7 @@ export default function Page() {
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorPinDialogButton(index)} 
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
@@ -730,28 +723,28 @@ export default function Page() {
                                                                         : actuador.device_pin
                                                                 }
                                                             </div>
-                                                            <div className="px-3 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
                                                                 <button
                                                                     onClick={() => openChartDialog(actuador.id, 4)}
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <GiWateringCan  size={24} className="w-9 px-2 text-indigo-600"/>
                                                                 </button>
                                                             </div>
-                                                            <div>
-                                                                <label className="w-full h-full flex justify-start items-center gap-2">
+                                                            {/* <div>
+                                                                <label className="w-full h-full flex items-center gap-2">
                                                                     <PiUmbrellaDuotone className="text-indigo-600" size={24}/>
                                                                     <Checkbox active={false} onChange={console.log("indoor")}/>
                                                                 </label>
-                                                            </div>
-                                                            <button onClick={() => handleActuadorMode(index)} className="w-16 h-5 flex items-center">
+                                                            </div> */}
+                                                            <button onClick={() => handleActuadorMode(index)} className="flex items-center">
                                                                 {
                                                                     actuador.mode == 1
-                                                                        ? <FaRobot className="w-full h-full text-indigo-600"></FaRobot>
-                                                                        : <FaRobot className="w-full h-full text-indigo-300"></FaRobot>
+                                                                        ? <FaRobot size={24} className="transition ease-in-out  text-indigo-600"></FaRobot>
+                                                                        : <FaRobot size={24} className="transition ease-in-out  text-indigo-300"></FaRobot>
                                                                 }
                                                             </button>
-                                                            <div className="px-2 w-12 h-2/3 flex justify-center items-center">
-                                                                <button onClick={() => handleOpenDeleteElemDialogButton(index, false)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                            <div className="px-2 w-full h-full flex justify-end items-center">
+                                                                <button onClick={() => handleOpenDeleteElemDialogButton(index, false)} className="w-8 h-2/3 rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>
                                                                 </button>
                                                             </div>
