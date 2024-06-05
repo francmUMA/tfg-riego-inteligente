@@ -8,6 +8,7 @@ import { deleteSensor } from "@/src/app/lib/sensorsUtils";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { deleteActuador, getActuadores, updateActuadorMode, updateActuadorStatus } from "@/src/app/lib/actuadorUtils";
 import { getSensors } from "@/src/app/lib/sensorsUtils";
+import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea } from "@/src/app/lib/areasUtils";
 
 
 const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensors, setActuadores, setEdit, edit, actuadores}) => {
@@ -66,7 +67,7 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensor
     return (
         <div id="main" className="flex flex-col w-full">
             <header id="buttons" className="w-full pt-1 flex flex-row gap-x-2 items-center">
-                <p className="flex text-2xl w-full font-bold items-center">{elem.name}</p>
+                <p className="flex text-2xl w-full min-w-fit font-bold items-center">{elem.name}</p>
                 <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
                     {
                         type == 2 && 
@@ -175,6 +176,7 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensor
                             <p>{elem.status == 1 ? "Regando" : "Parado"}</p>
                         </div>
                 }
+                
             </div>
         </div>
     )

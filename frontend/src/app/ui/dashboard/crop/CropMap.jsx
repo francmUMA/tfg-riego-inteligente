@@ -8,11 +8,13 @@ import { DeviceMarkerInfo } from "./DeviceMarkerInfo"
 import { ActuadorMarkerInfo } from "./ActuadorMarkerInfo"
 import { SensorMarkerInfo } from "./SensorMarkerInfo"
 import { AreaInfo } from "./AreaInfo"
+import CircularIndeterminate from "../info/CircularFallback"
 
 export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
     const [startLocation, setStartLocation] = useState({lat: 0, lng: 0})
     const [displayMap, setDisplayMap] = useState(false)
     const [coords, setCoords] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const filterOrderCoords = (area) => {
         let areaCoords = coords.filter(coord => coord.area == area.id)
@@ -37,6 +39,7 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
     }
 
     const fetchCropCoords = async () => {
+        setLoading(true)
         const token = getCookie("token")
         let newCoords = []
         if (areas !== undefined){
@@ -50,6 +53,7 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
                 setCoords(newCoords)
             }
         }
+        setLoading(false)
     }
 
     const [clickedDevice, setClickedDevice] = useState(undefined)
@@ -65,6 +69,7 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
 
 
     return(
+        loading ? <CircularIndeterminate/> :
         <main className="w-full h-full">
             {   displayMap && 
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>

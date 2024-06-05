@@ -13,6 +13,7 @@ import { DeleteCropDialog } from "@/src/app/ui/dashboard/crop/DeleteCropDialog";
 import { MdAddLocationAlt } from "react-icons/md";
 import { AddAreaDialog } from "@/src/app/ui/dashboard/crop/AddAreaDialog";
 import { ActuadorAccumulatedFlowBarChart, CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
+import CircularIndeterminate from "@/src/app/ui/dashboard/info/CircularFallback";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -120,7 +121,7 @@ export default function Page ({ }) {
             </header>
             <section className="w-full h-full min-h-96 flex flex-row gap-x-2">
                 <div id="map" className="w-full h-full rounded-md shadow-md overflow-hidden">
-                    <Suspense>
+                    <Suspense fallback={<CircularIndeterminate/>}>
                         <CropMap areas={cropAreas} crop={crop} devices={cropDevices} actuadores={cropActuadores} sensors={cropSensors}/>
                     </Suspense>
                 </div>

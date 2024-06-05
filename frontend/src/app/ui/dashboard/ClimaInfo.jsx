@@ -114,8 +114,9 @@ const ForecastInfo = ({weather}) => {
     )
 }
 
-export default function ClimaInfo({  }) {
+export default function ClimaInfo() {
     const [weather, setWeather] = useState({})
+    const [loading, setLoading] = useState(true)
 
     const fetchWeather = async () => {
         let data = await getWeather()
@@ -126,12 +127,19 @@ export default function ClimaInfo({  }) {
 
     useEffect(() => {
         fetchWeather()
+        setLoading(false)
     }, [])
 
     return (
         <div className="w-full h-full flex flex-col text-white gap-y-3">
             <Suspense fallback={<CircularIndeterminate/>}>
+                {loading ? 
+                    <div className="w-full bg-indigo-500 rounded-md shadow-md h-full flex flex-row items-center justify-center p-3">
+                        <CircularIndeterminate />
+                    </div>
+                     :
                 <section id="actual" className="w-full bg-indigo-500 rounded-md shadow-md h-full flex flex-row items-center justify-center p-3">
+                    
                     <div className="flex flex-col w-full justify-center items-center">
                         <p className="w-full h-11 flex items-center justify-center text-[50px] font-bold"> 
                             {weather !== undefined && weather.current !== undefined && weather.current.temp_c} ºC
@@ -153,11 +161,19 @@ export default function ClimaInfo({  }) {
                         </p>
                     </div>
                 </section>
+                }
             </Suspense>
             <Suspense fallback={<CircularIndeterminate/>}>
-                <section className="w-full h-full bg-indigo-600 rounded-md shadow-md">
+                {
+                    loading ? 
+                    <div  className="w-full h-full bg-indigo-600 rounded-md shadow-md">
+                        <CircularIndeterminate /> 
+                    </div>
+                    :
+                    <section className="w-full h-full bg-indigo-600 rounded-md shadow-md">
                     <ForecastInfo weather={weather}/>
-                </section> 
+                    </section> 
+                }   
             </Suspense>
         </div>
     )

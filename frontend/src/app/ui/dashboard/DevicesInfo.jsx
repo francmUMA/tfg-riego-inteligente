@@ -33,6 +33,7 @@ const DeviceInfo = ({ device }) => {
 
 export default function DevicesInfo({  }) {
     const [devices, setDevices] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const fetchDevices = async (token) => {
         let devices = await getDevices(token)
@@ -44,6 +45,7 @@ export default function DevicesInfo({  }) {
     useEffect(() => {
         const token = getCookie("token")
         fetchDevices(token)
+        setLoading(false)
     }, [])
 
     return(
@@ -52,21 +54,27 @@ export default function DevicesInfo({  }) {
                 <h1 className="text-slate-400">Dispositivos</h1>
             </header>
             <Suspense fallback={<CircularIndeterminate/>}>
-                <section id="devices-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
-                    {
-                        devices.length > 0 
-                        ?    devices.map((device, index) => {
-                                return (
-                                    <div id={device.id} className={`w-full h-12 flex ${
-                                        index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
-                                        } flex-row items-center justify-center`}>
-                                        <DeviceInfo device={device} />
-                                    </div>
-                                )
-                            })
-                        : <p className="w-full h-full flex justify-center items-center">No hay dispositivos</p>
-                    }
-                </section>
+                {
+                    loading 
+                    ? <CircularIndeterminate />
+                    : 
+                    <section id="devices-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
+                        {
+                            devices.length > 0 
+                            ?    devices.map((device, index) => {
+                                    return (
+                                        <div id={device.id} className={`w-full h-12 flex ${
+                                            index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
+                                            } flex-row items-center justify-center`}>
+                                            <DeviceInfo device={device} />
+                                        </div>
+                                    )
+                                })
+                            : <p className="w-full h-full flex justify-center items-center">No hay dispositivos</p>
+                        }
+                    </section>
+                }
+                
             </Suspense>
         </div>
     )

@@ -18,6 +18,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { ColorPicker } from './ColorPicker.jsx';
 import { Suspense } from 'react';
 import CircularIndeterminate from '../info/CircularFallback.jsx';
+import { AreaInfo, AuxAreaInfo } from './AreaInfo.jsx';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -717,7 +718,7 @@ const App = () => {
                       >
                         <div>
                           <header className='w-full h-full flex flex-row items-center gap-x-2'>
-                            <p className='text-2xl font-bold'>{area.name}</p>
+                            <p className='min-w-fit text-2xl font-bold'>{area.name}</p>
                             <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
                               <button 
                                 onClick={() => {
@@ -754,7 +755,13 @@ const App = () => {
                                     <FaRegTrashAlt size={17} />
                               </button>
                             </div>
+                            
                           </header>
+                          <div className='w-full'>
+                            <Suspense fallback={<CircularIndeterminate/>}>
+                              <AuxAreaInfo area={area} />
+                            </Suspense>
+                          </div>
                         </div>
                       </InfoWindow>
                   }

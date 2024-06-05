@@ -10,7 +10,7 @@ import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
-import { IoWaterOutline } from "react-icons/io5";
+import { IoPauseCircleSharp, IoPlayCircleSharp, IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
 import { FaTemperatureArrowDown, FaTemperatureArrowUp, FaWater } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
@@ -20,7 +20,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { IoIosCellular } from "react-icons/io";
 import { PiUmbrellaDuotone } from "react-icons/pi"
 
-import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin } from "@/src/app/lib/actuadorUtils";
+import { Actuador, addActuador, checkActuador, deleteActuador, getActuadores, updateActuadorMode, updateActuadorPin, updateActuadorStatus } from "@/src/app/lib/actuadorUtils";
 import { Area, getAreas } from "@/src/app/lib/areasUtils";
 import ChartDialog from "@/src/app/ui/dashboard/ChartDialog";
 import { LogInfo } from "@/src/app/ui/dashboard/info/LogInfo";
@@ -580,6 +580,14 @@ export default function Page() {
         setIsOpenChartDialog(false)
         setChartSensor("")
     }
+
+    const openCloseActuador = async (actuador: Actuador) => {
+        const token = getCookie('token')
+        let res = await updateActuadorStatus(actuador.id, actuador.status ? 0 : 1 , token as string)
+        if (res) {
+            fetchDeviceActuadores(deviceId as string, token as string)
+        }
+    }
     
     // ---------------------------------------------------------------------------------------------
 
@@ -727,15 +735,23 @@ export default function Page() {
                                                                 <button
                                                                     onClick={() => openChartDialog(actuador.id, 4)}
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
-                                                                    <GiWateringCan  size={24} className="w-9 px-2 text-indigo-600"/>
+                                                                    <GiWateringCan size={24} className="w-9 px-2 text-indigo-600"/>
                                                                 </button>
                                                             </div>
-                                                            {/* <div>
-                                                                <label className="w-full h-full flex items-center gap-2">
-                                                                    <PiUmbrellaDuotone className="text-indigo-600" size={24}/>
-                                                                    <Checkbox active={false} onChange={console.log("indoor")}/>
-                                                                </label>
-                                                            </div> */}
+                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
+                                                                <button 
+                                                                    onClick={() => openCloseActuador(actuador)}
+                                                                    disabled={actuador.mode == 1}
+                                                                    className={`w-9 h-2/3 flex justify-center text-indigo-600 items-center bg-gray-50 
+                                                                                hover:bg-gray-200 rounded-md shadow-md duration-150 disabled:text-indigo-300"}`}>
+                                                                        {
+                                                                            !actuador.status 
+                                                                                ? <IoPlayCircleSharp  className="transition ease-in-out" size={21}/>
+                                                                                : <IoPauseCircleSharp  className="transition ease-in-out" size={21}/>
+                                                                        }
+                                                                </button>
+                                                            </div>
+                                                            
                                                             <button onClick={() => handleActuadorMode(index)} className="flex items-center">
                                                                 {
                                                                     actuador.mode == 1

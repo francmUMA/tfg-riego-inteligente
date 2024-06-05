@@ -42,8 +42,14 @@ export default function Page() {
                     </div>
                 </section>
                 <section id="actuadores-sensores" className="h-full w-full flex flex-row gap-x-3 justify-center items-center">
-                    <div id="actuadores-info" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
-                        <ActuadoresInfo areas={undefined} filter={undefined} showStatus={true}/>
+                    <div id="actuadores-info" className="border flex-col hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
+                        <header className="w-full h-1/6 flex justify-center items-center">
+                            <h1 className="text-slate-400">Actuadores regando</h1>
+                        </header>
+                        <div className="w-full h-full">
+                            <ActuadoresInfo areas={undefined} filter={"status-on"} showStatus={true}/>
+                        </div>
+                        
                     </div>
                     <div id="clima-imfo" className="border hover:border-indigo-600 ease-in-out duration-150 shadow-md rounded-md h-full w-full flex justify-center items-center">
                         <SensorsInfo />

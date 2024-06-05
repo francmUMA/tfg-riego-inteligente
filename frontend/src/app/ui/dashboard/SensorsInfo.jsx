@@ -33,9 +33,10 @@ const SensorInfo = ({ sensor, devices }) => {
     )
 }
 
-export default function SensorsInfo({  }) {
+export default function SensorsInfo() {
     const [sensores, setSensores] = useState([])
     const [devices, setDevices] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const fetchDevices = async (token) => {
         let devices = await getDevices(token)
@@ -57,11 +58,13 @@ export default function SensorsInfo({  }) {
     useEffect(() => {
         const token = getCookie("token")
         fetchDevices(token)
+        setLoading(false)
     }, [])
 
     useEffect(() => {
         const token = getCookie("token")
         fetchSensores(token)
+        setLoading(false)
     }, [devices])
 
     return(
@@ -70,6 +73,8 @@ export default function SensorsInfo({  }) {
                 <h1 className="text-slate-400">Sensores</h1>
             </header>
             <Suspense fallback={<CircularIndeterminate />}>
+                {loading ? <CircularIndeterminate />
+                :
                 <div id="sensores-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
                     {
                         sensores.length > 0 ?
@@ -85,6 +90,8 @@ export default function SensorsInfo({  }) {
                         : <p className="w-full h-full flex justify-center items-center">No hay sensores disponibles</p>
                     }
                 </div>
+                }
+                
             </Suspense>
         </div>
     )

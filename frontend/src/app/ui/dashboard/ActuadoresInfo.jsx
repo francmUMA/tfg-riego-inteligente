@@ -6,6 +6,7 @@ import { FaFaucetDrip } from "react-icons/fa6";
 import { IoWaterOutline } from "react-icons/io5";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { FaRobot } from "react-icons/fa";
+import CircularIndeterminate from "./info/CircularFallback";
 
 const ActuadorInfo = ({ actuador, devices, showStatus }) => {
     return(
@@ -37,6 +38,7 @@ const ActuadorInfo = ({ actuador, devices, showStatus }) => {
 export default function ActuadoresInfo({ areas, filter, showStatus }) {
     const [actuadores, setActuadores] = useState([])
     const [devices, setDevices] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const fetchDevices = async (token) => {
         let devices = await getDevices(token)
@@ -65,42 +67,46 @@ export default function ActuadoresInfo({ areas, filter, showStatus }) {
     useEffect(() => {
         const token = getCookie("token")
         fetchDevices(token)
+        setLoading(false)
     }, [])
 
     useEffect(() => {
         const token = getCookie("token")
         fetchActuadores(token)
+        setLoading(false)
     }, [devices])
 
     return(
         <div className="w-full h-full flex flex-col justify-center items-center">
-            <main id="actuadores-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
-                {
-                    actuadores.length > 0 && areas === undefined
-                    ?    actuadores.map((actuador, index) => {
-                            return (
-                                <div id={actuador.id} className={`w-full h-12 flex ${
-                                    index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
-                                    } flex-row items-center justify-center`}>
-                                    <ActuadorInfo actuador={actuador} devices={devices} />
-                                </div>
-                            )
+            {   loading ? <CircularIndeterminate /> :
+                <section id="actuadores-list" className="h-full w-full rounded-md flex flex-col items-center overflow-y-auto">
+                    {
+                        actuadores.length > 0 && areas === undefined
+                        ?    actuadores.map((actuador, index) => {
+                                return (
+                                    <div id={actuador.id} className={`w-full h-12 flex ${
+                                        index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
+                                        } flex-row items-center justify-center`}>
+                                        <ActuadorInfo actuador={actuador} devices={devices} />
+                                    </div>
+                                )
+                            })
+                        : actuadores.length > 0 && areas !== undefined && actuadores.filter((actuador) => areas.find((area) => area.id == actuador.area) !== undefined).length > 0
+                        ?   actuadores.map((actuador, index) => {
+                            if (areas.find((area) => area.id == actuador.area) !== undefined){
+                                return (
+                                    <div id={actuador.id} className={`w-full h-12 flex ${
+                                        index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
+                                        } flex-row items-center justify-center`}>
+                                        <ActuadorInfo actuador={actuador} devices={devices} showStatus={showStatus}/>
+                                    </div>
+                                )
+                            }
                         })
-                    : actuadores.length > 0 && areas !== undefined && actuadores.filter((actuador) => areas.find((area) => area.id == actuador.area) !== undefined).length > 0
-                    ?   actuadores.map((actuador, index) => {
-                        if (areas.find((area) => area.id == actuador.area) !== undefined){
-                            return (
-                                <div id={actuador.id} className={`w-full h-12 flex ${
-                                    index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
-                                    } flex-row items-center justify-center`}>
-                                    <ActuadorInfo actuador={actuador} devices={devices} showStatus={showStatus}/>
-                                </div>
-                            )
-                        }
-                    })
-                    : <p className="w-full h-full flex justify-center items-center">No hay actuadores</p>
-                }
-            </main>
+                        : <p className="w-full h-full flex justify-center items-center">No hay actuadores</p>
+                    }
+                </section>
+            }
         </div>
     )
 }

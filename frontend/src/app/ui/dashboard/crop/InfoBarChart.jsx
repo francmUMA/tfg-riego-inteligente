@@ -4,6 +4,7 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 import { Suspense, useEffect, useState } from 'react';
 import { getCropActuadores, getCropAreas, getCrops } from '@/src/app/lib/cropUtils';
 import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea } from '@/src/app/lib/areasUtils';
+import CircularIndeterminate from '../info/CircularFallback';
 
 export class CustomBarChart extends PureComponent{
 
@@ -34,6 +35,7 @@ export class CustomBarChart extends PureComponent{
 
 export const CropHumBarChart = ({crop}) => {
     const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const fetchInfo = async () => {
         let resData = []
@@ -62,6 +64,7 @@ export const CropHumBarChart = ({crop}) => {
             }
         }
         setData(resData)
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -77,8 +80,10 @@ export const CropHumBarChart = ({crop}) => {
     return (
         <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
             <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
-            <Suspense>
-                <CustomBarChart data={data}/>
+            <Suspense fallback={<CircularIndeterminate/>}>
+                {
+                    loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
+                }
             </Suspense>
         </div>
     )
@@ -86,6 +91,7 @@ export const CropHumBarChart = ({crop}) => {
 
 export const CropTempBarChart = ({crop}) => {
   const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchInfo = async () => {
     let resData = []
@@ -114,6 +120,7 @@ export const CropTempBarChart = ({crop}) => {
         }
     }
     setData(resData)
+    setLoading(false)
 }
 
   useEffect(() => {
@@ -127,17 +134,20 @@ export const CropTempBarChart = ({crop}) => {
 }, [crop])
 
   return (
-      <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
-          <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Temperatura (ºC)</h1>
-          <Suspense>
-              <CustomBarChart data={data}/>
-          </Suspense>
-      </div>
+    <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
+        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+        <Suspense fallback={<CircularIndeterminate/>}>
+            {
+                loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
+            }
+        </Suspense>
+    </div>
   )
 }
 
 export const CropSoilTempBarChart = ({crop}) => {
   const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchInfo = async () => {
     let resData = []
@@ -166,6 +176,7 @@ export const CropSoilTempBarChart = ({crop}) => {
         }
     }
     setData(resData)
+    setLoading(false)
 }
 
   useEffect(() => {
@@ -179,17 +190,20 @@ export const CropSoilTempBarChart = ({crop}) => {
 }, [crop])
 
   return (
-      <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
-          <h1 className="w-full flex font-medium  justify-center items-center text-slate-400">Temperatura de suelo (ºC)</h1>
-          <Suspense>
-              <CustomBarChart data={data}/>
-          </Suspense>
-      </div>
+    <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
+        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+        <Suspense fallback={<CircularIndeterminate/>}>
+            {
+                loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
+            }
+        </Suspense>
+    </div>
   )
 }
 
 export const CropSoilHumBarChart = ({crop}) => {
   const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true)
 
   const fetchInfo = async () => {
     let resData = []
@@ -218,6 +232,7 @@ export const CropSoilHumBarChart = ({crop}) => {
         }
     }
     setData(resData)
+    setLoading(false)
 }
 
   useEffect(() => {
@@ -231,17 +246,20 @@ export const CropSoilHumBarChart = ({crop}) => {
   }, [crop])
 
   return (
-      <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
-          <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad de suelo (%RH)</h1>
-          <Suspense>
-              <CustomBarChart data={data}/>
-          </Suspense>
-      </div>
+    <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
+        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+        <Suspense fallback={<CircularIndeterminate/>}>
+            {
+                loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
+            }
+        </Suspense>
+    </div>
   )
 }
 
 export const ActuadorAccumulatedFlowBarChart = ({crop}) => {
     const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true)
   
     const fetchInfo = async () => {
         let resData = []
@@ -250,6 +268,7 @@ export const ActuadorAccumulatedFlowBarChart = ({crop}) => {
             resData.push({name: actuador.name, value: actuador.acumulatedFlow})
         }
         setData(resData)
+        setLoading(false)
     }
   
     useEffect(() => {
@@ -263,10 +282,12 @@ export const ActuadorAccumulatedFlowBarChart = ({crop}) => {
     }, [crop])
   
     return (
-        <div className="w-full h-full flex flex-col gap-y-1 justify-center items-center p-3">
-            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Caudal Acumulado (L/min)</h1>
-            <Suspense>
-                <CustomBarChart data={data}/>
+        <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
+            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+            <Suspense fallback={<CircularIndeterminate/>}>
+                {
+                    loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
+                }
             </Suspense>
         </div>
     )
