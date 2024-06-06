@@ -242,7 +242,9 @@ fn main() {
                                                                         chrono::Duration::from_std(Duration::from_millis(program.get_start_time() + 3600*1000)).unwrap();
                     let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
                     let end_time_date = start_time_date + chrono::Duration::from_std(Duration::from_secs(program.get_duration())).unwrap();
-                    let duration = end_time_date.timestamp() - start_time_date.timestamp();
+                    let datetime = Local.timestamp(now as i64, 0);
+                    let duration = end_time_date.timestamp() - datetime.timestamp();
+                    println!("Duración: {}", duration);
                     tokio::spawn(async move {
                         init_timer(id,tx_clone, duration as u64).await;
                     });
