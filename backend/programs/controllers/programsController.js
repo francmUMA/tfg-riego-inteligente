@@ -279,6 +279,19 @@ export const deleteProgram = async (req, res) => {
             return
         }
 
+        // Comprobar si el programa está asociado a algún actuador
+        let actuador = await actuadoresModel.findOne({
+            where: {
+                activeProgram: program.id
+            }
+        })
+
+        if (actuador != null) {
+            res.status(410).send("Program is associated to an actuator")
+            return
+        }
+
+
         // Eliminar el programa de los devices del usuario
         let devices = await deviceModel.findAll({
             where: {
