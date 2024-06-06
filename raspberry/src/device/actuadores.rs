@@ -87,6 +87,9 @@ impl Actuador {
     }
 
     pub fn open(&mut self) -> bool{
+        if (self.device_pin.is_none()) {
+            return false;
+        }
         self.device_pin.as_mut().unwrap().set_high();
         self.status = 1;
         true
