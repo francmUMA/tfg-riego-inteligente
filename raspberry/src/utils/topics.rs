@@ -347,7 +347,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             else if topic.contains("update") && topic.contains("activeProgram"){
                 let program_id = payload.to_string();
                 actuador.set_active_program(program_id.clone());
-                if (actuador.get_active_program() == "null"){
+                if (program_id == "null"){
                     if actuador.get_status() == 1 {
                         actuador.close();
                     }
