@@ -244,7 +244,7 @@ fn main() {
                     let end_time_date = start_time_date + chrono::Duration::from_std(Duration::from_secs(self.duration)).unwrap();
                     let duration = end_time_date.timestamp() - start_time_date.timestamp();
                     tokio::spawn(async move {
-                        init_timer(id,tx_clone, duration).await;
+                        init_timer(id,tx_clone, duration as u64).await;
                     });
                     actuator.open();
                 }
