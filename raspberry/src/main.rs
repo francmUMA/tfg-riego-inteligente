@@ -239,9 +239,9 @@ fn main() {
                     timers_list.lock().unwrap().push(timer);
                     let tx_clone = tx.clone();
                     let naive_start_time = NaiveTime::from_hms_opt(0, 0, 0).unwrap() + 
-                                                                        chrono::Duration::from_std(Duration::from_millis(self.start_time + 3600*1000)).unwrap();
+                                                                        chrono::Duration::from_std(Duration::from_millis(program.get_start_time() + 3600*1000)).unwrap();
                     let start_time_date = Local::now().date().and_time(naive_start_time).unwrap();
-                    let end_time_date = start_time_date + chrono::Duration::from_std(Duration::from_secs(self.duration)).unwrap();
+                    let end_time_date = start_time_date + chrono::Duration::from_std(Duration::from_secs(program.get_duration())).unwrap();
                     let duration = end_time_date.timestamp() - start_time_date.timestamp();
                     tokio::spawn(async move {
                         init_timer(id,tx_clone, duration as u64).await;

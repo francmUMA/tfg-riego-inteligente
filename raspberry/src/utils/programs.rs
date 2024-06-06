@@ -71,6 +71,10 @@ impl Program {
         self.duration
     }
 
+    pub fn get_start_time(&self) -> u64 {
+        self.start_time
+    }
+
     pub fn irrigate_now (&self, now: u64) -> bool{
         // Comprobar si es el día de la semana
         let datetime = Local.timestamp(now as i64, 0);
