@@ -12,7 +12,7 @@ import { Suspense, useEffect, useState } from "react";
 
 import { IoPauseCircleSharp, IoPlayCircleSharp, IoWaterOutline } from "react-icons/io5";
 import { WiHumidity } from "react-icons/wi";
-import { FaTemperatureArrowDown, FaTemperatureArrowUp, FaWater } from "react-icons/fa6";
+import { FaClock, FaTemperatureArrowDown, FaTemperatureArrowUp, FaWater } from "react-icons/fa6";
 import { LuPin } from "react-icons/lu";
 import { FaFaucetDrip } from "react-icons/fa6";
 import { FaRobot } from "react-icons/fa";
@@ -28,6 +28,7 @@ import { MdOutlineAddchart } from "react-icons/md";
 import { GiWateringCan } from "react-icons/gi"
 import Checkbox from "@/src/app/ui/Checkbox";
 import { SensorChart } from "@/src/app/ui/dashboard/SensorChart";
+import { getProgramName } from "@/src/app/lib/programUtils";
 
 
 export default function Page() {
@@ -732,6 +733,14 @@ export default function Page() {
                                                                 }
                                                             </div>
                                                             <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
+                                                                <FaClock className="text-indigo-600"/>
+                                                                {
+                                                                    actuador.activeProgram == null
+                                                                        ? "Sin programa"
+                                                                        : getProgramName(actuador.activeProgram)
+                                                                }
+                                                            </div>
+                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
                                                                 <button
                                                                     onClick={() => openChartDialog(actuador.id, 4)}
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
@@ -741,9 +750,9 @@ export default function Page() {
                                                             <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
                                                                 <button 
                                                                     onClick={() => openCloseActuador(actuador)}
-                                                                    disabled={actuador.mode == 1}
-                                                                    className={`w-9 h-2/3 flex justify-center text-indigo-600 items-center bg-gray-50 
-                                                                                hover:bg-gray-200 rounded-md shadow-md duration-150 disabled:text-indigo-300"}`}>
+                                                                    disabled={actuador.mode == 1 || actuador.device_pin == null}
+                                                                    className="w-9 h-2/3 flex justify-center text-indigo-600 items-center bg-gray-50
+                                                                     hover:bg-gray-200 rounded-md shadow-md duration-100 disabled:text-indigo-300">
                                                                         {
                                                                             !actuador.status 
                                                                                 ? <IoPlayCircleSharp  className="transition ease-in-out" size={21}/>

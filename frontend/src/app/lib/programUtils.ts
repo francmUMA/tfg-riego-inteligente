@@ -164,7 +164,12 @@ export const deleteProgram = async (programId: string) => {
     if (res.status == 200) {
         notify('Programa eliminado correctamente', 'success')
         return true
-    } else {
+    }
+    else if (res.status == 410){
+        notify('El programa no se puede eliminar porque está asociado a un actuador', 'error')
+        return false
+    } 
+    else {
         notify('Error al eliminar el programa', 'error')
         return false
     }
