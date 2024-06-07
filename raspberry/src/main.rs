@@ -219,13 +219,15 @@ fn main() {
                         println!("El actuador {} ya está activo", actuator.get_id());
                         continue;
                     }
-                    let timer_find = timers_list.lock().unwrap().iter_mut().find(|t| t.get_actuador_id() == actuator.get_id());
+                    let timer_find = timers_list.lock().unwrap().iter().position(|t| t.get_actuador_id() == actuator.get_id());
                     if timer_find.is_some() {
-                        if timer_find.unwrap().is_timer_to_resume() {
+                        let timer_find = timers_list.lock().unwrap().get_mut(timer_find.unwrap());
+                        let timer_find = timer_find.unwrap();
+                        if timer_find.is_timer_to_resume() {
                             println!("Reanudando el timer del actuador {}", actuator.get_id());
                             actuator.open();
-                        } else if timer_find.unwrap().is_stopped(){
-                            timer_find.unwrap().resume_timer();
+                        } else if timer_find.is_stopped(){
+                            timer_find.resume_timer();
                             println!("El actuador {} tiene un timer parado", actuator.get_id());
                         } else{
                             println!("El actuador {} tiene un timer activo", actuator.get_id());
