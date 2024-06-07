@@ -462,3 +462,76 @@ export const disassociateProgramFromActuator = async (req, res) => {
         return
     }
 }
+/**
+ * @description Pausa o reanuda un programa de un actuador
+ * @param actuatorId: string
+ * @param action boolean
+ * @returns 200 si se ha pausado/reanudado correctamente
+ */
+export const resumeStopActuatorProgram = async (req, res) => {
+    // --------------- Validacion de token -----------------------
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // -----------------------------------------------------------
+    if (req.body.actuatorId === undefined || req.body.action === undefined) {
+        res.status(400).send("Missing fields")
+        return
+    }
+
+    // Validar los identificadores
+    if (!validate(req.body.actuatorId)){
+        res.status(400).send("Invalid actuatorId")
+        return
+    }
+
+    try {
+
+        let actuador = await actuadoresModel.findOne({
+            where: {
+                id: req.body.actuatorId
+            }
+        })
+
+        if (actuador == null) {
+            res.status(400).send("Actuator not found")
+            return
+        }
+
+        // Comprobar que el dispositivo pertenece al usuario
+        let device = await deviceModel.findOne({
+            where: {
+                id: actuador.device,
+                Usuario: nif
+            }
+        })
+        
+        if (device == null) {
+            res.status(400).send("Device not found")
+            return
+        }
+
+        if (actuador.activeProgram == null) {
+            res.status(400).send("Actuator has no active program")
+            return
+        }
+
+        let topic = `devices/${device.id}/actuadores/${actuador.id}/update/program`
+        let message = req.body.action
+        publish_msg(topic, message)
+
+        res.status(200).send("Action sent")
+    } catch (error) {
+        res.status(500).send(error.message)
+        return
+    }
+}

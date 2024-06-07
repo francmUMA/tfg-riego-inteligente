@@ -9,7 +9,7 @@ use rand::seq::index;
 use serde_json::{de, json, to_string, Value};
 use paho_mqtt as mqtt;
 
-use super::mqtt_client::MqttClient;
+use super::{mqtt_client::MqttClient, time::TimerWrapper};
 
 //------------------------------------- SENSORES ----------------------------------------------------------------------------------------
 fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, mqtt_client: &mut MqttClient){
@@ -167,6 +167,20 @@ fn suscribe_actuador_topics(actuador_id: String, device_id: String, mqtt_client:
         mqtt_client.publish("logs", log_data.to_string().as_str());
         return false;
     }
+    if !mqtt_client.subscribe(format!("devices/{}/actuadores/{}/update/program", device_id, actuador_id).as_str()){
+        println!("No se ha podido suscribir al topic de programa del actuador con id {}", actuador_id);
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": device_id,
+            "deviceName": "---",
+            "logcode": 3419,
+            "actuadorCode": actuador_id,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido suscribir al topic de programa activo del actuador",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
+        return false;
+    }
 
     true
 }
@@ -212,7 +226,7 @@ fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
     }
 }
 
-fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, mqtt_client: &mut MqttClient){
+fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, timers: &mut Vec<TimerWrapper> , mqtt_client: &mut MqttClient){
     if topic.contains("new"){
         let payload_json: Value = serde_json::from_str(payload).unwrap();
         let actuador = Actuador::new(
@@ -365,6 +379,13 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                     "description": format!("Se ha cambiado el programa activo"),
                 });
                 mqtt_client.publish("logs", log_data.to_string().as_str());
+            }
+            else if topic.contains("update") && topic.contains("program") {
+                if payload == "stop"{
+                    timers.iter_mut().find(|timer| timer.get_actuador_id() == actuador.get_id()).unwrap().stop_timer();
+                } else if payload == "resume" {
+                    timers.iter_mut().find(|timer| timer.get_actuador_id() == actuador.get_id()).unwrap().resume_timer();
+                }
             }
         } else {
             println!("No se ha encontrado el actuador");
@@ -532,10 +553,11 @@ pub fn manage_msg(
     actuadores: &mut Vec<Actuador>, 
     sensors: &mut Vec<Sensor>, 
     programs: &mut Vec<Program>,
+    timers: &mut Vec<TimerWrapper>,
     mqtt_client: &mut MqttClient
 ){
     if topic.contains("actuadores") {
-        manage_topic_actuadores(device, topic, payload, actuadores, mqtt_client);
+        manage_topic_actuadores(device, topic, payload, actuadores, timers, mqtt_client);
     } else if topic.contains("sensors") || topic.contains("SENSOR") {
         manage_topic_sensors(topic, sensors, payload, mqtt_client);
     } else if topic.contains("server/available") {

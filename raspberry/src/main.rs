@@ -109,6 +109,8 @@ fn main() {
     let device_receiver = Arc::clone(&device);
     let client_receiver = Arc::clone(&client);
     let programs_receiver = Arc::clone(&programs);
+    let timers_list: Arc<Mutex<Vec<TimerWrapper>>> = Arc::new(Mutex::new(Vec::new()));
+    let timers_list_receiver: Arc<Mutex<Vec<TimerWrapper>>> = Arc::clone(&timers_list);
 
     thread::spawn(move || {
         let mut receiver = client_receiver.lock().unwrap().start_consuming();
@@ -122,6 +124,7 @@ fn main() {
                 &mut actuadores_receiver.lock().unwrap(),
                    &mut sensors_receiver.lock().unwrap(), 
                     &mut programs_receiver.lock().unwrap(),
+                    &mut timers_list_receiver.lock().unwrap(),
                &mut client_receiver.lock().unwrap()
             );
         }
@@ -201,7 +204,7 @@ fn main() {
     let client_manager = Arc::clone(&client);
     let programs_manager = Arc::clone(&programs);
     let (tx, rx): (Sender<String>, Receiver<String>) = std::sync::mpsc::channel();
-    let timers_list: Arc<Mutex<Vec<TimerWrapper>>> = Arc::new(Mutex::new(Vec::new()));
+    
     let timers_list_clone = Arc::clone(&timers_list);
 
     thread::spawn( move || {

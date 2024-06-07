@@ -46,6 +46,10 @@ impl TimerWrapper {
     pub fn resume_timer(&mut self) {
         self.stopped = 0;
     }
+
+    pub fn stop_timer(&mut self) {
+        self.stopped = 2;
+    }
 }
 
 pub async fn init_timer(id: String, tx: Sender<String>, duration: u64) {
