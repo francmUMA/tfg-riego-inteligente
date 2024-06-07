@@ -221,11 +221,11 @@ fn main() {
                     }
                     // Hay que comprobar si hay algún timer para ese actuador y modificarlo si es necesario
                     let timer_index = timers_list.lock().unwrap().iter().position(|t| t.get_actuador_id() == actuator.get_id());
-                    if timer_index.is_some() {
-                        let timer = timers_list.lock().unwrap().get_mut(timer_index.unwrap()).unwrap();
-                        if timer.is_timer_to_resume() {
+                    if let Some(index) = timer_index {
+                        let mut timers = timers_list.lock().unwrap();
+                        if timers[index].is_timer_to_resume() {
                             println!("Reanudando timer");
-                            timer.resume_timer();
+                            timers[index].resume_timer();
                             continue;
                         }
                     }
