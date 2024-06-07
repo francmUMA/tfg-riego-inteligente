@@ -1,3 +1,4 @@
+use core::time;
 use std::collections::BinaryHeap;
 use std::sync::mpsc::{Receiver, Sender};
 use std::{fs, thread::sleep};
@@ -214,10 +215,24 @@ fn main() {
                 println!("Gestionando timers");
                 for actuator in actuadores_manager.lock().unwrap().iter_mut() {
                     println!("Gestionando actuador: {}", actuator.get_id());
-                    if timers_list.lock().unwrap().iter().find(|t| t.get_actuador_id() == actuator.get_id()).is_some() {
-                        println!("El actuador {} ya tiene un timer activo", actuator.get_id());
+                    if actuator.get_status() == 1 {
+                        println!("El actuador {} ya está activo", actuator.get_id());
                         continue;
                     }
+                    let timer_find = timers_list.lock().unwrap().iter_mut().find(|t| t.get_actuador_id() == actuator.get_id());
+                    if timer_find.is_some() {
+                        if timer_find.unwrap().is_timer_to_resume() {
+                            println!("Reanudando el timer del actuador {}", actuator.get_id());
+                            actuator.open();
+                        } else if timer_find.unwrap().is_stopped(){
+                            timer_find.unwrap().resume_timer();
+                            println!("El actuador {} tiene un timer parado", actuator.get_id());
+                        } else{
+                            println!("El actuador {} tiene un timer activo", actuator.get_id());
+                        }
+                        continue;
+                    }
+                    
                     if actuator.get_active_program().is_none() {
                         println!("No hay programa activo en el actuador {}", actuator.get_id());
                         continue;
@@ -269,6 +284,10 @@ fn main() {
             let timer_index = timer_index.unwrap();
             let timer = timers_list_clone.lock().unwrap().remove(timer_index);
             println!("Timer finalizado: {}", timer.get_id());
+            if timer.is_stopped() {
+                println!("Ignorando el timer...");
+                continue;
+            }
             if let Some(actuator) = actuadores_receiver.lock().unwrap().iter_mut().find(|a| a.get_id() == timer.get_actuador_id()) {
                 actuator.close();
                 println!("Actuador cerrado: {}", actuator.get_id());

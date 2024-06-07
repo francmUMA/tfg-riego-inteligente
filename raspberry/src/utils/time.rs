@@ -14,14 +14,16 @@ pub fn create_unix_timestamp() -> u64 {
 
 pub struct TimerWrapper {
     id: String,
-    actuador_id: String
+    actuador_id: String,
+    stopped: u8
 }
 
 impl TimerWrapper {
     pub fn new(id: String, actuador_id: String) -> TimerWrapper {
         TimerWrapper {
             id,
-            actuador_id
+            actuador_id,
+            stopped: 0 as u8
         }
     }
 
@@ -31,6 +33,18 @@ impl TimerWrapper {
 
     pub fn get_actuador_id(&self) -> String {
         self.actuador_id.clone()
+    }
+
+    pub fn is_stopped(&self) -> bool {
+        self.stopped == 2
+    }
+
+    pub fn is_timer_to_resume(&self) -> bool {
+        self.stopped == 1
+    }
+
+    pub fn resume_timer(&mut self) {
+        self.stopped = 0;
     }
 }
 
