@@ -224,6 +224,18 @@ fn unsuscribe_actuador_topics(actuador: Actuador, mqtt_client: &mut MqttClient){
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
     }
+    if !mqtt_client.unsubscribe(format!("devices/{}/actuadores/{}/update/program", actuador.get_device(), actuador.get_id()).as_str()){
+        println!("No se ha podido desuscribir al topic de programa del actuador con id {}", actuador.get_id());
+        let timestamp = create_unix_timestamp();
+        let log_data = json!({
+            "deviceCode": actuador.get_device(),
+            "deviceName": "---",
+            "logcode": 3419,
+            "timestamp": timestamp,
+            "description": format!("No se ha podido desuscribir de un topic",),
+        });
+        mqtt_client.publish("logs", log_data.to_string().as_str());
+    }
 }
 
 fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actuadores: &mut Vec<Actuador>, timers: &mut Vec<TimerWrapper> , mqtt_client: &mut MqttClient){
