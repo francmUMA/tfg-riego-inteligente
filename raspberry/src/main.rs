@@ -226,8 +226,9 @@ fn main() {
                         if timers[index].is_timer_to_resume() {
                             println!("Reanudando timer");
                             timers[index].resume_timer();
+                            actuadores_manager.lock().unwrap().iter_mut().find(|a| a.get_id() == actuator.get_id()).unwrap().open();
                             continue;
-                        }
+                        } 
                     }
                     
                     if actuator.get_active_program().is_none() {
