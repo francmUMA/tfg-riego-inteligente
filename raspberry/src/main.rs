@@ -219,20 +219,15 @@ fn main() {
                         println!("El actuador {} ya está activo", actuator.get_id());
                         continue;
                     }
-                    let timer_find = timers_list.lock().unwrap().iter().position(|t| t.get_actuador_id() == actuator.get_id());
-                    if timer_find.is_some() {
-                        let timer_list_aux = timers_list.lock().as_mut().unwrap();
-                        let timer_find = timer_list_aux.get_mut(timer_find.unwrap()).unwrap();
-                        if timer_find.is_timer_to_resume() {
-                            println!("Reanudando el timer del actuador {}", actuator.get_id());
-                            actuator.open();
-                        } else if timer_find.is_stopped(){
-                            timer_find.resume_timer();
-                            println!("El actuador {} tiene un timer parado", actuator.get_id());
-                        } else{
-                            println!("El actuador {} tiene un timer activo", actuator.get_id());
+                    // Hay que comprobar si hay algún timer para ese actuador y modificarlo si es necesario
+                    let timer_index = timers_list.lock().unwrap().iter().position(|t| t.get_actuador_id() == actuator.get_id());
+                    if timer_index.is_some() {
+                        let timer = timers_list.lock().unwrap().get_mut(timer_index.unwrap()).unwrap();
+                        if timer.is_timer_to_resume() {
+                            println!("Reanudando timer");
+                            timer.resume_timer();
+                            continue;
                         }
-                        continue;
                     }
                     
                     if actuator.get_active_program().is_none() {
