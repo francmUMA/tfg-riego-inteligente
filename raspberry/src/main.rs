@@ -221,7 +221,7 @@ fn main() {
                     }
                     let timer_find = timers_list.lock().unwrap().iter().position(|t| t.get_actuador_id() == actuator.get_id());
                     if timer_find.is_some() {
-                        let timer_list_aux = timers_list.lock().unwrap();
+                        let timer_list_aux = timers_list.lock().as_mut().unwrap();
                         let timer_find = timer_list_aux.get_mut(timer_find.unwrap()).unwrap();
                         if timer_find.is_timer_to_resume() {
                             println!("Reanudando el timer del actuador {}", actuator.get_id());
