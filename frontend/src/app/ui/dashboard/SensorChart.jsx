@@ -99,6 +99,7 @@ export const SensorChart = props => {
 
     useEffect(() => {
         const token = getCookie('token');
+		if (id === undefined || id == null) return
 		fetchSensorData(id, type, token)
     }, [id])
 

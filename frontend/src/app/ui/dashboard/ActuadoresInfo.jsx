@@ -1,12 +1,34 @@
 import { getCookie } from "cookies-next"
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { getDevices } from "../../lib/devicesUtils"
 import { getActuadores } from "../../lib/actuadorUtils"
-import { FaFaucetDrip } from "react-icons/fa6";
+import { FaClock, FaFaucetDrip } from "react-icons/fa6";
 import { IoWaterOutline } from "react-icons/io5";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { FaRobot } from "react-icons/fa";
 import CircularIndeterminate from "./info/CircularFallback";
+import { getProgramName } from "../../lib/programUtils";
+
+export const ActuadorProgramName = ({programId}) => {
+
+    const [program, setProgram] = useState(undefined)
+    const fetchProgram = async () => {
+        let program = await getProgramName(programId)
+        setProgram(program)
+    }
+
+    useEffect(() => {
+        if (programId === undefined || programId == null) return
+        fetchProgram()
+    }, [programId])
+
+    return(
+        <p className="flex flex-row w-full min-w-fit justify-start items-center gap-x-3">
+            <FaClock size={20} className="text-indigo-600"/>
+            {program === undefined || program == null ? "No hay programa" : program}
+        </p>
+    )
+}
 
 const ActuadorInfo = ({ actuador, devices, showStatus }) => {
     return(

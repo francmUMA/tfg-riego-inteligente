@@ -1,5 +1,4 @@
 import { getCookie } from "cookies-next"
-import { getCropAreas } from "./cropUtils"
 import { notify } from "./notify"
 
 export interface Actuador {
@@ -11,7 +10,8 @@ export interface Actuador {
     Latitud: number,
     Longitud: number,
     status: number,
-    name: string
+    name: string,
+    activeProgram: string
 }
 export function checkActuador(actuadores: any, id: string) {
     return !(actuadores.find((actuador: any) => actuador.id == id))
