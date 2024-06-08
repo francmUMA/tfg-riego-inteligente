@@ -25,7 +25,9 @@ export const AssociateButton = ({setUpdate, elem, type, setAssocProgram, assocPr
         }       onClick={() => {
                     elem !== undefined && elem.activeProgram != null
                     ? unlinkProgram()
-                    : setAssocProgram(!assocProgram)
+                    : elem.status == 1 
+                        ? notify('Hay que parar el actuador para asociar el programa', 'warning')
+                        : setAssocProgram(!assocProgram)
                 }}
                 className={`shadow-md rounded-md h-10 flex disabled:text-slate-400 justify-center items-center gap-x-1 border hover:bg-gray-50 duration-150 px-1`}>
             {

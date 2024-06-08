@@ -27,6 +27,7 @@ import { MdOutlineAddchart } from "react-icons/md";
 import { GiWateringCan } from "react-icons/gi"
 import { SensorChart } from "@/src/app/ui/dashboard/SensorChart";
 import { ActuadorProgramName } from "@/src/app/ui/dashboard/ActuadoresInfo";
+import { notify } from "@/src/app/lib/notify";
 
 
 
@@ -335,9 +336,18 @@ export default function Page() {
     const handleActuadorMode = async (index: number) => {
         const token = getCookie("token");
         let actuador = deviceActuadores[index]
+        if (actuador.activeProgram != "" && actuador.activeProgram != null && actuador.mode == 0) {
+            notify("No se puede cambiar el modo de un actuador con un programa activo", "warning")
+            return
+        }
+        if (actuador.device_pin == null) {
+            notify("No se puede cambiar el modo de un actuador sin un pin asignado", "warning")
+            return
+        }
         let res = await updateActuadorMode(actuador.id, actuador.mode ? 0 : 1, token as string)
         if (res) {
             let newActuadores = await getActuadores(deviceId as string, token as string)
+            notify("Modo cambiado correctamente", "success")
             setDeviceActuadores(newActuadores)
         } 
     }
@@ -635,14 +645,47 @@ export default function Page() {
         closeActuadorOpenCloseModal()
     }
 
+    const checkProgram = async (programId: string) => {
+        return 0
+    }
 
     const openCloseActuador = async (actuador: Actuador) => {
         const token = getCookie('token')
         if (actuador.activeProgram != "" && actuador.activeProgram != null) {
             if (actuador.status) {
-                openActuadorOpenCloseModal(actuador, "¿Seguro que deseas cerrar el actuador? Tiene un programa activo")
+                /*
+                    - Si el actuador está abierto y tiene un programa activo para las proximas horas, preguntar si desea cancelar el programa de hoy
+                    - Si el actuador está abierto y tiene un programa en funcionamiento, preguntar si desea terminar el programa o simplemente pausarlo
+                */
+                let programStatus = await checkProgram(actuador.activeProgram)
+                if (programStatus == 0) {
+                    let res = await updateActuadorStatus(actuador.id, actuador.status ? 0 : 1 , token as string)
+                    if (res) {
+                        notify("Actuador cerrado correctamente", "success")
+                        fetchDeviceActuadores(deviceId as string, token as string)
+                    }
+                } else if (programStatus == 1) {    // Riega hoy, pero aun no esta activo
+                    openActuadorOpenCloseModal(actuador, "¿Deseas cancelar el programa?")
+                } else if (programStatus == 2) {    // Riega hoy y está activo
+                    openActuadorOpenCloseModal(actuador, "¿Deseas pausar el programa o cancelarlo?")
+                }
             } else {
-                openActuadorOpenCloseModal(actuador, "¿Seguro que deseas abrir el actuador? Tiene un programa activo")
+                /*
+                    - Si el actuador está cerrad y no tiene programa activo para hoy, se abre con normalidad
+                    - si el actuador está cerrado y tiene un programa activo para las proximas horas, preguntar si desea cancelar el programa de hoy
+                    - si está cerrado y el programa está activo, preguntar si reanudar el programa o abrir el actuador y cancelar el programa de hoy
+                */
+                let programStatus = await checkProgram(actuador.activeProgram)
+                if (programStatus == 0) {
+                    let res = await updateActuadorStatus(actuador.id, actuador.status ? 0 : 1 , token as string)
+                    if (res) {
+                        notify("Actuador abierto correctamente", "success")
+                        fetchDeviceActuadores(deviceId as string, token as string)
+                    }
+                } else if (programStatus == 1) {    // Riega hoy, pero aun no esta activo
+                    openActuadorOpenCloseModal(actuador, "¿Deseas cancelar el programa? Se regaría en modo manual")
+                
+                }
             }
         } else{
             let res = await updateActuadorStatus(actuador.id, actuador.status ? 0 : 1 , token as string)

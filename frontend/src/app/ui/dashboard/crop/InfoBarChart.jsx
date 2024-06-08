@@ -135,7 +135,7 @@ export const CropTempBarChart = ({crop}) => {
 
   return (
     <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
-        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Temperatura (ºC)</h1>
         <Suspense fallback={<CircularIndeterminate/>}>
             {
                 loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
@@ -191,7 +191,7 @@ export const CropSoilTempBarChart = ({crop}) => {
 
   return (
     <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
-        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Temperatura de suelo (ºC)</h1>
         <Suspense fallback={<CircularIndeterminate/>}>
             {
                 loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
@@ -247,7 +247,7 @@ export const CropSoilHumBarChart = ({crop}) => {
 
   return (
     <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
-        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+        <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad de suelo (%RH)</h1>
         <Suspense fallback={<CircularIndeterminate/>}>
             {
                 loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
@@ -283,7 +283,7 @@ export const ActuadorAccumulatedFlowBarChart = ({crop}) => {
   
     return (
         <div className="w-full h-full flex flex-col gap-y-2 justify-center items-center p-3">
-            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Humedad (%RH)</h1>
+            <h1 className="w-full flex font-medium justify-center items-center text-slate-400">Caudal acumulado (L)</h1>
             <Suspense fallback={<CircularIndeterminate/>}>
                 {
                     loading ? <CircularIndeterminate/> : <CustomBarChart data={data}/>
