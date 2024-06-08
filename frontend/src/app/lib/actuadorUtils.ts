@@ -218,4 +218,26 @@ export const getActuadorInfo = async (id: string, token: string) => {
     }
 }
 
+export const updateStatusProgram = async (actuadorId: string, action: string, token: string) => {
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({actuatorId: actuadorId, action: action})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/programs/programAction", options)
+    if (request.status === 200) {
+        if (action == "stop") {
+            notify("Programa pausado", "success")
+        } else if (action == "resume") {
+            notify("Programa reanudado", "success")
+        }
+        return true
+    } else {
+        return false
+    }
+}
+
 
