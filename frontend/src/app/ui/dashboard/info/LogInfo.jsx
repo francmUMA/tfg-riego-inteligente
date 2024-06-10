@@ -47,7 +47,7 @@ export const LogInfo = ({ elemId, type }) => {
                                     </div>
                                     <div className="w-full h-full flex flex-row items-center gap-x-2">
                                         <FaRegNewspaper className="text-indigo-600" size={18}/>
-                                        <p className="w-full h-full flex overflow-x-auto">{log.description}</p>
+                                        <p className="w-full h-full overflow-x-auto">{log.description}</p>
                                     </div>
                                 </div>
                             ))

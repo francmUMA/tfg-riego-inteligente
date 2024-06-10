@@ -10,7 +10,7 @@ import CircularIndeterminate from "./info/CircularFallback";
 const SensorInfo = ({ sensor, devices }) => {
     return(
         <main className="w-full h-full px-2 items-center flex flex-row gap-x-10 justify-center">
-            <p className="font-semibold w-full flex flex-row gap-x-3 items-center justify-start">
+            <p className=" w-full flex flex-row gap-x-3 items-center justify-start">
                 <FaFaucetDrip size={18} className="text-indigo-600"/>
                 {sensor.name}
             </p>

@@ -805,16 +805,16 @@ export default function Page() {
                                             {
                                                 deviceActuadores.map((actuador, index) => {
                                                     return (
-                                                        <div key={index} className={`w-dvw md:w-full h-12 flex flex-row gap-3 items-center ${
+                                                        <div key={index} className={`w-dvw md:w-full h-12 grid grid-cols-16 gap-x-3 items-center ${
                                                             index % 2 == 0
                                                                 ? "bg-blue-100"
                                                                 : "bg-gray-50"
                                                         }`}>
-                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row items-center">
+                                                            <div className="h-full col-span-3 flex items-center">
                                                                 <FaFaucetDrip size={20} className="w-9 text-indigo-600"></FaFaucetDrip>
                                                                 {actuador.name}
                                                             </div>
-                                                            <div className="px-3 w-full min-w-fit h-full flex gap-2 items-center">
+                                                            <div className="h-full col-span-3 flex gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorAreaDialogButton(index)} className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
                                                                 </button>
@@ -828,7 +828,7 @@ export default function Page() {
                                                                         })
                                                                 }
                                                             </div>
-                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
+                                                            <div className="h-full col-span-3 flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateActuadorPinDialogButton(index)} 
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <LuPin size={24} className="w-9 px-2 text-indigo-600"></LuPin>
@@ -838,16 +838,18 @@ export default function Page() {
                                                                         ? "Desconectado"
                                                                         : actuador.device_pin
                                                                 }
+                                                            </div> 
+                                                            <div className="h-full col-span-3 flex items-center justify-center">
+                                                                <ActuadorProgramName programId={actuador.activeProgram}/>
                                                             </div>
-                                                            <ActuadorProgramName programId={actuador.activeProgram}/>
-                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
+                                                            <div className="h-full flex items-center justify-center">
                                                                 <button
                                                                     onClick={() => openChartDialog(actuador.id, 4)}
                                                                     className="w-9 h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <GiWateringCan size={24} className="w-9 px-2 text-indigo-600"/>
                                                                 </button>
                                                             </div>
-                                                            <div className="px-3 w-full min-w-fit h-full flex flex-row gap-2 items-center">
+                                                            <div className="h-full flex items-center justify-center">
                                                                 <button 
                                                                     onClick={() => openCloseActuador(actuador)}
                                                                     disabled={actuador.mode == 1 || actuador.device_pin == null}
@@ -860,15 +862,14 @@ export default function Page() {
                                                                         }
                                                                 </button>
                                                             </div>
-                                                            
-                                                            <button onClick={() => handleActuadorMode(index)} className="flex items-center">
+                                                            <button onClick={() => handleActuadorMode(index)} className="h-full justify-center flex items-center">
                                                                 {
                                                                     actuador.mode == 1
                                                                         ? <FaRobot size={24} className="transition ease-in-out  text-indigo-600"></FaRobot>
                                                                         : <FaRobot size={24} className="transition ease-in-out  text-indigo-300"></FaRobot>
                                                                 }
                                                             </button>
-                                                            <div className="px-2 w-full h-full flex justify-end items-center">
+                                                            <div className="h-full flex items-center justify-center">
                                                                 <button onClick={() => handleOpenDeleteElemDialogButton(index, false)} className="w-8 h-2/3 rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>
                                                                 </button>
@@ -887,20 +888,20 @@ export default function Page() {
                             </div>
                             {
                                 deviceSensors.length > 0 && deviceSensors[0].id != ""
-                                    ?   <div className="w-full h-full overflow-y-auto rounded-md">
+                                    ?   <div className="w-full h-full  overflow-y-auto rounded-md">
                                             {
                                                 deviceSensors.map((sensor, index) => {
                                                     return (
-                                                        <div key={index} className={`w-dvw md:w-full h-12 flex flex-row gap-3 items-center justify-between ${
+                                                        <div key={index} className={`w-dvw md:w-full h-12 grid grid-cols-9 gap-3 items-center justify-between ${
                                                             index % 2 == 0
                                                                 ? "bg-blue-100"
                                                                 : "bg-gray-50"
                                                         }`}>
-                                                            <p className="px-3 w-28 h-full flex flex-row justify-center items-center">
+                                                            <p className="px-3 col-span-2 w-28 h-full flex flex-row justify-center items-center">
                                                                 <WiHumidity size={24} className="w-9 text-indigo-600"></WiHumidity>
                                                                 {sensor.name}
                                                             </p>
-                                                            <div className="px-3 w-48 h-full flex flex-row gap-2 items-center">
+                                                            <div className="px-3 col-span-2 w-48 h-full flex flex-row gap-2 items-center">
                                                                 <button onClick={() => handleOpenUpdateSensorAreaDialogButton(index)} className="h-2/3 rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <MapPinIcon className="w-9 px-2 text-indigo-600"></MapPinIcon>
                                                                 </button>
@@ -942,8 +943,8 @@ export default function Page() {
                                                                     <FaWater size={24} className="w-9 px-2 text-indigo-600"/>
                                                                 </button>
                                                             </div>                                                   
-                                                            <div className="px-2 w-12 h-2/3 flex justify-center items-center">
-                                                                <button onClick={() => handleOpenDeleteElemDialogButton(index, true)} className="w-full h-full rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
+                                                            <div className="px-2 w-full h-full flex justify-end items-center">
+                                                                <button onClick={() => handleOpenDeleteElemDialogButton(index, true)} className="w-8 h-2/3 rounded-md flex justify-center items-center shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
                                                                     <FaRegTrashAlt size={24} className="w-9 px-2 text-indigo-600"></FaRegTrashAlt>
                                                                 </button>
                                                             </div>

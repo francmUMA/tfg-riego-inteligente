@@ -58,8 +58,8 @@ export const ProgramsInfo = ({setUpdateActuador,updateProgram, setUpdateProgram,
                         <div key={index} className={`w-full h-12 flex flex-row items-center gap-x-3 px-2 overflow-x-auto ${
                             index % 2 == 0 ? "bg-blue-100" : "bg-gray-50"
                         }`}>
-                            <p className="w-full h-full flex items-center justify-start font-semibold">{program.name}</p>
-                            <p className="min-w-10  h-full flex items-center justify-start">
+                            <p className=" h-full flex items-center justify-start font-semibold">{program.name}</p>
+                            <p className="min-w-10 h-full flex items-center justify-start">
                                 {
                                     timestampToTime(program.startTime)
                                 }

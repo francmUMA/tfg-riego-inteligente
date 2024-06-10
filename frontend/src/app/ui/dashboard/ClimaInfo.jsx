@@ -92,7 +92,7 @@ const ForecastInfo = ({weather}) => {
                 <p className="flex justify-center items-center">
                     <CiTempHigh size={23}/> {weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 3)/ 24)].hour[(startIndex + 3) % 24].temp_c}
                 </p>
-                <p className="w-full w-full flex gap-x-1 items-center justify-center">
+                <p className="w-full flex gap-x-1 items-center justify-center">
                     <PiCloudRainDuotone size={17} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 3)/ 24)].hour[(startIndex + 3) % 24].chance_of_rain} %
                 </p>
             </div>
@@ -106,7 +106,7 @@ const ForecastInfo = ({weather}) => {
                 <p className="flex justify-center items-center">
                     <CiTempHigh size={23}/> {weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 4)/ 24)].hour[(startIndex + 4) % 24].temp_c}
                 </p>
-                <p className="w-full w-full flex gap-x-1 items-center justify-center">
+                <p className="w-full flex gap-x-1 items-center justify-center">
                     <PiCloudRainDuotone size={17} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[parseInt((startIndex + 4)/ 24)].hour[(startIndex + 4) % 24].chance_of_rain} %
                 </p>
             </div>
@@ -141,7 +141,7 @@ export default function ClimaInfo() {
                 <section id="actual" className="w-full bg-indigo-500 rounded-md shadow-md h-full flex flex-row items-center justify-center p-3">
                     
                     <div className="flex flex-col w-full justify-center items-center">
-                        <p className="w-full h-11 flex items-center justify-center text-[50px] font-bold"> 
+                        <p className="w-full h-11 flex items-center justify-center text-[45px] font-bold"> 
                             {weather !== undefined && weather.current !== undefined && weather.current.temp_c} ºC
                         </p>
                         <p className="text-slate-100">{weather !== undefined && weather.location !== undefined && weather.location.name + ", " + weather.location.country}</p>
@@ -150,13 +150,13 @@ export default function ClimaInfo() {
                         <WeatherIcon size={100} weatherText={weather !== undefined && weather.current !== undefined && weather.current.condition.text} />
                     </div>
                     <div className="w-full flex flex-col items-center justify-center">
-                        <p className="w-full text-xl flex items-center justify-center"> 
+                        <p className="w-full text-xl flex items-center"> 
                             <CiTempHigh size={23}/>{weather !== undefined && weather.current !== undefined && weather.current.feelslike_c} ºC
                         </p>
-                        <p className="w-full text-xl flex items-center justify-center"> 
+                        <p className="w-full text-xl flex items-center"> 
                             <WiHumidity size={23} />{weather !== undefined && weather.current !== undefined && weather.current.humidity} %
                         </p>
-                        <p className="w-full text-xl flex items-center justify-center">
+                        <p className="w-full text-xl flex items-center">
                             <PiCloudRainDuotone size={23} />{weather !== undefined && weather.forecast !== undefined && weather.forecast.forecastday[0].day.daily_chance_of_rain} %
                         </p>
                     </div>

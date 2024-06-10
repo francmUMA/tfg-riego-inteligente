@@ -1,8 +1,8 @@
 import { getCookie } from "cookies-next"
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { getDevices } from "../../lib/devicesUtils"
 import { getActuadores } from "../../lib/actuadorUtils"
-import { FaClock, FaCross, FaFaucetDrip } from "react-icons/fa6";
+import { FaClock, FaFaucetDrip } from "react-icons/fa6";
 import { IoWaterOutline } from "react-icons/io5";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { FaRobot } from "react-icons/fa";
@@ -23,13 +23,13 @@ export const ActuadorProgramName = ({programId}) => {
     }, [programId])
 
     return(
-        <div className="flex flex-row h-full w-full min-w-fit justify-start items-center gap-x-2">
-            <FaClock size={20} className="text-indigo-600"/>
-            {program === undefined || program == null ? "No hay programa" : program}
+        <div className="flex flex-row h-full w-full justify-start items-center gap-x-2">
             <button
                 className="w-9 h-2/3 flex justify-center items-center rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
-                <FaCross size={18} className="text-indigo-600"/>
+                <FaClock size={16} className="text-indigo-600"/>
             </button>
+            <p className="h-full flex items-center">{program === undefined || program == null ? "Indefinido" : program}</p>
+ 
         </div>
         
     )
