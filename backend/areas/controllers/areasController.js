@@ -85,7 +85,7 @@ export const add_area = async (req, res) => {
             crop: req.body.crop
         }
         await areasModel.create(area)
-        res.status(200).send("Area created")
+        res.status(200).send(area.id)
     } catch (error) {
         res.status(500).send(error.message)
     }
