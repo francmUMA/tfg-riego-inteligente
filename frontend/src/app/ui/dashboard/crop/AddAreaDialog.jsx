@@ -1,10 +1,11 @@
 
 import { addArea } from "@/src/app/lib/areasUtils"
+import { notify } from "@/src/app/lib/notify"
 import { Dialog, DialogTitle } from "@mui/material"
 import { getCookie } from "cookies-next"
 import { useState } from "react"
 
-export const AddAreaDialog = (openDialog, closeDialog, cropId) => {
+export const AddAreaDialog = (openDialog, closeDialog, cropId, setPlace, setAreaId) => {
     const [emptyName, setEmptyName] = useState(true)
     const [validName, setValidName] = useState(false)
     const [name, setName] = useState("")
@@ -12,12 +13,14 @@ export const AddAreaDialog = (openDialog, closeDialog, cropId) => {
     const handleSubmit = async () => {
         if (!emptyName && validName) {
             const token = getCookie("token")
-            console.log(name, cropId, token)
             let res = await addArea(name, cropId, token)
-            if (res) {
+            if (res !== undefined) {
                 closeDialog()
+                setPlace(true)
+                setAreaId(res)
+                notify("Debes colocar la zona en el mapa", "info")
             } else {
-                alert("Error al crear el area")
+                notify("Error al crear la zona", "error")
             }
         }
     }

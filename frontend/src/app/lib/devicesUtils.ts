@@ -204,3 +204,21 @@ export const getTemperatureValues = async (device: string) => {
         return []
     }
 }
+
+export const getDeviceTempLast24 = async (device: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/temperature/last24/" + device, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
+    }
+}

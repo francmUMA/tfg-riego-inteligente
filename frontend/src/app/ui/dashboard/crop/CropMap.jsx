@@ -10,7 +10,7 @@ import { SensorMarkerInfo } from "./SensorMarkerInfo"
 import { AreaInfo } from "./AreaInfo"
 import CircularIndeterminate from "../info/CircularFallback"
 
-export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
+export const CropMap = ({ crop, areas, devices, sensors, actuadores, place, placeId, setPlaceCoords }) => {
     const [startLocation, setStartLocation] = useState({lat: 0, lng: 0})
     const [displayMap, setDisplayMap] = useState(false)
     const [coords, setCoords] = useState([])
@@ -67,6 +67,12 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
         if (crop !== undefined) fetchCropCoords()
     }, [crop])
 
+    useEffect(() => {
+        if (placeId !== undefined){
+            
+        }
+    }, [placeId])
+
 
     return(
         loading ? <CircularIndeterminate/> :
@@ -104,11 +110,18 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
                                             strokeOpacity: 0.4,
                                             strokeWeight: 2
                                         }}
+                                        editable={placeId == area.id && place}
                                     />
                                     {
                                         clickedArea == area.id &&
                                         <InfoWindow
                                             position={{lat: clickedCoords.lat, lng: clickedCoords.lng}}
+                                            onCloseClick={() => {
+                                                setClickedDevice(undefined)
+                                                setClickedSensor(undefined)
+                                                setClickedActuador(undefined)
+                                                setClickedArea(undefined) 
+                                            }}
                                         >
                                             <AreaInfo area={area}/>
                                         </InfoWindow>
@@ -133,6 +146,12 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
                                         clickedDevice == device.id &&
                                         <InfoWindow
                                             position={{lat: device.Latitud + 0.0005, lng: device.Longitud}}
+                                            onCloseClick={() => {
+                                                setClickedDevice(undefined)
+                                                setClickedSensor(undefined)
+                                                setClickedActuador(undefined)
+                                                setClickedArea(undefined)
+                                            }}
                                         >
                                             <DeviceMarkerInfo device={device}/>
                                         </InfoWindow>
@@ -164,6 +183,12 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
                                         clickedSensor == sensor.id &&
                                         <InfoWindow
                                             position={{lat: sensor.Latitud + 0.0005, lng: sensor.Longitud}}
+                                            onCloseClick={() => {
+                                                setClickedDevice(undefined)
+                                                setClickedSensor(undefined)
+                                                setClickedActuador(undefined)
+                                                setClickedArea(undefined) 
+                                            }}
                                         >
                                             <SensorMarkerInfo sensor={sensor}/>
                                         </InfoWindow>
@@ -189,6 +214,12 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores }) => {
                                         clickedActuador == actuador.id &&
                                         <InfoWindow
                                             position={{lat: actuador.Latitud + 0.0005, lng: actuador.Longitud}}
+                                            onCloseClick={() => {
+                                                setClickedDevice(undefined)
+                                                setClickedSensor(undefined)
+                                                setClickedActuador(undefined)
+                                                setClickedArea(undefined)
+                                            }}
                                         >
                                             <ActuadorMarkerInfo actuador={actuador}/>
                                         </InfoWindow>

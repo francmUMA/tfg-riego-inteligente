@@ -34,9 +34,10 @@ export async function addArea(name: string, cropId:string, token: string) {
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas", options)
     if (request.status === 200) {
-        return true
+        let data = await request.text()
+        return data
     } else {
-        return false
+        return undefined
     }
 }
 

@@ -4,7 +4,7 @@ import ActuadoresInfo from "@/src/app/ui/dashboard/ActuadoresInfo";
 import { RotateIconUpdateButton } from "@/src/app/ui/dashboard/RotateIconUpdateButton";
 import { CropMap } from "@/src/app/ui/dashboard/crop/CropMap";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
 import { PiPlant,PiPolygon } from "react-icons/pi"
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { HiMiniCpuChip } from "react-icons/hi2";
@@ -14,6 +14,12 @@ import { MdAddLocationAlt } from "react-icons/md";
 import { AddAreaDialog } from "@/src/app/ui/dashboard/crop/AddAreaDialog";
 import { ActuadorAccumulatedFlowBarChart, CropHumBarChart, CropSoilHumBarChart, CropSoilTempBarChart, CropTempBarChart } from "@/src/app/ui/dashboard/crop/InfoBarChart";
 import CircularIndeterminate from "@/src/app/ui/dashboard/info/CircularFallback";
+import { notify } from "@/src/app/lib/notify";
+import { FaCheck } from "react-icons/fa6";
+import { addCoords } from "@/src/app/lib/coordsUtils";
+import { getCookie } from "cookies-next";
+import { fetchUserInfo } from "@/src/app/lib/userInfo";
+import { get } from "http";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -23,6 +29,8 @@ export default function Page ({ }) {
     const [cropDevices, setCropDevices] = useState([])
     const [cropActuadores, setCropActuadores] = useState([])
     const [cropSensors, setCropSensors] = useState([])
+
+    const [centerCoords, setCenterCoords] = useState({lat: 0, lng: 0})
 
     const fetchCropInfo = async () => {
         let id = getUrlId()
@@ -53,6 +61,10 @@ export default function Page ({ }) {
     const openDeleteCropDialog = () => setIsOpenDeleteCropDialog(true)
 
     const [IsOpenAddAreaDialog, setIsOpenAddAreaDialog] = useState(false)
+    const [placeArea, setPlaceArea] = useState(false)
+    const [placeAreaId, setPlaceAreaId] = useState(undefined)
+    const [placeAreaCoords, setPlaceAreaCoords] = useState([])
+    
     const closeAddAreaDialog = () => {
         setIsOpenAddAreaDialog(false)
         fetchCropAreas()
@@ -65,10 +77,39 @@ export default function Page ({ }) {
         let res = await deleteCrop(id as string)
         if (res) {
             router.push("/dashboard/crops")
+            notify("Cultivo eliminado","success")
         } else{
-            alert("Error al eliminar el cultivo")
+            notify("Error al eliminar cultivo")
         }
     }
+
+    const createInitialCoords = async (areaId: any) => {
+        if (centerCoords === undefined) {
+            notify("Error al crear el polígono","error")
+            return
+        }
+        const token = getCookie("token")
+        let coord1 = await addCoords(centerCoords.lat, centerCoords.lng, areaId, 0, token as string)
+        let coord2 = await addCoords(centerCoords.lat + 0.0001, centerCoords.lng + 0.0001, areaId, 1, token as string)
+        if (!coord1 || !coord2) {
+            notify("Error al crear el polígono","error")
+            return
+        }
+    }
+
+    const getUserInfo = async () => {
+        const token = getCookie("token")
+        let user = await fetchUserInfo(token as string)
+        if (user !== undefined) {
+            setCenterCoords({lat: user.Latitud, lng: user.Longitud})
+        }
+    }
+
+    useEffect(() => {
+        if (placeAreaId === undefined) return
+        createInitialCoords(placeAreaId)
+        fetchCropAreas()
+    }, [placeAreaId])
 
     const getUrlId = () => {
         const url = new URL(window.location.href)
@@ -81,8 +122,12 @@ export default function Page ({ }) {
 
     const fetchCropAreas = async () => {
         let id = getUrlId()
-        let data = await getCropAreas(id as string)
-        setCropAreas(data)
+        try {
+            let data = await getCropAreas(id as string)
+            setCropAreas(data)
+        } catch (error) {
+            notify("Error al obtener areas","error")
+        }
     }
 
     useEffect(() => {
@@ -91,38 +136,51 @@ export default function Page ({ }) {
         fetchCropDevices()
         fetchCropActuadores()
         fetchCropSensors()
+        getUserInfo()
     }, [])
 
     return (
         <main className="w-full h-full flex flex-col gap-y-2 overflow-scroll">
             {DeleteCropDialog(IsOpenDeleteCropDialog,closeDeleteCropDialog, deleteCropFunction)}
-            {AddAreaDialog(IsOpenAddAreaDialog,closeAddAreaDialog, crop !== undefined && crop.id)}
+            {AddAreaDialog(IsOpenAddAreaDialog,closeAddAreaDialog, crop !== undefined && crop.id, setPlaceArea, setPlaceAreaId)}
             <header className="flex flex-row w-full gap-x-2">
-                <button className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                <button className={`shadow-md rounded-md h-10 w-10 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
                         <ArrowLeftIcon onClick={() => {
                             router.push("/dashboard/crops")
                         }} className={`w-6 text-indigo-600`}/>
                 </button>
-                <RotateIconUpdateButton buttonClickFunction={() => {
+                {/* <RotateIconUpdateButton buttonClickFunction={() => {
                     fetchCropInfo()
                     fetchCropAreas()
                     fetchCropDevices()
                     fetchCropActuadores()
                     fetchCropSensors()
-                }}/>
-                <button onClick={openDeleteCropDialog} className="w-12 h-12 hover:bg-red-400 transition ease-in-out duration-150 bg-red-600 flex items-center justify-center rounded-md shadow-md">
-                    <FaRegTrashAlt  size={22} className="text-white"/>
-                </button>
+                }}/> */}
+
                 <button 
                     onClick={openAddAreaDialog}
-                    className={`shadow-md rounded-md h-12 w-12 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
-                    <MdAddLocationAlt size={24} className="w-6"/>
+                    className={`shadow-md rounded-md h-10 w-10 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                    <MdAddLocationAlt size={24} className="w-9"/>
+                </button>
+                <button 
+                    onClick={() => {
+                        setPlaceArea(false)
+                        notify("Area creada correctamente","success")
+                    }}
+                    className={`shadow-md ${
+                        !placeArea && "hidden"
+                    } rounded-md h-10 w-10 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
+                    <FaCheck size={24} className="w-9"/>
+                </button>
+                <button onClick={openDeleteCropDialog} className="w-10 h-10 hover:bg-red-400 transition ease-in-out duration-150 bg-red-600 flex items-center justify-center rounded-md shadow-md">
+                    <FaRegTrashAlt  size={20} className="w-9 text-white"/>
                 </button>
             </header>
             <section className="w-full h-full min-h-96 flex flex-row gap-x-2">
                 <div id="map" className="w-full h-full rounded-md shadow-md overflow-hidden">
                     <Suspense fallback={<CircularIndeterminate/>}>
-                        <CropMap areas={cropAreas} crop={crop} devices={cropDevices} actuadores={cropActuadores} sensors={cropSensors}/>
+                        <CropMap place={placeArea} setPlaceCoords={setPlaceAreaCoords} placeId={placeAreaId} 
+                         areas={cropAreas} crop={crop} devices={cropDevices} actuadores={cropActuadores} sensors={cropSensors}/>
                     </Suspense>
                 </div>
                 <div id="info" className="w-1/5 flex flex-col justify-center gap-y-2">

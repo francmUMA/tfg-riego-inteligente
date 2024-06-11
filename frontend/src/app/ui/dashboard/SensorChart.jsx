@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getSensorLast24hValuesHum, getSensorLast24hValuesSoilHum, getSensorLast24hValuesSoilTemp, getSensorLast24hValuesTemp } from '../../lib/sensorsUtils';
 import { getCookie } from 'cookies-next';
 import { getSensorLast24hValuesFlow } from '../../lib/actuadorUtils';
-import { getTemperatureValues } from '../../lib/devicesUtils';
+import { getDeviceTempLast24, getTemperatureValues } from '../../lib/devicesUtils';
 
 export const SensorChart = props => {
 	const {
@@ -67,7 +67,7 @@ export const SensorChart = props => {
 						: type == 4
 							? await getSensorLast24hValuesFlow(id, token)
 							: type == 5 
-								? await getTemperatureValues(id)
+								? await getDeviceTempLast24(id)
 								: []
         if (newData !== undefined) {
             //Ordenar los datos por fecha
