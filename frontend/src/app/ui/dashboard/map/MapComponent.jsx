@@ -19,6 +19,7 @@ import { ColorPicker } from './ColorPicker.jsx';
 import { Suspense } from 'react';
 import CircularIndeterminate from '../info/CircularFallback.jsx';
 import { AreaInfo, AuxAreaInfo } from './AreaInfo.jsx';
+import { notify } from '@/src/app/lib/notify.js';
 
 const App = () => {
   const [devices, setDevices] = useState([])
@@ -48,7 +49,6 @@ const App = () => {
       sensors.push(...sensors_device)
     }
     setSensors(sensors)
-    console.log(sensors[0])
     let userinfo = await fetchUserInfo(token)
     let actuadores = []
     for (let device of response) {
@@ -71,6 +71,8 @@ const App = () => {
     }
     setCoords(polygonsArea)
   }
+
+  useEffect(() => {console.log(coords)}, [coords])
 
   //------------------------------------ MARKERS -----------------------------------------------------------------
   const [addMarkerMode, setAddMarkerMode] = useState(false)
@@ -333,7 +335,7 @@ const App = () => {
     let coord1 = await addCoords(lat, lng, area, 0, token)
     let coord2 = await addCoords(lat + 0.0001, lng, area, 1, token)
     if (!coord1 || !coord2) {
-      alert('Error placing polygon')
+      notify('Error al agregar coordenadas', 'error')
     } else {
       let polygonsArea = []
       for (let area of areas) {

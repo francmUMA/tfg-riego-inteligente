@@ -1,10 +1,9 @@
 'use client'
 import { deleteCrop, getCrop, getCropActuadores, getCropAreas, getCropDevices, getCropSensors } from "@/src/app/lib/cropUtils";
 import ActuadoresInfo from "@/src/app/ui/dashboard/ActuadoresInfo";
-import { RotateIconUpdateButton } from "@/src/app/ui/dashboard/RotateIconUpdateButton";
 import { CropMap } from "@/src/app/ui/dashboard/crop/CropMap";
 import { useRouter } from "next/navigation";
-import { Suspense, use, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { PiPlant,PiPolygon } from "react-icons/pi"
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { HiMiniCpuChip } from "react-icons/hi2";
@@ -19,7 +18,6 @@ import { FaCheck } from "react-icons/fa6";
 import { addCoords } from "@/src/app/lib/coordsUtils";
 import { getCookie } from "cookies-next";
 import { fetchUserInfo } from "@/src/app/lib/userInfo";
-import { get } from "http";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -83,20 +81,6 @@ export default function Page ({ }) {
         }
     }
 
-    const createInitialCoords = async (areaId: any) => {
-        if (centerCoords === undefined) {
-            notify("Error al crear el polígono","error")
-            return
-        }
-        const token = getCookie("token")
-        let coord1 = await addCoords(centerCoords.lat, centerCoords.lng, areaId, 0, token as string)
-        let coord2 = await addCoords(centerCoords.lat + 0.0001, centerCoords.lng + 0.0001, areaId, 1, token as string)
-        if (!coord1 || !coord2) {
-            notify("Error al crear el polígono","error")
-            return
-        }
-    }
-
     const getUserInfo = async () => {
         const token = getCookie("token")
         let user = await fetchUserInfo(token as string)
@@ -107,7 +91,6 @@ export default function Page ({ }) {
 
     useEffect(() => {
         if (placeAreaId === undefined) return
-        createInitialCoords(placeAreaId)
         fetchCropAreas()
     }, [placeAreaId])
 

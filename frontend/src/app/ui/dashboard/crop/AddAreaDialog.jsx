@@ -1,4 +1,3 @@
-
 import { addArea } from "@/src/app/lib/areasUtils"
 import { notify } from "@/src/app/lib/notify"
 import { Dialog, DialogTitle } from "@mui/material"

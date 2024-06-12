@@ -1,8 +1,8 @@
-import { getCoordsArea } from "@/src/app/lib/coordsUtils"
+import { addCoords, getCoordsArea } from "@/src/app/lib/coordsUtils"
 import { fetchUserInfo } from "@/src/app/lib/userInfo"
 import { APIProvider, Map, Marker, InfoWindow } from "@vis.gl/react-google-maps"
 import { getCookie } from "cookies-next"
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { Polygon } from "../map/Polygon"
 import { DeviceMarkerInfo } from "./DeviceMarkerInfo"
 import { ActuadorMarkerInfo } from "./ActuadorMarkerInfo"
@@ -38,6 +38,29 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores, place, plac
         }
     }
 
+    const [newCoords, setNewCoords] = useState([])
+    const createInitialCoords = async (coords) => {
+        if (coords === undefined || placeId === undefined) {
+            notify("Error al crear el polígono","error")
+            return
+        }
+        const token = getCookie("token")
+        let coord1 = await addCoords(coords.lat, coords.lng, placeId, 0, token)
+        let coord2 = await addCoords(coords.lat + 0.0001, coords.lng + 0.0001, placeId, 1, token)
+        if (!coord1 || !coord2) {
+            notify("Error al crear el polígono","error")
+            return
+        }
+        let polygonsArea = []
+        for (let area of areas) {
+          let polys = await getCoordsArea(area.id, token)
+          if (polys.length > 0) {
+            polygonsArea.push(...polys)
+          }
+        }
+        setCoords(polygonsArea)
+    }
+
     const fetchCropCoords = async () => {
         setLoading(true)
         const token = getCookie("token")
@@ -68,10 +91,8 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores, place, plac
     }, [crop])
 
     useEffect(() => {
-        if (placeId !== undefined){
-            
-        }
-    }, [placeId])
+        if (!place) fetchCropCoords()
+    },[place])
 
 
     return(
@@ -80,11 +101,14 @@ export const CropMap = ({ crop, areas, devices, sensors, actuadores, place, plac
             {   displayMap && 
                 <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}>
                     <Map 
-                        onClick={() => { 
+                        onClick={(e) => { 
                             setClickedDevice(undefined)
                             setClickedSensor(undefined)
                             setClickedActuador(undefined)
-                            setClickedArea(undefined) 
+                            setClickedArea(undefined)
+                            if (place && placeId !== undefined) {
+                                createInitialCoords({lat: e.detail.latLng.lat, lng: e.detail.latLng.lng})
+                            } 
                         }}
                         mapId={"880d1a58ffae37c1"}
                         disableDefaultUI
