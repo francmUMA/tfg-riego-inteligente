@@ -16,7 +16,7 @@ def get_actuadores(cnx: mysql.connector.connection.MySQLConnection):
     """
     Obtiene los actuadores disponibles en modo auto
     """
-    query = ("SELECT id, name, Latitud, Longitud, area, status, device FROM Actuadores WHERE mode=1")
+    query = ("SELECT SQL_NO_CACHE id, name, Latitud, Longitud, area, status, device FROM Actuadores WHERE mode=1")
     actuadores = []
     cursor = cnx.cursor()
     cursor.execute(query)
@@ -30,6 +30,7 @@ def get_actuadores(cnx: mysql.connector.connection.MySQLConnection):
             'status': status,
             'device': device
         })
+    cursor.close()
     return actuadores
 
 def get_area_sensors(cnx: mysql.connector.connection.MySQLConnection, area):
@@ -43,6 +44,7 @@ def get_area_sensors(cnx: mysql.connector.connection.MySQLConnection, area):
         cursor.execute(query, (area, ))
         for (id) in cursor:
             sensors.append(id[0])
+        cursor.close()
         return sensors
     except Exception as e:
         print('Error al obtener los sensores -> ' + str(e))
@@ -60,6 +62,7 @@ def get_temperature(cnx: mysql.connector.connection.MySQLConnection,area):
             cursor = cnx.cursor()
             cursor.execute(query, (sensor,))
             data.append(cursor.fetchone()[0])
+            cursor.close()
         except Exception as e:
             print('Error al obtener los datos de los sensores -> ' + str(e))
             return None
@@ -77,6 +80,7 @@ def get_humidity(cnx: mysql.connector.connection.MySQLConnection, area):
             cursor = cnx.cursor()
             cursor.execute(query, (sensor,))
             data.append(cursor.fetchone()[0])
+            cursor.close()
         except Exception as e:
             print('Error al obtener los datos de los sensores -> ' + str(e))
             return None
@@ -94,6 +98,7 @@ def get_soil_temperature(cnx: mysql.connector.connection.MySQLConnection, area):
             cursor = cnx.cursor()
             cursor.execute(query, (sensor,))
             data.append(cursor.fetchone()[0])
+            cursor.close()
         except Exception as e:
             print('Error al obtener los datos de los sensores -> ' + str(e))
             return None
@@ -111,6 +116,7 @@ def get_soil_humidity(cnx: mysql.connector.connection.MySQLConnection,area):
             cursor = cnx.cursor()
             cursor.execute(query, (sensor,))
             data.append(cursor.fetchone()[0])
+            cursor.close()
         except Exception as e:
             print('Error al obtener los datos de los sensores -> ' + str(e))
             return None
@@ -122,6 +128,7 @@ def open(cnx: mysql.connector.connection.MySQLConnection, mqttc: mqtt.Client, ac
         cursor = cnx.cursor()
         cursor.execute(query, (actuador_id,))
         cnx.commit()
+        cursor.close()
     except Exception as e:
         print('Error al abrir el actuador -> ' + str(e))
         return
@@ -135,6 +142,7 @@ def close(cnx: mysql.connector.connection.MySQLConnection ,mqttc: mqtt.Client, a
         cursor = cnx.cursor()
         cursor.execute(query, (actuador_id,))
         cnx.commit()
+        cursor.close()
     except Exception as e:
         print('Error al abrir el actuador -> ' + str(e))
         return

@@ -15,6 +15,7 @@ def get_connection():
         cnx = mysql.connector.connect(user=user, password=password,
                                     host=host,
                                     database=database)
+        cnx.autocommit = True
         return cnx
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:

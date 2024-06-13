@@ -149,5 +149,4 @@ while True:
                             continue
                     else:
                         continue
-    
     sleep(60)
