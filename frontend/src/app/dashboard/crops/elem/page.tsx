@@ -18,6 +18,7 @@ import { FaCheck } from "react-icons/fa6";
 import { addCoords } from "@/src/app/lib/coordsUtils";
 import { getCookie } from "cookies-next";
 import { fetchUserInfo } from "@/src/app/lib/userInfo";
+import { NotPlacedAreas } from "@/src/app/ui/dashboard/crop/NotPlacedAreas";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -132,14 +133,6 @@ export default function Page ({ }) {
                             router.push("/dashboard/crops")
                         }} className={`w-6 text-indigo-600`}/>
                 </button>
-                {/* <RotateIconUpdateButton buttonClickFunction={() => {
-                    fetchCropInfo()
-                    fetchCropAreas()
-                    fetchCropDevices()
-                    fetchCropActuadores()
-                    fetchCropSensors()
-                }}/> */}
-
                 <button 
                     onClick={openAddAreaDialog}
                     className={`shadow-md rounded-md h-10 w-10 flex justify-center items-center border hover:bg-gray-100 duration-150`}>
@@ -196,8 +189,11 @@ export default function Page ({ }) {
                     <h1 className="w-full h-10 flex font-medium justify-center items-center text-slate-400">Actuadores regando</h1>
                     <ActuadoresInfo showStatus={false} areas={cropAreas} filter={"status-on"}/>
                 </div>
-                <div className="w-2/3 h-full min-h-80 border shadow-md rounded-md">
+                <div className="w-full h-full min-h-80 border shadow-md rounded-md">
                     <ActuadorAccumulatedFlowBarChart crop={crop !== undefined ? crop.id : undefined}/>
+                </div>
+                <div className="w-2/3 h-full border shadow-md flex flex-row hover:border-indigo-600 transition ease-in-out duration-150 gap-x-4 items-center justify-center rounded-md">
+                       <NotPlacedAreas crop={crop}/>
                 </div>
             </section>
             <section className="w-full h-full min-h-80 flex flex-row gap-x-2">
