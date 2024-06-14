@@ -1,0 +1,8 @@
+services:
+  app:
+    image: python:3.8
+    volumes:
+      - /home/devfran/tfg-riego-inteligente/agent:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "pip install --upgrade pip && pip install -r requirements && python main.py"
+

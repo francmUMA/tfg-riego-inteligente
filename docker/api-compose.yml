@@ -1,0 +1,10 @@
+services:
+  app:
+    image: node:22
+    volumes:
+      - /home/devfran/tfg-riego-inteligente/backend:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm i && node index.js"
+    ports:
+      - 3000:3000
+
