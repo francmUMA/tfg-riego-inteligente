@@ -184,7 +184,7 @@ export default function Page ({ }) {
                 </div>
             </section>
             
-            <section id="actuadores-caudal" className="w-full h-full flex justify-center items-center flex-row gap-x-2">
+            <section id="actuadores-caudal" className="w-full h-full max-h-fit flex justify-center items-center flex-row gap-x-2">
                 <div className="w-full h-full border shadow-md rounded-md">
                     <h1 className="w-full h-10 flex font-medium justify-center items-center text-slate-400">Actuadores regando</h1>
                     <ActuadoresInfo showStatus={false} areas={cropAreas} filter={"status-on"}/>
