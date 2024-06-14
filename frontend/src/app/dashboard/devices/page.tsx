@@ -9,6 +9,8 @@ import { SignalIcon, SignalSlashIcon, EnvelopeIcon, MapPinIcon, ArrowPathIcon } 
 import { Dialog, DialogTitle } from "@mui/material"
 import { Area, getAreas } from "../../lib/areasUtils"
 import { IoIosAddCircleOutline } from "react-icons/io"
+import { notify } from "../../lib/notify"
+import { checkToken } from "../../lib/token"
 
 export default function Page() {
     const [devices, setDevices] = useState([])
@@ -20,7 +22,7 @@ export default function Page() {
     const fetchDevices = async (token: string) => {
         const devices = await getDevices(token)
         if (devices === undefined) {
-             console.log("No se han obtenido los dispositivos")
+             notify("No se han obtenido los dispositivos", "error")
              setDevices([])
         } else {
             setDevices(devices)
@@ -30,7 +32,18 @@ export default function Page() {
 
     useEffect(() => {
         const token = getCookie("token")
-        if (token === undefined) router.push("/login")
+        if (token === undefined) {
+            notify("Sesión expirada", "error")
+            router.push("/login")
+        }
+        const verify = async (token: string) => {
+            let check = await checkToken(token)
+            if (!check) {
+                notify("Sesión expirada", "error")
+                router.push("/login")
+            } 
+        }
+        verify(token as string)
         fetchAreas(token as string)
         fetchDevices(token as string)
     }, [router])

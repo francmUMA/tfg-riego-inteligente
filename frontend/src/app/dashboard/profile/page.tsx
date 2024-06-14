@@ -7,6 +7,7 @@ import { fetchUserInfo, getEvents, updateEvent, updateNameSurname } from "../../
 import Checkbox from "../../ui/Checkbox"
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { notify } from "../../lib/notify"
 
 export default function Page() {
     const [eventos, setEventos] = useState([
@@ -61,13 +62,18 @@ export default function Page() {
 
     useEffect(() => {
         const token = getCookie("token")
-
+        if (token === undefined) {
+            notify("Sesión expirada", "error")
+            router.push("/login")
+        }
         const verify = async (token: string) => {
             let check = await checkToken(token)
             if (!check) {
+                notify("Sesión expirada", "error")
                 router.push("/login")
             } 
         }
+        verify(token as string)
 
         const getUserInfo = async (token: string) => {
             let data = await fetchUserInfo(token)

@@ -12,6 +12,10 @@ import { AddProgramDialog } from "../../ui/dashboard/info/AddProgramDialog";
 import { ProgramsInfo } from "../../ui/dashboard/info/ProgramsInfo";
 import { AssociateButton } from "../../ui/dashboard/info/AssociateButton";
 import CircularIndeterminate from "../../ui/dashboard/info/CircularFallback";
+import { getCookie } from "cookies-next";
+import { notify } from "../../lib/notify";
+import { useRouter } from "next/navigation";
+import { checkToken } from "../../lib/token";
 
 
 
@@ -23,7 +27,23 @@ export default function Page (){
     const [updatePrograms, setUpdatePrograms] = useState(false)
     const [updateActuador, setUpdateActuador] = useState(false)
 
-    useEffect(() => {}, [elem, type, associate])
+    const router = useRouter()
+
+    useEffect(() => {
+        const token = getCookie("token")
+        if (token === undefined) {
+            notify("Sesión expirada", "error")
+            router.push("/login")
+        }
+        const verify = async (token: string) => {
+            let check = await checkToken(token)
+            if (!check) {
+                notify("Sesión expirada", "error")
+                router.push("/login")
+            } 
+        }
+        verify(token as string)
+    }, [])
 
     const [IsOpenAddProgramDialog, setOpenAddProgramDialog] = useState(false)
     const closeAddProgramDialog = () => setOpenAddProgramDialog(false)

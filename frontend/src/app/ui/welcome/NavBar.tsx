@@ -43,6 +43,10 @@ const DropdownMenu = () => {
                     )
                 })
             }
+            <a href='/login' className='h-10 w-full flex justify-center items-center
+             hover:bg-gray-50 duration-100 transition ease-in-out'>
+                Inicia Sesión
+            </a>
             <a href='/register' className='h-10 w-full flex justify-center items-center bg-indigo-600 text-white hover:bg-indigo-400 duration-100 transition ease-in-out'>
                 Regístrate
             </a>
@@ -60,10 +64,10 @@ export default () => {
 
     return (
         <nav className="w-full border-b md:border-0 max-h-20">
-            <div className="items-center  max-h-20 max-w-screen-xl mx-auto flex flex-row md:px-8">
+            <div className="items-center w-full max-h-20 flex flex-row md:px-8">
                 <div className="flex w-full max-h-20 items-center justify-start md:py-5">
                     <Image src="/logo.png" alt="" width="80" height="0" />
-                    <h1 className="font-sans text-xl">Anukis II</h1>
+                    <h1 className="text-xl">WORM-E</h1>
                 </div>
                 <div className={`flex flex-row w-full items-center justify-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${ state ? 'block' : 'hidden'}`}>
                     <ul className="justify-center items-center space-y-8 md:flex md:space-x-6 md:space-y-0">
@@ -80,13 +84,22 @@ export default () => {
                         }
                     </ul>
                 </div>
-                <div className="hidden md:w-full md:flex md:items-center md:justify-end">
-                    <a href="/register" className="py-3 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow">
-                        Regístrate
-                    </a>
-                </div>
-                <div className='md:hidden h-full'>
-                    <DropdownMenu />
+                <div className='w-full h-full flex flex-row items-center justify-end gap-x-2'>
+                    <div className="hidden md:min-w-fit md:flex md:items-center">
+                        <a href="/login" className="py-3 px-4 duration-150 transition ease-in-out
+                         text-indigo-600 border hover:bg-gray-50 rounded-md shadow-md">
+                            Inicia Sesión
+                        </a>
+                    </div>
+                    <div className="hidden md:min-w-fit md:flex md:items-center">
+                        <a href="/register" className="py-3 px-4 duration-150 transition ease-in-out
+                         text-white bg-indigo-600 hover:bg-indigo-500 rounded-md shadow-md">
+                            Regístrate
+                        </a>
+                    </div>
+                    <div className='md:hidden h-full'>
+                        <DropdownMenu />
+                    </div>
                 </div>
             </div>
       </nav>

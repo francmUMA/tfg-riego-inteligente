@@ -19,6 +19,7 @@ import { addCoords } from "@/src/app/lib/coordsUtils";
 import { getCookie } from "cookies-next";
 import { fetchUserInfo } from "@/src/app/lib/userInfo";
 import { NotPlacedAreas } from "@/src/app/ui/dashboard/crop/NotPlacedAreas";
+import { checkToken } from "@/src/app/lib/token";
 
 export default function Page ({ }) {
     const router = useRouter()
@@ -91,6 +92,10 @@ export default function Page ({ }) {
     }
 
     useEffect(() => {
+        console.log(placeAreaCoords)
+    }, [placeAreaCoords])
+
+    useEffect(() => {
         if (placeAreaId === undefined) return
         fetchCropAreas()
     }, [placeAreaId])
@@ -115,6 +120,19 @@ export default function Page ({ }) {
     }
 
     useEffect(() => {
+        const token = getCookie("token")
+        if (token === undefined) {
+            notify("Sesión expirada", "error")
+            router.push("/login")
+        }
+        const verify = async (token: string) => {
+            let check = await checkToken(token)
+            if (!check) {
+                notify("Sesión expirada", "error")
+                router.push("/login")
+            } 
+        }
+        verify(token as string)
         fetchCropInfo()
         fetchCropAreas()
         fetchCropDevices()
@@ -155,7 +173,7 @@ export default function Page ({ }) {
             <section className="w-full h-full min-h-96 flex flex-row gap-x-2">
                 <div id="map" className="w-full h-full rounded-md shadow-md overflow-hidden">
                     <Suspense fallback={<CircularIndeterminate/>}>
-                        <CropMap place={placeArea} setPlaceCoords={setPlaceAreaCoords} placeId={placeAreaId} 
+                        <CropMap setAreas={setCropAreas} place={placeArea} setPlaceCoords={setPlaceAreaCoords} placeId={placeAreaId} 
                          areas={cropAreas} crop={crop} devices={cropDevices} actuadores={cropActuadores} sensors={cropSensors}/>
                     </Suspense>
                 </div>

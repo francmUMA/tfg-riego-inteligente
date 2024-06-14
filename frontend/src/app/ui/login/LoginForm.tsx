@@ -7,6 +7,8 @@ import checkPassword  from "../../lib/checkPassword"
 import { getCookie, setCookie } from "cookies-next"
 import { getToken } from "../../lib/token"
 import "./bg-form.css"
+import CircularIndeterminate from "../dashboard/info/CircularFallback"
+import { notify } from "../../lib/notify"
 
 export default function RegisterForm() {
 
@@ -64,6 +66,7 @@ export default function RegisterForm() {
             }
         }
     }
+    const [loading, setLoading] = useState(false)
 
     const renderContent = () => {
             return (
@@ -84,15 +87,18 @@ export default function RegisterForm() {
                         <span className="block w-full h-px bg-gray-300"></span>
                         <p className="inline-block w-fit text-sm bg-white px-2 absolute -top-2 inset-x-0 mx-auto"></p>
                     </div>
-                    <form onSubmit={async (e) => { 
+                    <form onSubmit={async (e) => {
+                        setLoading(true) 
                         e.preventDefault()
                         if (validEmail && validPassword) {
                             let token = await getToken(email as string, password as string)
                             setCookie('token', token)
                             router.push('/dashboard')
                         } else {
-                            console.log('Error al iniciar sesion')
+                            notify('Error al iniciar sesión', 'error')
+                            setLoading(false)
                         }
+                        
                     }}
                         className="space-y-5"
                     >
@@ -146,7 +152,10 @@ export default function RegisterForm() {
                        </div>
                         <div>
                             <button type="submit" className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                                Adelante</button>
+                                {
+                                    loading ? <CircularIndeterminate/> : 'Adelante'
+                                }
+                            </button>
                         </div>
                 </form>
                 </div>

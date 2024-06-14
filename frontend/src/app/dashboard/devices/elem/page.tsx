@@ -38,19 +38,19 @@ export default function Page() {
     const router = useRouter();
 
     useEffect(() => {
-        const verifyToken = async (token: string) => {
-            let res = await checkToken(token)
-            if (!res) {
-                router.push("/login");
-            }
-        }
-
-        // Verificar el token de autenticación
-        const token = getCookie("token");
+        const token = getCookie("token")
         if (token === undefined) {
-            router.push("/login");
+            notify("Sesión expirada", "error")
+            router.push("/login")
         }
-        verifyToken(token as string);
+        const verify = async (token: string) => {
+            let check = await checkToken(token)
+            if (!check) {
+                notify("Sesión expirada", "error")
+                router.push("/login")
+            } 
+        }
+        verify(token as string)
         
 
         // Recuperar el identificador del dispositivo de la URL

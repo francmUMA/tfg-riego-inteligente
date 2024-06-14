@@ -737,19 +737,14 @@ const App = () => {
                               </button>
                               <ColorPicker area={area} areas={areas} setAreas={setAreas} />
                               <button 
-                                onClick={() => {
+                                onClick={async () => {
                                   const token = getCookie('token')
                                   let res = deleteArea(area.id, token)
                                   if (res) {
-                                    let newAreas = []
-                                    for (let area of areas) {
-                                      if (area.id != area.id) {
-                                        newAreas.push(area)
-                                      }
-                                    }
-                                    setAreas(newAreas)
-                                    let newCoords = coords.filter(coord => coord.area != area.id)
-                                    setCoords(newCoords)
+                                    await fetchAllInfo()
+                                    notify('Zona eliminada correctamente', 'success')
+                                  } else {
+                                    notify('Error al eliminar zona', 'error')
                                   }
                                 }}
                                 className=" w-7 h-7 flex gap-2 text-red-600 justify-center items-center bg-gray-50 

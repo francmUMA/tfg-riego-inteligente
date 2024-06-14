@@ -141,7 +141,7 @@ export default function ClimaInfo() {
                 <section id="actual" className="w-full bg-indigo-500 rounded-md shadow-md h-full flex flex-row items-center justify-center p-3">
                     
                     <div className="flex flex-col w-full justify-center items-center">
-                        <p className="w-full h-11 flex items-center justify-center text-[45px] font-bold"> 
+                        <p className="w-full min-w-fit h-11 flex items-center justify-center text-[45px] font-bold"> 
                             {weather !== undefined && weather.current !== undefined && weather.current.temp_c} ºC
                         </p>
                         <p className="text-slate-100">{weather !== undefined && weather.location !== undefined && weather.location.name + ", " + weather.location.country}</p>
