@@ -1,5 +1,6 @@
 import deviceModel from "../models/deviceModel.js";
 import areaModel from "../../areas/models/areasModel.js";
+import monitorModel from "../../monitors/models/monitorModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { validate } from 'uuid';
@@ -162,6 +163,8 @@ export const deleteDevice = async (req, res) => {
             res.status(404).send("Device not found")
             return
         }
+        //Eliminar datos sobre el dispositivo
+        await monitorModel.destroy({ where: { deviceCode: req.params.id } })
         device.Usuario = "00000000A"
         device.save()
         publish_msg("devices/" + device.id + "/unregister", nif)
