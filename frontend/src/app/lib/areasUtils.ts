@@ -1,3 +1,4 @@
+import { indigo } from "@mui/material/colors"
 import { getCookie } from "cookies-next"
 
 export interface Area {
@@ -23,14 +24,14 @@ export async function getAreas(token: string) {
     }
 }
 
-export async function addArea(name: string, cropId:string, token: string) {
+export async function addArea(name: string, cropId:string, indoor: boolean, token: string) {
     let options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({name: name, crop: cropId, color: '5833FF'})
+        body: JSON.stringify({name: name, crop: cropId, indoor: indoor, color: '5833FF'})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas", options)
     if (request.status === 200) {
