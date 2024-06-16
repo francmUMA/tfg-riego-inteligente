@@ -5,6 +5,7 @@ import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { validate } from 'uuid';
 import { publish_msg } from "../../mqtt.js";
+import actuadoresModel from "../../actuadores/models/actuadoresModel.js";
 /*
     @description: Obtiene todos los dispositivos de un usuario
 */
@@ -165,6 +166,16 @@ export const deleteDevice = async (req, res) => {
         }
         //Eliminar datos sobre el dispositivo
         await monitorModel.destroy({ where: { deviceCode: req.params.id } })
+
+        //Eliminar actuadores asociados
+        let actuadores = await actuadoresModel.destroy({ where: { device: req.params.id } })
+        
+        //Actualizar los sensores que estaban asociados al dispositivo a null
+        let sensors = await monitorModel.findAll({ where: { device: req.params.id } })
+        for (let sensor of sensors) {
+            sensor.device = null
+            sensor.save()
+        }
         device.Usuario = "00000000A"
         device.save()
         publish_msg("devices/" + device.id + "/unregister", nif)
