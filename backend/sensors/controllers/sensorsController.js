@@ -136,7 +136,7 @@ export const addSensor = async (req, res) => {
             res.status(404).send("Sensor not registered")
             return
         }
-        if (sensor.user != "00000000A"){
+        if (sensor.user != "00000000A" && sensor.user != nif){
             res.status(403).send("Sensor already registered")
             return
         }
