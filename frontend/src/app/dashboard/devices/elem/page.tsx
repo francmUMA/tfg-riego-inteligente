@@ -225,8 +225,6 @@ export default function Page() {
             let res = await addSensor(sensorId, sensorName, deviceId as string, token as string)
             if (res) {
                 fetchDeviceSensors(deviceId as string, token as string)
-            } else {
-                alert("Error al añadir el sensor")
             }
             closeSensorActuadorDialog()
         }

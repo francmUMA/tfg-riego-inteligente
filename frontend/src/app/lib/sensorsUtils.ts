@@ -1,4 +1,5 @@
 import { getCookie } from "cookies-next"
+import { notify } from "./notify"
 
 export interface Sensor {
     id: string,
@@ -65,8 +66,10 @@ export async function addSensor(sensor: string, name: string, device: string, to
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
     if (request.status === 200) {
+        notify("Sensor añadido correctamente", "success")
         return true
     } else {
+        notify("Error al añadir el sensor", "error")
         return false
     }
 }
