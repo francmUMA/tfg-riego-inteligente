@@ -1,6 +1,7 @@
 import deviceModel from "../models/deviceModel.js";
 import areaModel from "../../areas/models/areasModel.js";
 import monitorModel from "../../monitors/models/monitorModel.js"
+import sensorModel from "../../sensors/models/sensorsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { validate } from 'uuid';
@@ -168,10 +169,10 @@ export const deleteDevice = async (req, res) => {
         await monitorModel.destroy({ where: { deviceCode: req.params.id } })
 
         //Eliminar actuadores asociados
-        let actuadores = await actuadoresModel.destroy({ where: { device: req.params.id } })
+        await actuadoresModel.destroy({ where: { device: req.params.id } })
         
         //Actualizar los sensores que estaban asociados al dispositivo a null
-        let sensors = await monitorModel.findAll({ where: { device: req.params.id } })
+        let sensors = await sensorModel.findAll({ where: { device: req.params.id } })
         for (let sensor of sensors) {
             sensor.device = null
             sensor.save()
