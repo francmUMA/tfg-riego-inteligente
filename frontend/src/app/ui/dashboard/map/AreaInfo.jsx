@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react"
 import { IoWaterOutline } from "react-icons/io5"
-import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea } from "@/src/app/lib/areasUtils"
+import { getMeanHumArea, getMeanSoilHumArea, getMeanSoilTempArea, getMeanTempArea, updateIndoorArea } from "@/src/app/lib/areasUtils"
 import CircularIndeterminate from "../info/CircularFallback"
 import { FaTemperatureArrowDown, FaTemperatureArrowUp, FaWater } from "react-icons/fa6"
 import { getCropName } from "../info/DeviceInfo"
 import { PiPlant } from "react-icons/pi"
+import Checkbox from "../../Checkbox"
 
 
-export const AuxAreaInfo = ({ area }) => {
+export const AuxAreaInfo = ({ area, handleUpdateIndoor }) => {
 
     const [meanData, setMeanData] = useState([0,0,0,0])
     const [crop, setCrop] = useState("")
@@ -51,6 +52,12 @@ export const AuxAreaInfo = ({ area }) => {
         </div>
             :
         <div className="w-full h-full flex flex-col gap-y-2">
+            <div className="w-full h-full">
+                <label className="w-full h-full flex justify-start items-center gap-1">
+                    <Checkbox active={area.indoor} onChange={() => handleUpdateIndoor(!area.indoor)}/>
+                    <p>Cubierto</p>
+                </label>
+            </div>
             <div className="w-full h-full pt-1 flex flex-row gap-x-2 items-center">
                 <PiPlant size={18} className="text-indigo-600"/>
                 <p>{crop}</p>

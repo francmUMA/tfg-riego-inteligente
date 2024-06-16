@@ -1,7 +1,8 @@
 import { FaRegTrashAlt } from "react-icons/fa";
 import { AuxAreaInfo } from "../map/AreaInfo";
 
-export const AreaInfo = ({ area, handleDeleteAreas }) => {
+
+export const AreaInfo = ({ area, handleDeleteAreas, handleUpdateIndoor }) => {
     return (
         <main className="w-full h-full min-w-fit">
             <header className="w-full h-full flex flex-row items-center">
@@ -15,7 +16,7 @@ export const AreaInfo = ({ area, handleDeleteAreas }) => {
                 </div>
             </header>
             <section className="w-full min-w-24 h-full flex flex-col gap-y-1">
-                <AuxAreaInfo area={area}/>
+                <AuxAreaInfo area={area} handleUpdateIndoor={handleUpdateIndoor}/>
             </section>
         </main>
     );

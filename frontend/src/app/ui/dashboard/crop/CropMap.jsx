@@ -12,7 +12,7 @@ import CircularIndeterminate from "../info/CircularFallback"
 import { updateDeviceArea } from "@/src/app/lib/devicesUtils"
 import { updateActuadorArea } from "@/src/app/lib/actuadorUtils"
 import { updateSensorArea } from "@/src/app/lib/sensorsUtils"
-import { deleteArea } from "@/src/app/lib/areasUtils"
+import { deleteArea, updateIndoorArea } from "@/src/app/lib/areasUtils"
 import { notify } from "@/src/app/lib/notify"
 import { getCropAreas } from "@/src/app/lib/cropUtils"
 
@@ -294,9 +294,16 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
       } else {
           notify('Error al eliminar el área', 'error')
       }
-  }
+    }
 
-
+    const handleUpdateIndoor = async (indoor) => {
+      let res = await updateIndoorArea(clickedArea, indoor)
+      if (res){
+          let areas = await getCropAreas(crop.id)
+          setAreas(areas)
+      }
+    }
+  
     return(
         loading ? <CircularIndeterminate/> :
         <main className="w-full h-full">
@@ -354,7 +361,7 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
                                                 setClickedArea(undefined) 
                                             }}
                                         >
-                                            <AreaInfo area={area} handleDeleteAreas={handleDeleteAreas}/>
+                                            <AreaInfo handleUpdateIndoor={handleUpdateIndoor} area={area} handleDeleteAreas={handleDeleteAreas}/>
                                         </InfoWindow>
                                     }
                                 </div>

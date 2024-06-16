@@ -8,7 +8,7 @@ import { fetchUserInfo } from '@/src/app/lib/userInfo.ts';
 import { getSensors, updateSensorArea, updateSensorPosition } from '@/src/app/lib/sensorsUtils.ts';
 import { getActuadores, updatePositionActuador, updateActuadorArea } from '@/src/app/lib/actuadorUtils.ts';
 import { addCoords, deleteCoords, getCoordsArea } from '@/src/app/lib/coordsUtils.ts';
-import { deleteArea, getAreas } from '@/src/app/lib/areasUtils.ts';
+import { deleteArea, getAreas, updateIndoorArea } from '@/src/app/lib/areasUtils.ts';
 import { MdOutlineAddLocation, MdOutlineDownloadDone, MdEditLocationAlt, MdLocationOn, MdAddLocationAlt, MdDone } from "react-icons/md";
 import { HiMiniCpuChip } from "react-icons/hi2";
 import { WiHumidity } from "react-icons/wi";
@@ -549,6 +549,12 @@ const App = () => {
   const [clickedArea, setClickedArea] = useState(undefined)
   const [clickedCoords, setClickedCoords] = useState(undefined)
 
+  const handleUpdateIndoor = async (indoor) => {
+    let res = await updateIndoorArea(clickedArea, indoor)
+    if (res){
+        await fetchAllInfo()
+    }
+  }
 
   //----------------------------------------------------------------------------------------------------------------
   return (
@@ -756,7 +762,7 @@ const App = () => {
                           </header>
                           <div className='w-full'>
                             <Suspense fallback={<CircularIndeterminate/>}>
-                              <AuxAreaInfo area={area} />
+                              <AuxAreaInfo area={area} handleUpdateIndoor={handleUpdateIndoor}/>
                             </Suspense>
                           </div>
                         </div>

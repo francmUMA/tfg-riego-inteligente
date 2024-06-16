@@ -1,5 +1,6 @@
 import { indigo } from "@mui/material/colors"
 import { getCookie } from "cookies-next"
+import { notify } from "./notify"
 
 export interface Area {
     id: string,
@@ -155,5 +156,25 @@ export async function getMeanSoilHumArea(id: string) {
         return request.json()
     } else {
         return undefined
+    }
+}
+
+export const updateIndoorArea = async (id: string, indoor: boolean) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({indoor: indoor})
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/areas/indoor/" + id, options)
+    if (request.status === 200) {
+        notify("Área cambiada a modo " + (indoor ? "interior" : "exterior") + " correctamente", "success")
+        return true
+    } else {
+        notify("Error al cambiar el modo de la zona", "error")
+        return false
     }
 }
