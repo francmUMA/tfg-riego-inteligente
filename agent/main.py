@@ -11,13 +11,7 @@ from utils.mqtt import *
 
 # Definición de los valores de comparación
 TEMP_HIGH_THRESHOLD = 30
-TEMP_LOW_THRESHOLD = 10
-
-HUMIDITY_HIGH_THRESHOLD = 80
-HUMIDITY_LOW_THRESHOLD = 30
-
-SOIL_TEMP_HIGH_THRESHOLD = 25
-SOIL_TEMP_LOW_THRESHOLD = 10
+TEMP_LOW_THRESHOLD = 13
 
 SOIL_HUMIDITY_HIGH_THRESHOLD = 80
 SOIL_HUMIDITY_LOW_THRESHOLD = 25
@@ -63,18 +57,18 @@ while True:
         print(f'Temperatura: {temperature}')
 
         # Obtener humedad promedio del área de cultivo
-        humidity = get_humidity(cnx, actuador['area'])
-        if humidity is None:
-            print('Valor erroneo de humedad')
-            continue
-        print(f'Humedad: {humidity}')
+        # humidity = get_humidity(cnx, actuador['area'])
+        # if humidity is None:
+        #     print('Valor erroneo de humedad')
+        #     continue
+        # print(f'Humedad: {humidity}')
 
         # Obtener temperatura de suelo promedio del área de cultivo
-        soil_temperature = get_soil_temperature(cnx, actuador['area'])
-        if soil_temperature is None:
-            print('Valor erroneo de temperatura de suelo')
-            continue
-        print(f'Temperatura de suelo: {soil_temperature}')
+        # soil_temperature = get_soil_temperature(cnx, actuador['area'])
+        # if soil_temperature is None:
+        #     print('Valor erroneo de temperatura de suelo')
+        #     continue
+        # print(f'Temperatura de suelo: {soil_temperature}')
 
         # Obtener humedad de suelo promedio del área de cultivo
         soil_humidity = get_soil_humidity(cnx, actuador['area'])
@@ -101,8 +95,7 @@ while True:
                         # Si la temperatura es alta, abrir el actuador solo si no es una hora crítica
                         if current_hour > HOUR_CRITICAL_LOW_THRESHOLD and current_hour < HOUR_CRITICAL_HIGH_THRESHOLD:
                             continue
-                        else:
-                            open(cnx, mqttc, actuador['id'], actuador['device'])
+                        open(cnx, mqttc, actuador['id'], actuador['device'])
                     else:
                         open(cnx, mqttc, actuador['id'], actuador['device'])
             else:
