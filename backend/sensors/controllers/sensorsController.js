@@ -6,6 +6,7 @@ import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import {v4, validate} from 'uuid'
 import { publish_msg } from "../../mqtt.js"
 import { sendCommandToWorker } from "../../index.js"
+import monitorModel from "../../monitors/models/monitorModel.js"
 
 
 /*
@@ -135,7 +136,7 @@ export const addSensor = async (req, res) => {
             res.status(404).send("Sensor not registered")
             return
         }
-        if (sensor.user != "00000000A"){
+        if (sensor.user != "00000000A" && sensor.user != nif){
             res.status(403).send("Sensor already registered")
             return
         }
@@ -386,6 +387,14 @@ export const updateSensorArea = async (req, res) => {
     }
     // ------------------------------------- Asignar area -------------------------------------------
     try {
+        if (req.body.area != sensor.area) {
+            //Eliminar los datos leídos hasta ahora
+            let res = monitorModel.destroy({ where: { sensorCode: req.body.id } })
+            if (res === null) {
+                res.status(500).send("Error deleting sensor data")
+                return
+            }
+        }
         await sensorsModel.update({ area: req.body.area }, { where: { id: req.body.id } })
         res.status(200).send("Area updated")
     } catch (error) {

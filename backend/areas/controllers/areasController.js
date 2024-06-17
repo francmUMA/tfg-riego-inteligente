@@ -35,7 +35,8 @@ export const get_areas = async (req, res) => {
     @param {
         name: nombre del area,
         color: color del area,
-        crop: cultivo del area
+        crop: cultivo del area,
+        indoor: modo cubierto
     }
 */
 export const add_area = async (req, res) => {
@@ -70,6 +71,10 @@ export const add_area = async (req, res) => {
         res.status(400).send("Missing crop")
         return
     }
+    if (req.body.indoor === undefined || req.body.indoor === null) {
+        res.status(400).send("Missing indoor or bad indoor")
+        return
+    }
     if (!validate(req.body.crop)) {
         res.status(400).send("Invalid crop")
         return
@@ -82,7 +87,8 @@ export const add_area = async (req, res) => {
             name: req.body.name,
             user: nif,
             color: req.body.color,
-            crop: req.body.crop
+            crop: req.body.crop,
+            indoor: req.body.indoor
         }
         await areasModel.create(area)
         res.status(200).send(area.id)

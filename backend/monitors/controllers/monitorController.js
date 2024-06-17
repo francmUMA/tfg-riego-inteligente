@@ -8,7 +8,6 @@ import { v1 } from 'uuid';
 import sequelize from 'sequelize';
 import { Op } from 'sequelize';
 import actuadoresModel from '../../actuadores/models/actuadoresModel.js';
-import e from 'cors';
 
 /**
  * 

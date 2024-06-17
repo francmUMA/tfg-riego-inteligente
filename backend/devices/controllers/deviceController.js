@@ -1,9 +1,13 @@
 import deviceModel from "../models/deviceModel.js";
 import areaModel from "../../areas/models/areasModel.js";
+import monitorModel from "../../monitors/models/monitorModel.js"
+import sensorModel from "../../sensors/models/sensorsModel.js"
+import logModel from "../../logs/models/logModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js";
 import ping from "ping"
 import { validate } from 'uuid';
 import { publish_msg } from "../../mqtt.js";
+import actuadoresModel from "../../actuadores/models/actuadoresModel.js";
 /*
     @description: Obtiene todos los dispositivos de un usuario
 */
@@ -161,6 +165,21 @@ export const deleteDevice = async (req, res) => {
         if (device === null) {
             res.status(404).send("Device not found")
             return
+        }
+        //Eliminar datos sobre el dispositivo
+        await monitorModel.destroy({ where: { deviceCode: req.params.id } })
+
+        //Eliminar actuadores asociados
+        await actuadoresModel.destroy({ where: { device: req.params.id } })
+
+        //Eliminar los logs
+        await logModel.destroy({ where: { deviceCode: req.params.id } })
+        
+        //Actualizar los sensores que estaban asociados al dispositivo a null
+        let sensors = await sensorModel.findAll({ where: { device: req.params.id } })
+        for (let sensor of sensors) {
+            sensor.device = null
+            sensor.save()
         }
         device.Usuario = "00000000A"
         device.save()
