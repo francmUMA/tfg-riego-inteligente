@@ -29,6 +29,7 @@ const App = () => {
   const [centerLng, setCenterLng] = useState(0.0)
   const [coords, setCoords] = useState([])
   const [areas, setAreas] = useState([])
+  const [areasCoordsFetched, setAreasCoordsFetched] = useState(false)
   const [displayMap, setDisplayMap] = useState(false)
 
   useEffect( () => {
@@ -40,6 +41,7 @@ const App = () => {
   }, [centerLat, centerLng])
 
   const fetchAllInfo = async () => {
+    setAreasCoordsFetched(false)
     const token = getCookie('token')
     let response = await getDevices(token)
     setDevices(response)
@@ -70,6 +72,7 @@ const App = () => {
       }
     }
     setCoords(polygonsArea)
+    setAreasCoordsFetched(true)
   }
 
   //------------------------------------ MARKERS -----------------------------------------------------------------
@@ -440,9 +443,6 @@ const App = () => {
       }
     }
     const computeSensorsMarkersArea = (polygon) => {
-      if (coords.length == 0 || areas.length == 0){
-        return
-      }
       for (let sensor of sensors) {
         if (sensor.Latitud != null && sensor.Longitud != null) {
           let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: sensor.Latitud, lng: sensor.Longitud}), polygon)
@@ -484,8 +484,8 @@ const App = () => {
     }, [actuadores])
 
     useEffect(() => {
-      computeSensorsMarkersArea(polygonRef.current)
-    }, [coords, areas,sensors])
+      if (areasCoordsFetched) computeSensorsMarkersArea(polygonRef.current)
+    }, [areasCoordsFetched, coords, sensors])
 
     return (
         <Polygon
