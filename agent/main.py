@@ -80,7 +80,7 @@ while True:
         print(f'Humedad de suelo: {soil_humidity}')
 
         # Si la predicción del clima indica lluvia, continuar al siguiente actuador
-        if near_rain(weather_prediction) and is_area_indoor(cnx, actuador['area']) is False:
+        if is_area_indoor(cnx, actuador['area']) is False and near_rain(weather_prediction):
             print('Hay predicción de lluvia')
             close(cnx, mqttc, actuador['id'], actuador['device'])
             continue
