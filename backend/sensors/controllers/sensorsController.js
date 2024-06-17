@@ -363,6 +363,10 @@ export const updateSensorArea = async (req, res) => {
         res.status(404).send("Sensor not found")
         return
     }
+    if (sensor.area == req.body.area) {
+        res.status(200).send("Area updated")
+        return
+    }
     // ------------------- Comprobar si el area existe ---------------------------
     if (req.body.area != null) {
         try {
