@@ -18,7 +18,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { ColorPicker } from './ColorPicker.jsx';
 import { Suspense } from 'react';
 import CircularIndeterminate from '../info/CircularFallback.jsx';
-import { AreaInfo, AuxAreaInfo } from './AreaInfo.jsx';
+import { AuxAreaInfo } from './AreaInfo.jsx';
 import { notify } from '@/src/app/lib/notify.js';
 
 const App = () => {
@@ -71,8 +71,6 @@ const App = () => {
     }
     setCoords(polygonsArea)
   }
-
-  useEffect(() => {console.log(coords)}, [coords])
 
   //------------------------------------ MARKERS -----------------------------------------------------------------
   const [addMarkerMode, setAddMarkerMode] = useState(false)
@@ -445,7 +443,8 @@ const App = () => {
       for (let sensor of sensors) {
         if (sensor.Latitud != null && sensor.Longitud != null) {
           let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: sensor.Latitud, lng: sensor.Longitud}), polygon)
-          if (res && sensor.area != area) {
+          if (res && sensor.area !== undefined && sensor.area != area) {
+            console.log("area del sensor: " + sensor.name + " " + sensor.area)
             let response = updateSensorArea(sensor.id, area, getCookie('token'))
             if (response) {
               let newSensors = sensors.map(sens => {
