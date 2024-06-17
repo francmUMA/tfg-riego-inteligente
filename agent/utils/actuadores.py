@@ -1,16 +1,5 @@
-from dotenv import load_dotenv
 import paho.mqtt.client as mqtt
 import mysql.connector
-
-load_dotenv()
-# print('Obteniendo token...')
-# token = get_token()
-# while token is None:
-#     print('Error al obtener el token\nReintentando...')
-#     token = get_token()
-# print('Token obtenido')
-# API_URL = os.getenv("API_URL")
-
 
 def get_actuadores(cnx: mysql.connector.connection.MySQLConnection):
     """

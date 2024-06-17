@@ -8,6 +8,7 @@ from utils.actuadores import *
 from utils.weather import *
 from utils.database import *
 from utils.mqtt import *
+from utils.areas import *
 
 # Definición de los valores de comparación
 TEMP_HIGH_THRESHOLD = 30
@@ -33,7 +34,8 @@ mqttc = get_mqtt_client()
 while True:
     actuadores = get_actuadores(cnx)
     while actuadores is None or len(actuadores) == 0:
-        print('Error al obtener los actuadores\nReintentando...')
+        print('No se han encontrado actuadores.\nReintentando...')
+        sleep(5)
         actuadores = get_actuadores(cnx)
 
     # Filtrar actuadores que no tienen posición o área asignada
@@ -78,7 +80,7 @@ while True:
         print(f'Humedad de suelo: {soil_humidity}')
 
         # Si la predicción del clima indica lluvia, continuar al siguiente actuador
-        if near_rain(weather_prediction):
+        if near_rain(weather_prediction) and is_area_indoor(cnx, actuador['area']) is False:
             print('Hay predicción de lluvia')
             close(cnx, mqttc, actuador['id'], actuador['device'])
             continue
