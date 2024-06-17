@@ -440,6 +440,9 @@ const App = () => {
       }
     }
     const computeSensorsMarkersArea = (polygon) => {
+      if (coords.length == 0 || areas.length == 0){
+        return
+      }
       for (let sensor of sensors) {
         if (sensor.Latitud != null && sensor.Longitud != null) {
           let res = geometry?.poly.containsLocation(toLatLngLiteral({lat: sensor.Latitud, lng: sensor.Longitud}), polygon)
@@ -455,7 +458,8 @@ const App = () => {
               })
               setSensors(newSensors)
             } 
-          } else if (!res && sensor.area == area) {
+          } else if (!res && sensor.area != null && sensor.area == area) {
+            console.log("area sensor: " + sensor.name + " " + sensor.area)
             let response = updateSensorArea(sensor.id, null, getCookie('token'))
             if (response) {
               let newSensors = sensors.map(sens => {
@@ -481,7 +485,7 @@ const App = () => {
 
     useEffect(() => {
       computeSensorsMarkersArea(polygonRef.current)
-    }, [sensors])
+    }, [coords, areas,sensors])
 
     return (
         <Polygon

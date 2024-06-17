@@ -42,7 +42,6 @@ export async function getSensors(device: string, token: string) {
             let lastValue = await getSensorLastValue(sensor.id, token)
             if (lastValue !== undefined) {
                 sensor.value = lastValue ? lastValue.value : 0
-                console.log(lastValue.id)
             }
         }
         return sensors
