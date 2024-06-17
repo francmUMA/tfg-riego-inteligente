@@ -119,6 +119,23 @@ export default function Page ({ }) {
         }
     }
 
+    const addNewCoords = async (coords: any, area: any) => {
+        if (area === undefined) {
+            notify("Error al añadir coordenadas", "error")
+            return
+        }
+        for (let i = 0; i < coords.length; i++) {
+            let res = await addCoords(coords[i].Latitud, coords[i].Longitud, area, coords[i].index, getCookie("token") as string)
+            if (!res) {
+                notify("Error al añadir coordenadas", "error")
+                return
+            } 
+        }
+        notify("Coordenadas añadidas", "success")
+        fetchCropAreas()
+        fetchCropInfo()
+    }
+
     useEffect(() => {
         const token = getCookie("token")
         if (token === undefined) {
@@ -157,9 +174,9 @@ export default function Page ({ }) {
                     <MdAddLocationAlt size={24} className="w-9"/>
                 </button>
                 <button 
-                    onClick={() => {
+                    onClick={async () => {
                         setPlaceArea(false)
-                        notify("Area creada correctamente","success")
+                        await addNewCoords(placeAreaCoords, placeAreaId)
                     }}
                     className={`shadow-md ${
                         !placeArea && "hidden"

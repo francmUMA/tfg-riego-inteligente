@@ -1,4 +1,4 @@
-import { addCoords, getCoordsArea } from "@/src/app/lib/coordsUtils"
+import { getCoordsArea } from "@/src/app/lib/coordsUtils"
 import { fetchUserInfo } from "@/src/app/lib/userInfo"
 import { APIProvider, Map, Marker, InfoWindow, useMapsLibrary, toLatLngLiteral } from "@vis.gl/react-google-maps"
 import { getCookie } from "cookies-next"
@@ -17,7 +17,7 @@ import { notify } from "@/src/app/lib/notify"
 import { getCropAreas } from "@/src/app/lib/cropUtils"
 
 const PolygonComponent = ({color, area, editable, devices, actuadores, sensors, 
-    coords, setClickedCoords, setClickedArea, setCoords
+    coords, setClickedCoords, setClickedArea, setCoords, setNewCoords, placeId
 }) => {
 
     const polygonRef = useRef(null)
@@ -114,6 +114,7 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
         }
       }
     }
+
     const handleDragPolygon = (area, polygon) => {
         let newCoords = []
         // Eliminar coordenadas que tenga el id del area
@@ -122,7 +123,7 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
             newCoords.push(coord)
           }
         }
-    
+        let polygonCoords = []
         // Agregar las coordenadas del poligono
         if (polygon.latLngs.Fg[0] !== undefined && polygon.latLngs.Fg[0].Fg.length > 0){
             polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
@@ -133,8 +134,10 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
                   index: index
               }
               newCoords.push(newCoord)
+              polygonCoords.push(newCoord)
           })
         }
+        if (placeId == area) setNewCoords(polygonCoords)
         setCoords(newCoords)
     }
 
@@ -230,21 +233,21 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
             notify("Error al crear el polígono","error")
             return
         }
-        const token = getCookie("token")
-        let coord1 = await addCoords(coords.lat, coords.lng, placeId, 0, token)
-        let coord2 = await addCoords(coords.lat + 0.0001, coords.lng + 0.0001, placeId, 1, token)
-        if (!coord1 || !coord2) {
-            notify("Error al crear el polígono","error")
-            return
+
+        let coord1 = {
+            Latitud: coords.lat, 
+            Longitud: coords.lng, 
+            area: placeId, 
+            index: 0
         }
-        let polygonsArea = []
-        for (let area of areas) {
-          let polys = await getCoordsArea(area.id, token)
-          if (polys.length > 0) {
-            polygonsArea.push(...polys)
-          }
+        let coord2 = {
+          Latitud: coords.lat+0.0001, 
+          Longitud: coords.lng+0.0001, 
+          area: placeId, 
+          index: 1
         }
-        setCoords(polygonsArea)
+        setCoords(coords => [...coords, coord1, coord2])
+        setPlaceCoords([coord1, coord2])
     }
 
     const fetchCropCoords = async () => {
@@ -281,7 +284,8 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
     },[place])
 
     useEffect(() => {
-        console.log(newCoords)
+        setPlaceCoords(newCoords)
+        setCoords(coords => [...newCoords])
     }, [newCoords])
 
     const handleDeleteAreas = async () => {
@@ -347,8 +351,8 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
                                     /> */}
                                     <PolygonComponent actuadores={actuadores} area={area.id} color={area.color}
                                         coords={filterOrderCoords(area)} devices={devices} sensors={sensors} 
-                                        setCoords={setNewCoords} editable={placeId == area.id && place} setClickedCoords={setClickedCoords}
-                                        setClickedArea={setClickedArea}
+                                        setCoords={setCoords} setNewCoords={setNewCoords} editable={placeId == area.id && place} setClickedCoords={setClickedCoords}
+                                        setClickedArea={setClickedArea} placeId={placeId}
                                     />
                                     {
                                         clickedArea == area.id &&
