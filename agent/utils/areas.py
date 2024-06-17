@@ -7,8 +7,7 @@ def is_area_indoor(cnx: mysql.connector.connection.MySQLConnection, area: str) -
         cursor.execute(query, (area,))
         indoor = cursor.fetchone()[0]
         cursor.close()
-        print(f'Area {area} es indoor: {indoor is True}')
-        return indoor
+        return indoor == 1
     except Exception as e:
         print('Error al obtener el dato del área -> ' + str(e))
         return False
