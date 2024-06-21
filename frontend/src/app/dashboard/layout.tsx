@@ -1,4 +1,6 @@
-import SideNav from "../ui/dashboard/sideNav";
+import SideNav from "../ui/dashboard/sideNav"
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Layout(
   { children }: { children: React.ReactNode}
@@ -11,6 +13,7 @@ export default function Layout(
           <SideNav />
         </div>
         <div className="h-full w-full overflow-y-auto py-4 pr-2">
+          <ToastContainer />
           {children}
         </div>
       </div>

@@ -1,3 +1,6 @@
+import { getCookie } from "cookies-next"
+import { notify } from "./notify"
+
 export async function getDevices (token: string) {
     let options = {
         method: 'GET',
@@ -10,6 +13,7 @@ export async function getDevices (token: string) {
         let response = await request.json()
         return response
     } else {
+        notify("Error al obtener dispositivos", "error")
         return []
     }
 }
@@ -29,20 +33,22 @@ export function checkIP(ip: string) {
     return false;
 }
 
-export async function createDevice (name: string, ip: string, token: string) {
+export async function createDevice (id: string, name: string, ip: string, token: string) {
     let options = {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({name: name, ip: ip})
+        body: JSON.stringify({id: id, name: name, ip: ip})
     }
     console.log(options)
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/", options)
     if (response.status == 200) {
+        notify("Dispositivo creado", "success")
         return true
     } else {
+        notify("Error al crear dispositivo", "error")
         return false
     }
 }
@@ -56,8 +62,10 @@ export async function deleteDevice (id: string, token: string) {
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/" + id, options)
     if (response.status == 200) {
+        notify("Dispositivo eliminado", "success")
         return true
     } else {
+        notify("Error al eliminar dispositivo", "error")
         return false
     }
 }
@@ -73,8 +81,10 @@ export async function updateDevicePosition (id: string, lat: number, lon: number
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/position", options)
     if (response.status == 200) {
+        notify("Posición actualizada", "success")
         return true
     } else {
+        notify("Error al actualizar posición", "error")
         return false
     }
 }
@@ -91,8 +101,10 @@ export async function updateDeviceIp (id: string, ip: string, token: string) {
 
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/ip", options)
     if (response.status == 200) {
+        notify("IP actualizada", "success")
         return true
     } else {
+        notify("Error al actualizar IP", "error")
         return false
     }
 }
@@ -106,8 +118,10 @@ export async function testDeviceConnection (id: string, token: string) {
     }
     let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/devices/test/" + id, options)
     if (response.status == 200) {
+        notify("Conexión exitosa", "success")
         return true
     } else {
+        notify("Error al conectar con dispositivo", "error")
         return false
     }
 }
@@ -124,24 +138,8 @@ export async function getDeviceInfo (id: string, token: string) {
         let data = await response.json()
         return data
     } else {
+        notify("Error al obtener información del dispositivo", "error")
         return undefined
-    }
-}
-
-export async function getDeviceCpuTemperature (id: string, token: string) {
-    let options = {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    }
-
-    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/cpu_temp/all/" + id, options)
-    if (response.status == 200) {
-        let data = await response.json()
-        return data
-    } else {
-        return []
     }
 }
 
@@ -159,5 +157,68 @@ export async function updateDeviceArea (id: string, area: string, token: string)
         return true
     } else {
         return false
+    }
+}
+
+export const getDeviceName = async (device: string) => {
+    const token = getCookie("token")
+    let info = await getDeviceInfo(device, token as string)
+    if (info !== undefined) {
+        return info.name
+    }
+    return "Sin device"
+}
+
+export const getDeviceLogs = async (device: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/logs/device/" + device, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
+    }
+}
+
+export const getTemperatureValues = async (device: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/temperature/all/" + device, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
+    }
+}
+
+export const getDeviceTempLast24 = async (device: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/temperature/last24/" + device, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
     }
 }

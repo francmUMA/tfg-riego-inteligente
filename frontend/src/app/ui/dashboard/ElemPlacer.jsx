@@ -1,12 +1,12 @@
 import { getCookie } from "cookies-next"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, use } from "react"
 import { APIProvider, Map, Marker, useMapsLibrary } from "@vis.gl/react-google-maps"
 import { fetchUserInfo } from "../../lib/userInfo"
 import { getAreas } from "../../lib/areasUtils"
 import { getCoordsArea } from "../../lib/coordsUtils"
 import { Polygon } from "./map/Polygon"
 import { updateDeviceArea, updateDevicePosition } from "../../lib/devicesUtils"
-import { getSensors, updateSensorArea, updateSensorPosition } from "../../lib/sensorsUtils"
+import { updateSensorArea, updateSensorPosition } from "../../lib/sensorsUtils"
 import { updateActuadorArea, updatePositionActuador } from "../../lib/actuadorUtils"
 import { MdDone, MdLocationPin } from "react-icons/md";
 
@@ -64,25 +64,27 @@ export const ElemPlacer = ({elem, closeDialog, type, elems, setElems}) => {
             setCenterLat(elem.Latitud != null ? elem.Latitud : user.Latitud)
             setCenterLon(elem.Longitud != null ? elem.Longitud : user.Longitud)
         }
-        let areas = await getAreas(token)
-        if (areas !== undefined){
-            setAreas(areas)
+        let newAreas = await getAreas(token)
+        if (newAreas !== undefined){
+            setAreas(newAreas)
         }
         let newCoords = []
-        if(areas.length > 0){
-            areas.map(async (area) => {
-                let areaCoords = await getCoordsArea(area.id, getCookie('token'))
-                if (areaCoords.length > 0){
-                    areaCoords.map(coord => {
-                        newCoords.push(coord)
-                    })
+        if (newAreas !== undefined){
+            for (let area of newAreas){
+                let coordsArea = await getCoordsArea(area.id, token)
+                for (let coord of coordsArea){
+                    newCoords.push(coord)
                 }
-            })
+            }
         }
-        setCoords(newCoords)
+        if (newCoords.length > 0){
+            setCoords(newCoords)
+        }
+
         if (elem !== undefined){
             setMarkerArea(elem.area)
         }
+
         setDisplayMap(true)
     }
 
@@ -184,7 +186,7 @@ export const ElemPlacer = ({elem, closeDialog, type, elems, setElems}) => {
                                         onDragEnd={handleDragElem}
                                         draggable/>
                                     {
-                                        areas.map((area) => (
+                                        areas.length > 0 && coords.length > 0 && areas.map((area) => (
                                             <PolygonComponent 
                                                 area={area}
                                                 markerArea={markerArea}

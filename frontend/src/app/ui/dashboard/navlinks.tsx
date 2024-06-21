@@ -19,14 +19,14 @@ class CropIcon extends React.Component {
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
 const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+  { name: 'Principal', href: '/dashboard', icon: HomeIcon },
   {
-    name: 'Devices',
+    name: 'Dispositivos',
     href: '/dashboard/devices',
     icon: CpuChipIcon,
   },
-  { name: 'Map', href: '/dashboard/map', icon: MapIcon },
-  { name: 'Crops', href: '/dashboard/crops', icon: CropIcon},
+  { name: 'Mapa', href: '/dashboard/map', icon: MapIcon },
+  { name: 'Cultivos', href: '/dashboard/crops', icon: CropIcon},
   { name: 'Información', href: '/dashboard/info', icon: PresentationChartBarIcon },
 ];
 

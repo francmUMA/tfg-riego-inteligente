@@ -4,7 +4,7 @@ export default () => {
         <footer className="pt-10">
             <div className="max-w-screen-xl mx-auto px-4 md:px-8">
                 <div className="py-8 border-t items-center justify-center md:justify-between sm:flex">
-                    <p className="text-gray-600 hidden md:block">© 2022 AquaMind Inc. All rights reserved.</p>
+                    <p className="text-gray-600 hidden md:block">© 2024 WORM-E Inc. All rights reserved.</p>
                     <div className="flex items-center justify-center gap-x-6 text-gray-400 mt-6">
                         <svg className="md:hidden w-4 h-4 duration-150 text-gray-350" width="24" height="24" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <path fill="currentColor" d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248s248-111.033 248-248S392.967 8 256 8m0 448c-110.532 0-200-89.451-200-200c0-110.531 89.451-200 200-200c110.532 0 200 89.451 200 200c0 110.532-89.451 200-200 200m107.351-101.064c-9.614 9.712-45.53 41.396-104.065 41.396c-82.43 0-140.484-61.425-140.484-141.567c0-79.152 60.275-139.401 139.762-139.401c55.531 0 88.738 26.62 97.593 34.779a11.965 11.965 0 0 1 1.936 15.322l-18.155 28.113c-3.841 5.95-11.966 7.282-17.499 2.921c-8.595-6.776-31.814-22.538-61.708-22.538c-48.303 0-77.916 35.33-77.916 80.082c0 41.589 26.888 83.692 78.277 83.692c32.657 0 56.843-19.039 65.726-27.225c5.27-4.857 13.596-4.039 17.82 1.738l19.865 27.17a11.947 11.947 0 0 1-1.152 15.518"/>

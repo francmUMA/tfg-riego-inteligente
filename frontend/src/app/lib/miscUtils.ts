@@ -9,8 +9,6 @@ export const getWeather = async () => {
     if (requestLocation.status !== 200) return undefined
 
     let location = await requestLocation.json()
-    console.log(location)
-    
 
     let request = await fetch("https://api.weatherapi.com/v1/forecast.json?key="+ process.env.NEXT_PUBLIC_WEATHER_API_KEY+ "&q="+location.results[location.results.length - 5].address_components[0].long_name+"&days=2&aqi=no&alerts=no")
     if (request.status === 200){
@@ -18,15 +16,6 @@ export const getWeather = async () => {
         return data
     }
     return undefined
-}
-
-export const getWeatherPngPath = (icon: string) => {
-    //Example //cdn.weatherapi.com/weather/64x64/night/113.png
-    if (icon === undefined || icon == null) return ""
-    let split_path = icon.split('/')
-    let icon_folder = split_path[split_path.length - 2]
-    let icon_name = split_path[split_path.length - 1]
-    return icon_folder + "/" + icon_name
 }
 
 export const getLocation = async () => {

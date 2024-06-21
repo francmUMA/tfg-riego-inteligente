@@ -1,14 +1,31 @@
+import { getCookie } from "cookies-next"
+import { notify } from "./notify"
+
 export interface Sensor {
     id: string,
-    type: string,
     device: string,
-    device_pin: number,
     area: string,
     Latitud: number,
     Longitud: number,
     name: string,
-    value: number,
     available: number
+}
+
+export async function getUserSensors() {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'  
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/all", options)
+    if (response.status === 200) {
+        return await response.json()
+    } else {
+        return []
+    }
 }
 
 export async function getSensors(device: string, token: string) {
@@ -20,7 +37,14 @@ export async function getSensors(device: string, token: string) {
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
     if (request.status === 200) {
-        return await request.json()
+        let sensors = await request.json()
+        for (let sensor of sensors) {
+            let lastValue = await getSensorLastValue(sensor.id, token)
+            if (lastValue !== undefined) {
+                sensor.value = lastValue ? lastValue.value : 0
+            }
+        }
+        return sensors
     } else {
         return []
     }
@@ -30,19 +54,21 @@ export async function checkSensorId(sensors: any, id: string){
     return !(sensors.find((sensor: any) => sensor.id == id))
 }
 
-export async function addSensor(name: string, device: string, token: string, type: string) {
+export async function addSensor(sensor: string, name: string, device: string, token: string) {
     let options = {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({name: name, type: type})
+        body: JSON.stringify({name: name, id: sensor})
     }
     let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
     if (request.status === 200) {
+        notify("Sensor añadido correctamente", "success")
         return true
     } else {
+        notify("Error al añadir el sensor", "error")
         return false
     }
 }
@@ -64,33 +90,16 @@ export async function updateSensorArea(id: string, area: string, token: string) 
     }
 }
 
-export async function updateSensorPin(id: string, pin: number, token: string) {
+export async function deleteSensor(id: string, device: string, token: string) {
     let options = {
         method: 'PUT',
         headers: {
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({id: id, device_pin: pin})
-    }
-    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/pin", options)
-    if (request.status === 200) {
-        return true
-    } else {
-        return false
-    }
-}
-
-export async function deleteSensor(id: string, device: string, token: string) {
-    let options = {
-        method: 'DELETE',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
         body: JSON.stringify({id: id})
     }
-    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/" + device, options)
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/unlink/" + device, options)
     if (request.status === 200) {
         return true
     } else {
@@ -112,5 +121,114 @@ export async function updateSensorPosition(id: string, Latitud: number, Longitud
         return true
     } else {
         return false
+    }
+}
+
+export const getSensorLastValue = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return undefined
+    }
+}
+
+export const getSensorLast24hValuesTemp = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/temperature/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
+
+export const getSensorLast24hValuesSoilHum = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/soilHumidity/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
+
+export const getSensorLast24hValuesSoilTemp = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/soilTemperature/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
+
+export const getSensorLast24hValuesHum = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/monitor/sensor/last24/humidity/" + id, options)
+    if (request.status === 200) {
+        return await request.json()
+    } else {
+        return []
+    }
+}
+
+export const getSensorLogs = async (sensor: string) => {
+    const token = getCookie("token")
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token as string,
+            'Content-Type': 'application/json'
+        }
+    }
+    let response = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/logs/sensor/" + sensor, options)
+    if (response.status == 200) {
+        let data = await response.json()
+        return data
+    } else {
+        return []
+    }
+}
+
+export const getSensorInfo = async (id: string, token: string) => {
+    let options = {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    }
+    let request = await fetch(process.env.NEXT_PUBLIC_GLOBAL_API_URL + "/sensores/sensor/" + id, options)
+    if (request.status === 200) {
+        let data = await request.json()
+        return data
+    } else {
+        return undefined
     }
 }

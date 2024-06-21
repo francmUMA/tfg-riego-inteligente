@@ -1,4 +1,5 @@
 import { getCookie } from "cookies-next"
+import { getArea } from "./areasUtils"
 
 export const getCrops = async () => {
     const token = getCookie("token")
@@ -137,4 +138,14 @@ export const getCropActuadores = async (id: string) => {
     } else {
         return []
     }
+}
+
+export const getCropByArea = async (areaId: string) => {
+    const token = getCookie("token")
+    let area = await getArea(areaId, token as string)
+    if (area !== undefined) {
+        let crop = await getCrop(area.crop)
+        return crop
+    } 
+    return undefined
 }
