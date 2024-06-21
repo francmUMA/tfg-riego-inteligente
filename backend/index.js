@@ -10,9 +10,13 @@ import sensorsRoutes from "./sensors/routes/sensorsRoutes.js"
 import areasRoutes from "./areas/routes/areasRoutes.js"
 import coordsRoutes from "./coordenadas/routes/coordsRoute.js"
 import cropRoutes from "./crops/routes/cropRoutes.js"
+import logRoutes from "./logs/routes/logRoutes.js"
+import programRoutes from "./programs/routes/programRoutes.js"
 import schedule from "node-schedule"
-import { checkDevices } from "./devices/controllers/deviceController.js";
 import { Worker } from 'worker_threads'
+import { updateActuadoresAccumulatedFlow } from "./actuadores/controllers/actuadoresController.js";
+import { checkDevices } from "./devices/controllers/deviceController.js";
+import { checkSensors } from "./sensors/controllers/sensorsController.js";
 
 const app = express();
 
@@ -31,6 +35,9 @@ app.use("/api/sensores", sensorsRoutes)
 app.use("/api/areas", areasRoutes)
 app.use("/api/coords", coordsRoutes)
 app.use("/api/crops", cropRoutes)
+app.use("/api/logs", logRoutes)
+app.use("/api/programs", programRoutes)
+
 
 // Conexion a la base de datos
 try {
@@ -51,8 +58,9 @@ app.listen(app.get("port"), () => {
     console.log(`Server on port ${app.get("port")}`);
 });
 
-// Ping a los dispositivos cada 5 minutos
+schedule.scheduleJob('* * * * *', updateActuadoresAccumulatedFlow)
 schedule.scheduleJob('* * * * *', checkDevices)
+schedule.scheduleJob('* * * * *', checkSensors)
 
 
 

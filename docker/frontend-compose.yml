@@ -1,0 +1,9 @@
+services:
+  app:
+    image: node:22
+    volumes:
+      - /home/devfran/tfg-riego-inteligente/frontend:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm install && npm run dev"
+    ports:
+      - 3000:3000

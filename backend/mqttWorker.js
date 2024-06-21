@@ -6,6 +6,32 @@ import deviceModel from './devices/models/deviceModel.js'
 import actuadoresModel from './actuadores/models/actuadoresModel.js'
 import { addValue } from './monitors/controllers/monitorController.js'
 import { addLog } from './logs/controllers/logController.js'
+import programsModel from './programs/models/programsModel.js'
+// import { registerSensor } from './sensors/controllers/sensorsController.js'
+import { validate } from 'uuid'
+/**
+ * @description Registra un sensor descubierto
+ * @param sensorId Identificador del sensor
+ * @returns true si se ha registrado correctamente, false en caso contrario
+ */
+
+const registerSensor = async (sensorId) => {
+    try {
+        if (!validate(sensorId)) {
+            return false
+        }
+        await sensorsModel.create({ 
+            id: sensorId, 
+            user: "00000000A",
+            name: "Unreg-" + sensorId.substring(0, 4),
+            available: 1,
+        })
+        return true
+    } catch (error) {
+        console.log(error.message)
+        return false
+    }
+}
 
 if (!isMainThread){
     const client = mqtt.connect(`mqtt://${process.env.BROKER_IP}:1883`, {
@@ -16,6 +42,11 @@ if (!isMainThread){
     client.on('connect',async () => {
         console.log("Conectando")
         try {
+            client.subscribe('server/discover/sensors', (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: server/discover")
+                }
+            })
             client.subscribe('logs', (err) => {
                 if (err) {
                     console.log("No se ha podido suscribir al topic: logs")
@@ -50,6 +81,16 @@ if (!isMainThread){
                 })
                 console.log(`Suscrito al topic: ${topic}`)
             })
+            let actuadores = await actuadoresModel.findAll()
+            actuadores.forEach(actuador => {
+                let topic = `devices/${actuador.device}/actuadores/${actuador.id}/flow`
+                client.subscribe(topic, (err) => {
+                    if (err) {
+                        console.log("No se ha podido suscribir al topic: " + topic)
+                    }
+                })
+                console.log(`Suscrito al topic: ${topic}`)
+            })
             console.log("Conexión con el broker MQTT exitosa")
             client.publish('server/available', '1', (err) => {
                 if (err) {
@@ -71,12 +112,20 @@ if (!isMainThread){
                 console.log("No se ha encontrado el dispositivo")
                 return
             }
+
             client.publish(`devices/${device_data.id}/info`, JSON.stringify(device_data), (err) => {
                 if (err) {
                     console.log("No se ha podido enviar la información del dispositivo")
                 }
             })
+
             client.subscribe(`devices/${device_data.id}/available`, (err) => {
+                if (err) {
+                    console.log("No se ha podido suscribir al topic: devices/" + device_data.id + "/available")
+                }
+            })
+
+            client.subscribe(`devices/${device_data.id}/temperature`, (err) => {
                 if (err) {
                     console.log("No se ha podido suscribir al topic: devices/" + device_data.id + "/available")
                 }
@@ -111,6 +160,18 @@ if (!isMainThread){
                         console.log("No se ha podido enviar la información del actuador: " + actuador.id)
                     }
                 })
+
+                if (actuador.activeProgram != null) {
+                    let program = await programsModel.findOne({where: {id: actuador.activeProgram}})
+                    if (program == null) {
+                        console.log("No se ha encontrado el programa para enviar al actuador")
+                    }
+                    client.publish(`devices/${device_data.id}/programs/new`, JSON.stringify(program), (err) => {
+                        if (err) {
+                            console.log("No se ha podido enviar la información del programa: " + program.id)
+                        }
+                    })
+                }
             }
         } else if (topic.includes('available')){
             let device_id = topic.split('/')[1]
@@ -127,14 +188,58 @@ if (!isMainThread){
             let jsonData = JSON.parse(message.toString())
             addValue({
                 sensorCode: sensor_id,
-                value: jsonData.value,
+                type: 0,
+                value: jsonData.temperature,
+                time: jsonData.time
+            })
+            addValue({
+                sensorCode: sensor_id,
+                type: 1,
+                value: jsonData.soilTemperature,
+                time: jsonData.time
+            })
+            addValue({
+                sensorCode: sensor_id,
+                type: 2,
+                value: jsonData.humidity,
+                time: jsonData.time
+            })
+            addValue({
+                sensorCode: sensor_id,
+                type: 3,
+                value: jsonData.soilHumidity,
                 time: jsonData.time
             })
         } else if (topic.includes('logs')){
             let logData = JSON.parse(message.toString())
             addLog(logData)
+        } else if (topic.includes('temperature')){
+            let device_id = topic.split('/')[1]
+            let jsonData = JSON.parse(message.toString())
+            addValue({
+                deviceCode: device_id,
+                value: jsonData.value,
+                time: jsonData.time
+            })
+        } else if (topic.includes('discover')){
+            // Comprobar si el dispositivo de lectura ya existe
+            let sensor = await sensorsModel.findOne({where: {id: message.toString()}})
+            if (sensor != null){
+                sensor.available = 1
+                sensor.save()
+                return
+            }
+            console.log("Sensor descubierto -> " + message.toString())
+            registerSensor(message.toString())
+        } else if (topic.includes('flow')){
+            let actuador_id = topic.split('/')[3]
+            let jsonData = JSON.parse(message.toString())
+            addValue({
+                actuadorCode: actuador_id,
+                value: jsonData.value,
+                time: jsonData.time
+            })
         }
-        
     })
 
     parentPort.on('message', (data) => {

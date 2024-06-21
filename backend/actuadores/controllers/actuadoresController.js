@@ -1,10 +1,48 @@
 import actuadoresModel from "../models/actuadoresModel.js"
 import deviceModel from "../../devices/models/deviceModel.js"
 import areasModel from "../../areas/models/areasModel.js"
-import sensorModel from "../../sensors/models/sensorsModel.js"
 import { get_nif_by_token } from "../../users/controllers/UserController.js"
 import { v4, validate } from "uuid"
 import { publish_msg } from "../../mqtt.js"
+import { sendCommandToWorker } from "../../index.js"
+import monitorModel from "../../monitors/models/monitorModel.js"
+import { Op } from "sequelize"
+
+/**
+ * 
+ * @description: Devuelve los actuadores de un usuario. Solamente necesita el token de autenticación
+ * 
+ */
+export const getUserActuadores = async (req, res) => {
+    // Validar token
+    console.log("All")
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+    // Buscar los actuadores de este usuario
+    try {
+        let allActuadores = await actuadoresModel.findAll()
+        let actuadores = []
+        // Filtrar los que tenga un device que pertenezca al usuario
+        for (let i = 0; i < allActuadores.length; i++) {
+            let device = await deviceModel.findOne({ where: { id: allActuadores[i].device, Usuario: nif } })
+            if (device !== null) {
+                actuadores.push(allActuadores[i])
+            }
+        }
+        res.status(200).send(actuadores)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
 
 /*
     @description: Devuelve los actuadores de un dispositivo
@@ -139,6 +177,7 @@ export const addActuador = async (req, res) => {
         let topic = `devices/${device.id}/actuadores/new`
         let actuador = await actuadoresModel.findOne({ where: { id: uuid } })
         publish_msg(topic, JSON.stringify(actuador))
+        sendCommandToWorker("suscribe", `devices/${device.id}/actuadores/${actuador.id}/flow`)
         res.status(200).send("Actuator added")
     } catch (error) {
         res.status(500).send(error.message)
@@ -206,8 +245,9 @@ export const deleteActuador = async (req, res) => {
     }
 
     // Comprobar si el actuador existe
+    let actuador
     try {
-        let actuador = await actuadoresModel.findOne({ where: { id: req.body.id, device: req.params.device } })
+        actuador = await actuadoresModel.findOne({ where: { id: req.body.id, device: req.params.device } })
         if (actuador === null) {
             res.status(404).send("Actuator not found")
             return
@@ -222,6 +262,7 @@ export const deleteActuador = async (req, res) => {
         let topic = `devices/${device.id}/actuadores/delete`
         let payload = req.body.id
         publish_msg(topic, payload)
+        sendCommandToWorker("unsuscribe", `devices/${device.id}/actuadores/${actuador.id}/flow`)
         res.status(200).send("Actuator deleted")
     } catch (error) {
         res.status(500).send(error.message)
@@ -448,15 +489,6 @@ export const updateActuadorDevicePin = async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
-    try {
-        let sensor = await sensorModel.findOne({ where: { device_pin: req.body.device_pin, device: actuador.device } })
-        if (sensor !== null) {
-            res.status(409).send("Pin already in use")
-            return
-        }
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
         let topic = `devices/${actuador.device}/actuadores/${actuador.id}/update/device_pin`
@@ -549,8 +581,10 @@ export const updateActuadorDevice = async (req, res) => {
     }
     // ------------------------------------ Actualizar pin ---------------------------------------------------------
     try {
+        sendCommandToWorker("unsuscribe", `devices/${actuador.device}/actuadores/${actuador.id}/flow`)
         actuador.device = req.body.device
         actuador.save()
+        sendCommandToWorker("suscribe", `devices/${req.body.device}/actuadores/${actuador.id}/flow`)
         res.status(200).send("Device updated")
     } catch (error) {
         res.status(500).send(error.message)
@@ -782,3 +816,123 @@ export const updateActuadorName = async (req, res) => {
         res.status(500).send(error.message)
     }
 }
+
+/**
+ * 
+ * @description Devuelve todos los actuadores para el agente solo con el token
+ */
+export const getAllAutoActuadores = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif != "00000000A") {
+        res.status(403).send("Not allowed")
+        return
+    }
+    // Buscar los actuadores de este usuario
+    try {
+        let allActuadores = await actuadoresModel.findAll({
+            where: {
+                mode: 1
+            }
+        })
+        res.status(200).send(allActuadores)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/**
+ * @description GET de actuadores por id
+ * @param id del actuador
+ * @returns 200 si todo ha ido bien, 400 si hay algún error en los datos, 404 si no se encuentra el actuador, 500 si hay un error en la base de datos
+ */
+
+export const getActuador = async (req, res) => {
+    // Validar token
+    let nif
+    try {
+        nif = await get_nif_by_token(req.header('Authorization').replace('Bearer ', ''))
+    } catch (error) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (nif === undefined) {
+        res.status(401).send("Invalid token")
+        return
+    }
+
+    if (req.params.id === undefined || req.params.id === null || req.params.id == "") {
+        res.status(400).send("Missing id")
+        return
+    }
+
+    if (!validate(req.params.id)) {
+        res.status(400).send("Invalid actuador")
+        return
+    }
+
+    try {
+        let actuador = await actuadoresModel.findOne({ where: { id: req.params.id } })
+        if (actuador === null) {
+            res.status(404).send("Actuator not found")
+            return
+        }
+
+        let device = await deviceModel.findOne({ where: { id: actuador.device, Usuario: nif } })
+        if (device === null) {
+            res.status(404).send("Device not found")
+            return
+        }
+
+        res.status(200).send(actuador)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+/**
+ * 
+ * @description Actualiza el flujo acumulado de los actuadores
+ * Para cada actuador, se obtienen los datos de caudal de su caudalimetro  y se hace un promedio de los datos.
+ * Después, se suma al flujo acumulado del actuador
+ * 
+ */
+export const updateActuadoresAccumulatedFlow = async () => {
+    try{
+        let actuadores = await actuadoresModel.findAll()
+        for (let i = 0; i < actuadores.length; i++) {
+            let flowData = await monitorModel.findAll({
+                where: {
+                    actuadorCode: actuadores[i].id,
+                    createdAt: {
+                        [Op.gt]: new Date(new Date() - 60000)
+                    }
+                }
+            })
+            let lastMinuteFlow = 0
+            for (let j = 0; j < flowData.length; j++) {
+                lastMinuteFlow += flowData[j].value
+            }
+            let meanFlow = lastMinuteFlow / flowData.length
+            actuadores[i].acumulatedFlow += meanFlow
+            actuadores[i].save()
+        }
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+

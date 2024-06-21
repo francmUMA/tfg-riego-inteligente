@@ -1,0 +1,11 @@
+version: '3'
+services:
+  api-backend:
+    image: node:22
+    volumes:
+      - /home/franpi/tfg-riego-inteligente/backend:/usr/src/app
+    working_dir: /usr/src/app
+    command: bash -c "npm i && node index.js"
+    ports:
+      - 3000:3000
+    restart: unless-stopped

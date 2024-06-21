@@ -1,0 +1,4 @@
+python-dotenv
+paho-mqtt
+mysql-connector
+requests

@@ -1,0 +1,11 @@
+[Unit]
+Description=Device control application
+
+[Service]
+User=franpi
+Group=franpi
+WorkingDirectory=/home/franpi/tfg-riego-inteligente/raspberry/
+ExecStart=/home/franpi/tfg-riego-inteligente/raspberry/run.sh
+
+[Install]
+WantedBy=multi-user.target

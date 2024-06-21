@@ -23,4 +23,9 @@ export default db.define("Areas", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    indoor: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 0
+    },
 })

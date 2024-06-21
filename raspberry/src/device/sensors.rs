@@ -1,17 +1,13 @@
 use rppal::gpio::InputPin;
 use rppal::gpio::Gpio;
+use serde_json::json;
 use serde_json::Value;
 
 pub struct  Sensor {
     id: String,
     device: String,
-    device_pin: Option<InputPin>,
-    sensor_type: String,
     area: Option<String>,
-    latitud: Option<f64>,
-    longitud: Option<f64>,
     name: String,
-    value: Option<u8>,
     available: u8
 }
 
@@ -19,45 +15,19 @@ impl Sensor {
     pub fn new(
         id: String,
         device: String,
-        device_pin: Value,
-        sensor_type: String,
         area: Value,
-        latitud: Value,
-        longitud: Value,
         name: String,
-        value: Value,
         available: u8
     ) -> Sensor {
-        let mut device_pin_value: Option<InputPin> = None;
         let mut area_value: Option<String> = None;
-        let mut latitud_value: Option<f64> = None;
-        let mut longitud_value: Option<f64> = None;
-        let mut value_value: Option<u8> = None;
-        if device_pin.is_u64() {
-            device_pin_value = Some(Gpio::new().unwrap().get(device_pin.as_u64().unwrap() as u8).unwrap().into_input());
-        }
         if area.is_string() {
             area_value = Some(area.to_string());
-        }
-        if latitud.is_f64() {
-            latitud_value = Some(latitud.as_f64().unwrap());
-        }
-        if longitud.is_f64() {
-            longitud_value = Some(longitud.as_f64().unwrap());
-        }
-        if value.is_u64() {
-            value_value = Some(value.as_u64().unwrap() as u8);
         }
         Sensor {
             id,
             device,
-            device_pin: device_pin_value,
-            sensor_type: sensor_type.chars().filter(|c| c.to_ascii_lowercase() != '"'.to_ascii_lowercase()).collect::<String>(),
             area: area_value,
-            latitud: latitud_value,
-            longitud: longitud_value,
             name,
-            value: value_value,
             available
         }
     }
@@ -70,47 +40,74 @@ impl Sensor {
         self.name.clone()
     }
 
-    pub fn change_pin(&mut self, pin: u8) -> bool {
-        self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_input());
-        true
-    }
-
-    pub fn read(&mut self) -> Option<u8> {
-        println!("Tipo de sensor: {}", self.sensor_type);
-        if self.sensor_type.as_str() == "DHT" {
-            self.value = Some(read_humidity(&mut self.device_pin));
-        } else if self.sensor_type.as_str() == "TMP" {
-            self.value = Some(read_tmp(&mut self.device_pin));
-        } else if self.sensor_type.as_str() == "CAU" {
-            self.value = Some(read_caudal(&mut self.device_pin));
-        }
-        
-        self.value.clone()
-    }
-
     pub fn get_device(&self) -> String {
         self.device.clone()
     }
+}
 
-    pub fn clean_pin(&mut self) {
-        self.device_pin = None;
+pub struct ESP32info {
+    id: String,
+    time: u64,
+    temp: f64,
+    hum: f64,
+    soil_temp: u32,
+    soil_hum: u32
+}
+
+impl ESP32info {
+    pub fn new(
+        id: String,
+        time: u64,
+        temp: f64,
+        hum: f64,
+        soil_temp: u32,
+        soil_hum: u32
+    ) -> ESP32info {
+        ESP32info {
+            id,
+            time,
+            temp,
+            hum,
+            soil_temp,
+            soil_hum
+        }
     }
-}
 
-use rand::Rng;
-fn generate_random_value() -> u8 {
-    let mut rng = rand::thread_rng();
-    return rng.gen_range(0..100);
-}
+    pub fn get_id(&self) -> String {
+        self.id.clone()
+    }
 
-fn read_humidity(pin: &mut Option<InputPin>) -> u8{
-    return generate_random_value();
-}
+    pub fn get_time(&self) -> u64 {
+        self.time
+    }
 
-fn read_tmp(pin: &mut Option<InputPin>) -> u8{
-    return generate_random_value();
-}
+    pub fn get_temp(&self) -> f64 {
+        self.temp
+    }
 
-fn read_caudal(pin: &mut Option<InputPin>) -> u8{
-    return generate_random_value();
+    pub fn get_hum(&self) -> f64 {
+        self.hum
+    }
+
+    pub fn get_soil_temp(&self) -> u32 {
+        self.soil_temp
+    }
+
+    pub fn get_soil_hum(&self) -> u32 {
+        self.soil_hum
+    }
+
+}   
+
+pub fn get_esp32_info(id: String, payload: String) -> ESP32info {
+    let time = crate::utils::time::create_unix_timestamp();
+    let json_payload: Value = serde_json::from_str(&payload).unwrap();
+    let analog = json_payload["ANALOG"].as_object().unwrap();
+    let am3201 = json_payload["AM2301"].as_object().unwrap();
+    let mut soil_hum = analog["A1"].as_u64().unwrap_or_else(|| 0) as u32;
+    soil_hum = (((3876 - soil_hum) as f32/(3876-1100) as f32)*100 as f32) as u32;
+    let temp = am3201["Temperature"].as_f64().unwrap_or_else(|| 0.0);
+    let hum = am3201["Humidity"].as_f64().unwrap_or_else(|| 0.0);
+    let soil_temp = 0;
+    return ESP32info::new(id, time, temp, hum,soil_temp, soil_hum)
 }
