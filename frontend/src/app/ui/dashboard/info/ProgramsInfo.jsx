@@ -64,11 +64,11 @@ export const ProgramsInfo = ({setUpdateActuador,updateProgram, setUpdateProgram,
                                     timestampToTime(program.startTime)
                                 }
                             </p>
-                            <div className="min-w-16 h-full flex items-center justify-start gap-x-1">
+                            <div className="min-w-24 h-full flex items-center justify-start gap-x-1">
                                 <FiClock className="text-indigo-600" size={16} />
                                 <p className="text-center">{program.duration == null ? 0 : program.duration} h</p>
                             </div>
-                            <div className="h-8 flex items-center justify-start border rounded-md bg-white">
+                            <div className="h-8 flex items-center border rounded-md bg-white">
                                 <p className={`w-7 h-full flex justify-center items-center border-r ${
                                     (program.days & 0x01) && 'bg-indigo-500 text-white'
                                 }`}>L</p>
@@ -91,21 +91,24 @@ export const ProgramsInfo = ({setUpdateActuador,updateProgram, setUpdateProgram,
                                     program.days >> 6 && 'bg-indigo-500 text-white'
                                 }`}>D</p>
                             </div>
-                            <button onClick={
-                                () => {
-                                    associate
-                                        ? updateAssociateProgram(index)
-                                        : console.log("Edit program")
+                            <div className="w-full h-full flex justify-end items-center">
+                                <button onClick={
+                                    () => {
+                                        associate
+                                            ? updateAssociateProgram(index)
+                                            : console.log("Edit program")
+                                    }
                                 }
-                            }
-                            className="min-w-8 h-8 flex items-center justify-center rounded-md border bg-white hover:bg-gray-100 transition ease-in-out duration-150 shadow-md">
-                                {
-                                    associate !== undefined && associate == true && elem !== undefined && elem.activeProgram == null
-                                        ? <CiSquarePlus className="text-indigo-600" size={16}></CiSquarePlus>
-                                        : <FaRegEdit className="text-indigo-600" size={16} />
-                                }
-                                
-                            </button>
+                                className="min-w-8 h-8 flex items-center justify-center rounded-md border bg-white hover:bg-gray-100 transition ease-in-out duration-150 shadow-md">
+                                    {
+                                        associate !== undefined && associate == true && elem !== undefined && elem.activeProgram == null
+                                            ? <CiSquarePlus className="text-indigo-600" size={16}></CiSquarePlus>
+                                            : <FaRegEdit className="text-indigo-600" size={16} />
+                                    }
+                                    
+                                </button>
+                            </div>
+                            
                             <button
                                 onClick={() => deleteProgram2(programs[index].id)}
                                 className="min-w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-400 transition ease-in-out duration-150 rounded-md shadow-md">

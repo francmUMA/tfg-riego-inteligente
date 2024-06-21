@@ -957,7 +957,7 @@ export default function Page() {
                     </div>
                     <div id="graficas" className="w-full h-full max-h-64 flex flex-col md:flex-row gap-3 items-center justify-center">
                         <div className="w-full h-full flex flex-col items-center border rounded-md shadow-md">
-                            <h1 className="w-full h-12 text-lg text-center text-slate-400">Temperatura</h1>
+                            <h1 className="w-full h-12 text-lg text-center text-slate-400">Temperatura de la CPU</h1>
                             <Suspense>
                                 <SensorChart className="w-full h-full" type={5} id={deviceId}/>
                             </Suspense>

@@ -480,7 +480,7 @@ const App = () => {
     }, [devices])
 
     useEffect(() => {
-      computeActuadoresMarkersArea(polygonRef.current)
+      // computeActuadoresMarkersArea(polygonRef.current)
     }, [actuadores])
 
     useEffect(() => {
