@@ -374,7 +374,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                 let program_id = payload.to_string();
 
                 //Comprobar si el programa es diferente al activo
-                if program_id == actuador.get_active_program() {
+                if actuador.get_active_program().is_some() && program_id == actuador.get_active_program().unwrap() {
                     println!("El programa activo es el mismo");
                     return
                 }
