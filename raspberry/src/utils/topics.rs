@@ -372,6 +372,14 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             }
             else if topic.contains("update") && topic.contains("activeProgram"){
                 let program_id = payload.to_string();
+
+                //Comprobar si el programa es diferente al activo
+                if program_id == actuador.get_active_program() {
+                    println!("El programa activo es el mismo");
+                    return
+                }
+
+                //cambiar el programa activo y comprobar si hay algún temporizador creado
                 actuador.set_active_program(program_id.clone());
                 if (program_id == "null"){
                     if actuador.get_status() == 1 {
@@ -391,6 +399,13 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                     "description": format!("Se ha cambiado el programa activo"),
                 });
                 mqtt_client.publish("logs", log_data.to_string().as_str());
+
+                 //Si hay un temporizador creado, eliminarlo
+                let index = timers.iter().position(|timer| timer.get_actuador_id() == actuador.get_id());
+                if index.is_some() {
+                    let _ = timers.remove(index.unwrap());
+                    println!("Temporizador eliminado")
+                }
             }
             else if topic.contains("update") && topic.contains("program") {
                 if payload == "stop"{
