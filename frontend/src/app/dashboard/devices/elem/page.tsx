@@ -850,7 +850,7 @@ export default function Page() {
                                                             <div className="h-full flex items-center justify-center">
                                                                 <button 
                                                                     onClick={() => openCloseActuador(actuador)}
-                                                                    disabled={actuador.mode == 1 || actuador.device_pin == null}
+                                                                    disabled={actuador.mode == 1 || actuador.device_pin == null || actuador.activeProgram != null}
                                                                     className="w-9 h-2/3 flex justify-center text-indigo-600 items-center bg-gray-50
                                                                      hover:bg-gray-200 rounded-md shadow-md duration-100 disabled:text-indigo-300">
                                                                         {

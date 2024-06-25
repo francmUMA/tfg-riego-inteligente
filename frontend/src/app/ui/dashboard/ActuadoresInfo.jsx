@@ -24,12 +24,8 @@ export const ActuadorProgramName = ({programId}) => {
 
     return(
         <div className="flex flex-row h-full w-full justify-start items-center gap-x-2">
-            <button
-                className="w-9 h-2/3 flex justify-center items-center rounded-md shadow-sm border bg-gray-50 hover:bg-gray-100 duration-150">
-                <FaClock size={16} className="text-indigo-600"/>
-            </button>
+            <FaClock size={16} className="text-indigo-600"/>
             <p className="h-full flex items-center">{program === undefined || program == null ? "Indefinido" : program}</p>
- 
         </div>
         
     )
