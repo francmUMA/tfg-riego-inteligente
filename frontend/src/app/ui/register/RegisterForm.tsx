@@ -53,12 +53,6 @@ export default function RegisterForm() {
     const [emptyNif, setEmptyNif] = useState(true)
     const [validNif, setValidNif] = useState(false)
     const [validNifMessage, setValidNifMessage] = useState('')
-
-
-    const [code1, setCode1] = useState('0')
-    const [code2, setCode2] = useState('0')
-    const [code3, setCode3] = useState('0')
-    const [code4, setCode4] = useState('0')
     
     const router = useRouter()
 
@@ -99,11 +93,13 @@ export default function RegisterForm() {
     const handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault()
         setShowForm(false)
+        setShowDataForm(true)
     }
 
     const handleName = (e: { target: { value: string } }) => {
         if (e.target.value === '') {
             setEmptyName(true)
+            setName('')
         } else {
             setEmptyName(false)
             if (e.target.value.length <= 45) {
@@ -119,6 +115,7 @@ export default function RegisterForm() {
     const handleSurname = (e: { target: { value: string } }) => {
         if (e.target.value === '') {
             setEmptySurname(true)
+            setSurname('')
         } else {
             setEmptySurname(false)
             if (e.target.value.length <= 45) {
@@ -164,29 +161,6 @@ export default function RegisterForm() {
         } else {
             console.log('Error al crear el usuario')
         }
-    }
-
-
-    // Codigo de verificacion
-    const handleSendCodeSubmit = () => {
-        console.log(code1 + code2 + code3 + code4)
-        setShowDataForm(true)
-    }
-
-    const handleCode1 = (e: { target: { value: string } }) => {
-        setCode1(e.target.value)
-    }
-
-    const handleCode2 = (e: { target: { value: string } }) => {
-        setCode2(e.target.value)
-    }
-
-    const handleCode3 = (e: { target: { value: string } }) => {
-        setCode3(e.target.value)
-    }
-
-    const handleCode4 = (e: { target: { value: string } }) => {
-        setCode4(e.target.value)
     }
 
     const [showLocationMap, setShowLocationMap] = useState(false)
@@ -304,47 +278,6 @@ export default function RegisterForm() {
             </div>
                 
             )
-        } else if (!showDataForm && !showForm && !showLocationMap) {
-            return (
-                <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
-                    <div className="space-y-5 mx-5">
-                        <div className="flex justify-center items-center">
-                            <Image src="/logo.png" alt="" width="150" height="0" />
-                        </div>
-                        <div className="flex justify-center items-center">
-                            <p className="flex font-serif text-center text-2xl">
-                                Se te ha enviado un código de verificación a {email} para verificar tu cuenta.
-                            </p>
-                        </div>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-center">
-                                <label className="text-gray-600 row-span-1 col-span-1">
-                                    Verification code
-                                </label>
-                            </div>
-                            <form onSubmit={handleSendCodeSubmit}>
-                                <div className="flex items-center justify-center">
-                                    <div className="mt-2 flex items-center gap-x-5">
-                                        <input name="code1" type="text" onChange={handleCode1} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
-                                        />
-                                        <input name="code2" type="text" onChange={handleCode2} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
-                                        />
-                                        <input name="code3" type="text" onChange={handleCode3} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
-                                        />
-                                        <input name="code4" type="text" onChange={handleCode4} placeholder="0" maxLength={1} className="w-12 h-12 rounded-lg border focus:border-indigo-600 outline-none text-center text-2xl"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="flex items-center justify-center pt-4">
-                                    <button type="submit" className="w-1/2 px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
-                                        Enviar
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            ) 
         } else if (showDataForm && !showLocationMap) {
             return (
                 <div className="flex-1 flex items-center justify-center h-full overflow-hidden">
@@ -360,7 +293,7 @@ export default function RegisterForm() {
                                 <label className="font-medium">
                                     Nombre
                                 </label>
-                                <input name="nombre" type="text" placeholder="Nombre" onChange={handleName} onBlur={handleName} required
+                                <input name="nombre" type="text" placeholder="Nombre" value={name} onChange={handleName} onBlur={handleName} required
                                 className={`transition easy-in-out duration-200 
                                 w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
                                 shadow-sm rounded-lg ${
@@ -384,7 +317,7 @@ export default function RegisterForm() {
                                 <label className="font-medium">
                                     Apellidos
                                 </label>
-                                <input name="nombre" type="text" placeholder="(Opcional)" onChange={handleSurname} onBlur={handleName}
+                                <input name="surname" type="text" placeholder="(Opcional)" value={surname} onChange={handleSurname} onBlur={handleName}
                                 className={`transition easy-in-out duration-200 
                                 w-full mt-2 px-3 py-2 bg-transparent focus:text-gray-500 outline-none border focus:border-indigo-600 
                                 shadow-sm rounded-lg ${

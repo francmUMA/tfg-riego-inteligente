@@ -91,7 +91,11 @@ export const ProgramsInfo = ({setUpdateActuador,updateProgram, setUpdateProgram,
                                     program.days >> 6 && 'bg-indigo-500 text-white'
                                 }`}>D</p>
                             </div>
-                            <div className="w-full h-full flex justify-end items-center">
+                            <div className={`w-full h-full flex ${
+                                associate !== undefined && associate == true && elem !== undefined && elem.activeProgram == null
+                                ? `visible`
+                                : `hidden`
+                            } justify-end items-center`}>
                                 <button onClick={
                                     () => {
                                         associate
