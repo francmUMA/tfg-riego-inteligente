@@ -51,7 +51,6 @@ export default function Page() {
                 <button onClick={openAddCropDialogButton} className="h-12 w-12 bg-indigo-600 text-white hover:bg-indigo-500 transition ease-in-out duration-150 rounded-md shadow-md border">
                     <IoIosAddCircleOutline size={22} className="w-full flex items-center justify-center"/>
                 </button>
-                <RotateIconUpdateButton buttonClickFunction={fetchCrops}/>
             </header>
             <section id="cultivos" className="w-full grid grid-cols-3 gap-2 overflow-y-auto">
                 {

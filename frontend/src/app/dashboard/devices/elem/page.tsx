@@ -4,6 +4,7 @@ import { Sensor, addSensor, checkSensorId, deleteSensor, getSensors } from "@/sr
 import { checkToken } from "@/src/app/lib/token";
 import { ElemPlacer } from "@/src/app/ui/dashboard/ElemPlacer"
 
+import Select from 'react-select'
 import { ArrowPathIcon, ArrowLeftIcon, XMarkIcon, MapPinIcon, PlusCircleIcon, GlobeAltIcon, EnvelopeIcon, WifiIcon } from "@heroicons/react/24/outline";
 import { Dialog, DialogTitle } from "@mui/material";
 import { getCookie } from "cookies-next";
@@ -368,7 +369,8 @@ export default function Page() {
     }
 
     const handleSelectNewActuadorPin = (e: any) => {
-        setNewActuadorPin(e.target.value)
+        if (e === undefined || e == null) setNewActuadorPin(1)
+        else setNewActuadorPin(e.value)
     }
 
     const closeUpdateActuadorPinDialog = async () => {
@@ -382,23 +384,39 @@ export default function Page() {
     }
 
     const updateActuadorPinDialog = () => {
+        const options = [
+            {
+                value: null,
+                label: "Ninguno"
+            },
+            {
+                value: 14,
+                label: "1"
+            },
+            {
+                value: 23,
+                label: "2"
+            },
+            {
+                value: 6,
+                label: "3"
+            },
+            {
+                value: 22,
+                label: "4"
+            }
+        ]
+
         return (
             <Dialog open={IsOpenUpdateActuadorPinDialog} onClose={closeUpdateActuadorPinDialog}>
                 <DialogTitle className="w-full h-full border">Añade un nuevo pin</DialogTitle>
-                <div className="flex flex-col justify-center items-center p-4 gap-4">
+                <div className="flex flex-col h-full min-h-72 items-center p-4 gap-4">
                     <div className="w-full h-full">
                         <label className="font-medium">Elige un pin</label>
                     </div>
                     <div className="w-full h-full flex flex-col gap-3 justify-center items-center">
-                        <select className="w-full h-10" onChange={handleSelectNewActuadorPin}>
-                            {
-                                Array.from({length: 40}, (_, i) => i + 1).map((pin, index) => {
-                                    return (
-                                        <option key={index} value={pin}>{pin}</option>
-                                    )
-                                })
-                            }
-                        </select>
+                    <Select
+                        className="w-full" placeholder="Elemento" onChange={handleSelectNewActuadorPin}  options={options} isClearable/>
                         <button onClick={handleActuadorPin} className="w-full h-8 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150">
                             <p>Actualizar pin</p>
                         </button>
@@ -643,10 +661,6 @@ export default function Page() {
         closeActuadorOpenCloseModal()
     }
 
-    const checkProgram = async (programId: string) => {
-        return 0
-    }
-
     const openCloseActuador = async (actuador: Actuador) => {
         const token = getCookie('token')
         if (actuador.activeProgram != "" && actuador.activeProgram != null) {
@@ -834,7 +848,13 @@ export default function Page() {
                                                                 {
                                                                     actuador.device_pin == null
                                                                         ? "Desconectado"
-                                                                        : actuador.device_pin
+                                                                        : actuador.device_pin == 14 
+                                                                            ? "Slot 1"
+                                                                            : actuador.device_pin == 23
+                                                                                ? "Slot 2"
+                                                                                : actuador.device_pin == 6
+                                                                                    ? "Slot 3"
+                                                                                    : "Slot 4"
                                                                 }
                                                             </div> 
                                                             <div className="h-full col-span-3 flex items-center justify-center">

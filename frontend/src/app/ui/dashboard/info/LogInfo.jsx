@@ -28,6 +28,9 @@ export const LogInfo = ({ elemId, type }) => {
     
     useEffect(() => {
         if (elemId !== undefined && type !== undefined) fetchLogs()
+        setInterval(() => {
+            if (elemId !== undefined && type !== undefined) fetchLogs()
+        }, 10000)
     }, [elemId, type])
 
     return (
