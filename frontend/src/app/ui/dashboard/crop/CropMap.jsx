@@ -2,7 +2,7 @@ import { getCoordsArea } from "@/src/app/lib/coordsUtils"
 import { fetchUserInfo } from "@/src/app/lib/userInfo"
 import { APIProvider, Map, Marker, InfoWindow, useMapsLibrary, toLatLngLiteral } from "@vis.gl/react-google-maps"
 import { getCookie } from "cookies-next"
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, use } from "react"
 import { Polygon } from "../map/Polygon"
 import { DeviceMarkerInfo } from "./DeviceMarkerInfo"
 import { ActuadorMarkerInfo } from "./ActuadorMarkerInfo"
@@ -126,7 +126,7 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
         let polygonCoords = []
         // Agregar las coordenadas del poligono
         if (polygon.latLngs.Fg[0] !== undefined && polygon.latLngs.Fg[0].Fg.length > 0){
-            polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
+            polygon.latLngs.Fg[0].Fg.map((point, index) => {
               let newCoord = {
                   Latitud: point.lat(), 
                   Longitud: point.lng(), 
@@ -228,6 +228,16 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
     }
 
     const [newCoords, setNewCoords] = useState([])
+    useEffect(() => {
+      console.log("New Coords",newCoords)
+        setPlaceCoords(newCoords)
+        setCoords([...coords, ...newCoords])
+    }, [newCoords])
+
+    useEffect(() => {
+      console.log("Coords",coords)
+    }, [coords])
+
     const createInitialCoords = async (coords) => {
         if (coords === undefined || placeId === undefined) {
             notify("Error al crear el polígono","error")
@@ -246,8 +256,7 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
           area: placeId, 
           index: 1
         }
-        setCoords(coords => [...coords, coord1, coord2])
-        setPlaceCoords([coord1, coord2])
+        setNewCoords([coord1, coord2])
     }
 
     const fetchCropCoords = async () => {
@@ -282,11 +291,6 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
     useEffect(() => {
         if (!place) fetchCropCoords()
     },[place])
-
-    useEffect(() => {
-        setPlaceCoords(newCoords)
-        setCoords(coords => [...newCoords])
-    }, [newCoords])
 
     const handleDeleteAreas = async () => {
       const token = getCookie('token')
@@ -355,18 +359,18 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
                                         setClickedArea={setClickedArea} placeId={placeId}
                                     />
                                     {
-                                        clickedArea == area.id &&
-                                        <InfoWindow
-                                            position={{lat: clickedCoords.lat, lng: clickedCoords.lng}}
-                                            onCloseClick={() => {
-                                                setClickedDevice(undefined)
-                                                setClickedSensor(undefined)
-                                                setClickedActuador(undefined)
-                                                setClickedArea(undefined) 
-                                            }}
-                                        >
-                                            <AreaInfo handleUpdateIndoor={handleUpdateIndoor} area={area} handleDeleteAreas={handleDeleteAreas}/>
-                                        </InfoWindow>
+                                      clickedArea == area.id &&
+                                      <InfoWindow
+                                          position={{lat: clickedCoords.lat, lng: clickedCoords.lng}}
+                                          onCloseClick={() => {
+                                              setClickedDevice(undefined)
+                                              setClickedSensor(undefined)
+                                              setClickedActuador(undefined)
+                                              setClickedArea(undefined) 
+                                          }}
+                                      >
+                                          <AreaInfo handleUpdateIndoor={handleUpdateIndoor} area={area} handleDeleteAreas={handleDeleteAreas}/>
+                                      </InfoWindow>
                                     }
                                 </div>
                             )

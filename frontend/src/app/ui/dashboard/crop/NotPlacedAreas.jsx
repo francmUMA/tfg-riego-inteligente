@@ -62,10 +62,6 @@ export const NotPlacedAreas = ({crop}) => {
                             </p>
                             <div className="w-full h-full flex flex-row items-center justify-end p-2 gap-x-2">
                                 <button 
-                                    className={`shadow-md rounded-md h-full w-8 flex bg-white justify-center items-center border hover:bg-gray-100 duration-150`}>
-                                    <FaPlusCircle size={18} className="w-9 text-indigo-600" />
-                                </button>
-                                <button 
                                     onClick={() => handleDeleteAreas(area.id)}
                                     className={`shadow-md bg-red-600 border-red-700 rounded-md h-full w-8 flex justify-center items-center border hover:bg-red-500 duration-150`}>
                                     <FaRegTrashAlt size={18} className="w-9 text-white" />

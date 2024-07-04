@@ -79,7 +79,7 @@ export default function Page ({ }) {
             router.push("/dashboard/crops")
             notify("Cultivo eliminado","success")
         } else{
-            notify("Error al eliminar cultivo")
+            notify("Error al eliminar cultivo", "error")
         }
     }
 
