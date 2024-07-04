@@ -112,7 +112,19 @@ impl Actuador {
     pub fn change_pin(&mut self, pin: u8) -> bool {
         self.clean_pin();
         self.device_pin = Some(Gpio::new().unwrap().get(pin).unwrap().into_output());
-        self.flowmeter = Some(Gpio::new().unwrap().get(pin + 1).unwrap().into_input());
+
+        let mut flowmeter_pin = 0;
+        if pin == 14 || pin == 22 {
+            flowmeter_pin = pin + 1;
+        } else if pin == 6 {
+            flowmeter_pin = 5;
+        } else if pin == 22 {
+            flowmeter_pin = 27;
+        } else {
+            return false;
+        }
+
+        self.flowmeter = Some(Gpio::new().unwrap().get(flowmeter_pin).unwrap().into_input());
         true
     }
 
