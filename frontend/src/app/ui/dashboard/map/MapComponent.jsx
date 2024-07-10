@@ -261,10 +261,9 @@ const App = () => {
         newCoords.push(coord)
       }
     }
-
     // Agregar las coordenadas del poligono
-    if (polygon.latLngs.Fg[0] !== undefined && polygon.latLngs.Fg[0].Fg.length > 0){
-        polygon.latLngs.Fg[0].Fg.map(async (point, index) => {
+    if (polygon.getPath() !== undefined && polygon.getPath().getArray().length > 0){
+        polygon.getPath().getArray().map(async (point, index) => {
           let newCoord = {
               Latitud: point.lat(), 
               Longitud: point.lng(), 
@@ -273,10 +272,15 @@ const App = () => {
           }
           newCoords.push(newCoord)
       })
+    } else {
+      notify('Error al actualizar coordenadas', 'error')
     }
-
     setCoords(newCoords)
   }
+
+  useEffect(() => {
+    console.log('Coords: ', coords)
+  }, [coords])
 
   const orderCoords = (coords) => {
     let orderedCoords = []
@@ -480,7 +484,7 @@ const App = () => {
     }, [devices])
 
     useEffect(() => {
-      // computeActuadoresMarkersArea(polygonRef.current)
+      computeActuadoresMarkersArea(polygonRef.current)
     }, [actuadores])
 
     useEffect(() => {

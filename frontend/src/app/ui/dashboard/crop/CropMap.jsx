@@ -125,8 +125,8 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
         }
         let polygonCoords = []
         // Agregar las coordenadas del poligono
-        if (polygon.latLngs.Fg[0] !== undefined && polygon.latLngs.Fg[0].Fg.length > 0){
-            polygon.latLngs.Fg[0].Fg.map((point, index) => {
+        if (polygon.getPath() !== undefined && polygon.getPath().getArray().length > 0){
+          polygon.getPath().getArray().map(async (point, index) => {
               let newCoord = {
                   Latitud: point.lat(), 
                   Longitud: point.lng(), 
@@ -140,6 +140,10 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
         if (placeId == area) setNewCoords(polygonCoords)
         setCoords(newCoords)
     }
+
+    useEffect(() => {
+      console.log("Color",color)
+    }, [color])
 
     useEffect(() => {
       computeDeviceMarkersArea(polygonRef.current)

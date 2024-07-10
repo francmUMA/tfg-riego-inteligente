@@ -69,40 +69,6 @@ const InfoContent = ({elem, deviceName, type, sensors, area, setElems, setSensor
             <header id="buttons" className="w-full pt-1 flex flex-row gap-x-2 items-center">
                 <p className="flex text-2xl w-full min-w-fit font-bold items-center">{elem.name}</p>
                 <div className="pl-5 w-full flex flex-row justify-end items-center gap-x-2">
-                    {
-                        type == 2 && 
-                            <button 
-                            onClick={handleUpdateActuador}
-                            className="">
-                                {
-                                    elem.mode == 1
-                                        ? <FaRobot size={18} className="w-full h-full text-indigo-600"></FaRobot>
-                                        : <FaRobot size={18} className="w-full h-full text-indigo-300"></FaRobot>
-                                }
-                            </button>
-                    }
-                    {
-                        type == 2 && 
-                            <button 
-                            onClick={() => {
-                                const token = getCookie('token')
-                                let res = updateActuadorStatus(elem.id, !elem.status, token)
-                                if (res) {
-                                    setElems(actuadores.map((actuador) => {
-                                        if (actuador.id == elem.id && actuador.device == elem.device) actuador.status = !actuador.status
-                                        return actuador
-                                    }))
-                                }
-                            }}
-                            className={`w-7 h-7 flex justify-center text-indigo-600 items-center bg-gray-50 
-                                        hover:bg-gray-200 rounded-md shadow-md ${elem.mode == 1 && "disabled"}`}>
-                                {
-                                    elem.status == 0 
-                                        ? <IoPlayCircleSharp size={15}/>
-                                        : <IoPauseCircleSharp size={15}/>
-                                }
-                            </button>
-                    }
                     <button 
                         onClick={() => {
                             setEdit(!edit)
