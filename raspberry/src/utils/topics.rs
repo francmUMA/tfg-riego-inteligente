@@ -30,7 +30,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             "logcode": 3311,
             "sensorCode": sensor.get_id(),
             "timestamp": timestamp,
-            "description": format!("Sensor añadido",),
+            "description": format!("Sensor añadido"),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         if !suscribe_sensor_topics(sensor.get_id().clone(), sensor.get_device().clone(), mqtt_client){
@@ -48,7 +48,7 @@ fn manage_topic_sensors(topic: &str, sensors: &mut Vec<Sensor>, payload: &str, m
             "deviceName": "---",
             "logcode": 3321,
             "timestamp": timestamp,
-            "description": format!("Sensor eliminado con id {}", sensor.get_id()),
+            "description": format!("Sensor {} eliminado", sensor.get_name()),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         unsubscribe_sensor_topics(sensor, mqtt_client);
@@ -283,7 +283,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
             "deviceName": device.get_name(),
             "logcode": 3321,
             "timestamp": timestamp,
-            "description": format!("Se ha eliminado el actuador con id {}", actuador.get_id()),
+            "description": format!("Se ha eliminado el actuador {}", actuador.get_name()),
         });
         mqtt_client.publish("logs", log_data.to_string().as_str());
         unsuscribe_actuador_topics(actuador, mqtt_client);
@@ -308,7 +308,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                             "logcode": 1101,
                             "actuadorCode": actuador.get_id(),
                             "timestamp": timestamp,
-                            "description": format!("Se ha abierto el actuador con id {}", actuador.get_id()),
+                            "description": format!("Se ha abierto el actuador {}", actuador.get_name()),
                         });
                         mqtt_client.publish("logs", log_data.to_string().as_str());
                     }
@@ -322,7 +322,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                             "logcode": 1101,
                             "actuadorCode": actuador.get_id(),
                             "timestamp": timestamp,
-                            "description": format!("Se ha cerrado el actuador con id {}", actuador.get_id()),
+                            "description": format!("Se ha cerrado el actuador {}", actuador.get_name()),
                         });
                         mqtt_client.publish("logs", log_data.to_string().as_str());
                     }
@@ -335,7 +335,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                             "logcode": 1109,
                             "actuadorCode": actuador.get_id(),
                             "timestamp": timestamp,
-                            "description": format!("No se ha podido actuar sobre el actuador con id {}", actuador.get_id()),
+                            "description": format!("No se ha podido actuar sobre el actuador {}", actuador.get_name()),
                         });
                         mqtt_client.publish("logs", log_data.to_string().as_str());
                     }
@@ -353,7 +353,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                         "logcode": 1201,
                         "actuadorCode": actuador.get_id(),
                         "timestamp": timestamp,
-                        "description": format!("Se ha cambiado el pin del actuador con id {}", actuador.get_id()),
+                        "description": format!("Se ha cambiado el pin del actuador {}", actuador.get_name()),
                     });
                     mqtt_client.publish("logs", log_data.to_string().as_str());
                 } else {
@@ -365,7 +365,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                         "logcode": 1209,
                         "actuadorCode": actuador.get_id(),
                         "timestamp": timestamp,
-                        "description": format!("No se ha podido cambiar el pin del actuador con id {}", actuador.get_id()),
+                        "description": format!("No se ha podido cambiar el pin del actuador {}", actuador.get_name()),
                     });
                     mqtt_client.publish("logs", log_data.to_string().as_str());
                 }
@@ -422,7 +422,7 @@ fn manage_topic_actuadores(device: &mut Device, topic: &str, payload: &str, actu
                 "deviceName": device.get_name(),
                 "logcode": 3239,
                 "timestamp": timestamp,
-                "description": format!("No se ha encontrado el actuador con id {}", actuador_id),
+                "description": format!("No se ha encontrado el actuador {}", actuador_id),
             });
             mqtt_client.publish("logs", log_data.to_string().as_str());
         }

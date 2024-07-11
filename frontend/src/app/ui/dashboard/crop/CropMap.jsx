@@ -17,7 +17,7 @@ import { notify } from "@/src/app/lib/notify"
 import { getCropAreas } from "@/src/app/lib/cropUtils"
 
 const PolygonComponent = ({color, area, editable, devices, actuadores, sensors, 
-    coords, setClickedCoords, setClickedArea, setCoords, setNewCoords, placeId
+    coords, setClickedCoords, setClickedArea, setCoords, setNewCoords, placeId, allCoords
 }) => {
 
     const polygonRef = useRef(null)
@@ -116,13 +116,13 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
     }
 
     const handleDragPolygon = (area, polygon) => {
-        let newCoords = []
-        // Eliminar coordenadas que tenga el id del area
-        for (let coord of coords) {
-          if (coord.area != area) {
-            newCoords.push(coord)
-          }
+      let newCoords = []
+      // Eliminar coordenadas que tenga el id del area
+      for (let coord of allCoords) {
+        if (coord.area != area) {
+          newCoords.push(coord)
         }
+      }
         let polygonCoords = []
         // Agregar las coordenadas del poligono
         if (polygon.getPath() !== undefined && polygon.getPath().getArray().length > 0){
@@ -133,17 +133,13 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
                   area: area, 
                   index: index
               }
-              newCoords.push(newCoord)
               polygonCoords.push(newCoord)
+              newCoords.push(newCoord)
           })
         }
-        if (placeId == area) setNewCoords(polygonCoords)
+        setNewCoords(polygonCoords)
         setCoords(newCoords)
     }
-
-    useEffect(() => {
-      console.log("Color",color)
-    }, [color])
 
     useEffect(() => {
       computeDeviceMarkersArea(polygonRef.current)
@@ -192,9 +188,9 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
                 coords
             ]}
             options={{
-                fillColor: color,
+                fillColor: '#' + color,
                 fillOpacity: 0.2,
-                strokeColor: color,
+                strokeColor: '#' + color,
                 strokeOpacity: 0.4,
                 strokeWeight: 2,
             }}
@@ -233,14 +229,9 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
 
     const [newCoords, setNewCoords] = useState([])
     useEffect(() => {
-      console.log("New Coords",newCoords)
         setPlaceCoords(newCoords)
         setCoords([...coords, ...newCoords])
     }, [newCoords])
-
-    useEffect(() => {
-      console.log("Coords",coords)
-    }, [coords])
 
     const createInitialCoords = async (coords) => {
         if (coords === undefined || placeId === undefined) {
@@ -358,7 +349,7 @@ export const CropMap = ({ crop, areas, setAreas, devices, sensors, actuadores, p
                                         editable={placeId == area.id && place}
                                     /> */}
                                     <PolygonComponent actuadores={actuadores} area={area.id} color={area.color}
-                                        coords={filterOrderCoords(area)} devices={devices} sensors={sensors} 
+                                        coords={filterOrderCoords(area)} allCoords={coords} devices={devices} sensors={sensors} 
                                         setCoords={setCoords} setNewCoords={setNewCoords} editable={placeId == area.id && place} setClickedCoords={setClickedCoords}
                                         setClickedArea={setClickedArea} placeId={placeId}
                                     />
