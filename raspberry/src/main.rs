@@ -115,7 +115,12 @@ fn main() {
     thread::spawn(move || {
         let mut receiver = client_receiver.lock().unwrap().start_consuming();
         loop {
-            let msg = receiver.recv().unwrap().unwrap();
+            let msg = receiver.recv().unwrap();
+            if msg.is_none() {
+                println!("Error al recibir el mensaje");
+                continue;
+            }
+            let msg = msg.unwrap();
             let topic = msg.topic();
             let payload = msg.payload_str();
             println!("Mensaje recibido en el topic: {}", topic);
