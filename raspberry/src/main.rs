@@ -70,7 +70,7 @@ fn main() {
     }
     let mqtt_broker_ip = mqtt_broker_ip.unwrap();
     println!("Broker IP: {}", mqtt_broker_ip);
-    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), "device_uuid".to_string());
+    let mut client = mqtt_client::MqttClient::new(mqtt_broker_ip.clone(), device_uuid.clone());
     while client.is_none() {
         println!("Error al crear el cliente mqtt");
         sleep(Duration::from_secs(30));

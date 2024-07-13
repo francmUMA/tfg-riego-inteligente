@@ -256,7 +256,7 @@ export default function Page() {
                         </button>
                     </div>
                 </div>
-                <div className="w-full h-full p-4 justify-center items-center md:items-start grid md:grid-cols-[repeat(auto-fit,minmax(360px,1fr))] gap-4 overflow-y-auto">
+                <div className="w-full grid grid-cols-3 gap-2 overflow-y-auto">
                 {
                     devices.map((devices, index) => {
                         return (
@@ -284,47 +284,6 @@ export default function Page() {
                         )
                     })
                 }
-                    {/* <div
-                        style={
-                            {
-                                background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
-                            }
-                        }
-                        className="w-full max-w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
-                    </div>
-                    <div
-                        style={
-                            {
-                                background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
-                            }
-                        }
-                        className="w-full max-w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
-                    </div>
-                    <div
-                        style={
-                            {
-                                background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
-                            }
-                        }
-                        className="w-full max-w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
-                    </div>
-                    <div
-                        style={
-                            {
-                                background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
-                            }
-                        }
-                        className="w-full max-w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
-                    </div>
-                    <div
-                        style={
-                            {
-                                background: "linear-gradient(157deg, rgba(224,243,255,1) 0%, rgba(177,177,255,1) 100%)",
-                            }
-                        }
-                        className="w-full max-w-96 border flex flex-col h-64 shadow-md hover:shadow-lg transition ease-in-out duration-150 hover:border-indigo-600 rounded-md overflow-hidden">
-                    </div> */}
-                
                 </div>
             </div>
         </main>
