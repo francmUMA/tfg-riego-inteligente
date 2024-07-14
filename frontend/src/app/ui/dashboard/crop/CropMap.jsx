@@ -141,18 +141,6 @@ const PolygonComponent = ({color, area, editable, devices, actuadores, sensors,
         setCoords(newCoords)
     }
 
-    useEffect(() => {
-      computeDeviceMarkersArea(polygonRef.current)
-    }, [devices])
-
-    useEffect(() => {
-      computeActuadoresMarkersArea(polygonRef.current)
-    }, [actuadores])
-
-    useEffect(() => {
-      computeSensorsMarkersArea(polygonRef.current)
-    }, [sensors])
-
     return (
         <Polygon
             ref={polygonRef}
